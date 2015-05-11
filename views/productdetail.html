@@ -1,16 +1,68 @@
 
 
-<div class="row wrapper border-bottom white-bg page-heading" ng-controller="productdetailCtrl">
-	<div class="col-lg-9">
-	        <h2>Products</h2>
-	        <ol class="breadcrumb">
-	            <li>
-	                <a href="/dashboards">Home</a>
-	            </li>
-	            
-	            <li class="active">
-	                <strong>Product: {{productId}}</strong>
-	            </li>
-	        </ol>
+<div  ng-controller="productdetailCtrl">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-9">
+		        <h2>Products</h2>
+		        <ol class="breadcrumb">
+		            <li>
+		                <a href="/dashboards">Home</a>
+		            </li>
+		            
+		            <li class="active">
+		                <strong>Product: {{productId}}</strong>
+		            </li>
+		        </ol>	       
+		</div>
 	</div>
-</div>
+	<div id="productdetails" class="col-lg-12">
+		<div class="col-lg-6">	
+			<img alt="image" class="img-responsive" src="img/p1.jpg">
+		</div>
+		<div class="col-lg-6">	
+			<div class="row">
+				<div class="col-lg-2 pull-left"> 
+		  			<strong >  Name:  </strong>  	
+		  		</div>
+		  		<div class="col-lg-9 pull-left"> {{productDails.name}}  </div> 
+		   	</div>  
+		   	<div class="row">
+				<div class="col-lg-2 pull-left">
+		  			<strong >  Price:  </strong>  	
+		  		</div>
+		  		<div class="col-lg-9 pull-left"> {{productDails.price}}  </div> 
+		   	</div>
+		   	<div class="row">
+				<div class="col-lg-2 pull-left">
+		  			<strong >  Brand:  </strong>  	
+		  		</div>
+		  		<div class="col-lg-9 pull-left"> {{productDails.circle}}  </div> 
+		   	</div>
+		   	<div class="row">
+				<div class="col-lg-2 pull-left">
+		  			<strong >  Category:  </strong>  	
+		  		</div>
+		  		<div class="col-lg-9 pull-left"> {{productDails.category}}  </div> 
+		   	</div>	 
+		   	
+		   	<div class="row">
+				<div class="col-lg-2 pull-left">
+		  			<strong >  Fabric:  </strong>  	
+		  		</div>
+		  		<div class="col-lg-9 pull-left"> {{productDails.fabric}}  </div> 
+		   	</div>	 
+		   	<div class="row">
+				<div class="col-lg-2 pull-left">
+		  			<strong >  Work:  </strong>  	
+		  		</div>
+		  		<div class="col-lg-9 pull-left"> {{productDails.work}}  </div> 
+		   	</div>	
+		   	<div class="row">
+				<div class="col-lg-2 pull-left">
+		  			<strong >  Images:  </strong>  	
+		  		</div>
+		  		<div class="col-lg-9 pull-left"> {{productDails.cimages}}  </div> 
+		   	</div>	 
+	   	</div> 	
+	</div>
+</div> 

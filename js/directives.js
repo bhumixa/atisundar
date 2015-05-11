@@ -358,19 +358,71 @@ function fullScroll($timeout){
     };
 }
 
+function getimageUrl($firebaseObject){
+    return {
+        link: function(scope, element, attrs){ 
+        var id  =  attrs.myAttr  
+        var atrStr = '';
+        var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products/"+id)
+        var i = $firebaseObject(allproductsRef);
+        console.log(i)
+       
+           /* allproductsRef.orderByValue().on("value", function(snapshot) {
+                //var value = snapshot.val().products;
+                //console.log();
+                //var vals = snapshot.val();
+                var imageName = snapshot.val().cimages
+                console.log(imageName +'uoiui')
+                element.removeAttr('my-attr');                  
+                element.attr('href', imageName); 
+            })*/
+                 
+        }
+    };
+}
+
 /*function getUrl($scope, $rootScope, $firebaseArray){
     var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products")
     return function(input) {
         return input ? '\u2713' : '\u2718';
     };
 }*/
-
-
-angular.module('atisundar').filter('getUrl', function() {
+/*
+report.directive('resetLink', function($parse, $log ) {
+  return {
+    link: function(scope, element, attrs){            
+      var atrStr = '';
+      var companyId = scope.$eval('companyid');          
+      var currentDate = scope.$eval('currentDate');         
+      var nextPeriod = scope.$eval('nextPeriod'); 
+      if(companyId){
+        atrStr = attrs.myAttr.replace('companyid', companyId);
+      }          
+      if(currentDate){
+        atrStr = atrStr.replace('currentDate', currentDate);
+      }
+      if(nextPeriod){
+        atrStr = atrStr.replace('nextPeriod', nextPeriod);
+      }
+      element.removeAttr('my-attr');                  
+      element.attr('href', atrStr);        
+    }
+  };
+});*/
+angular.module('atisundar' ).filter('getUrl', function($firebaseObject) {
   return function(input) {
     //console.log(input)
      var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products/"+input)
-    console.log(allproductsRef)
+     /*var i = $firebaseObject(allproductsRef);
+     console.log(i.cimages)*/
+    allproductsRef.orderByValue().on("value", function(snapshot) {
+        //var value = snapshot.val().products;
+        //console.log();
+        //var vals = snapshot.val();
+        /*var imageName = snapshot.val().cimages*/
+        console.log(imageName)
+        return imageName;
+    })
        /* ref3.once("value", function (ss) {
             resolve(ss.val())
         })*/
@@ -398,4 +450,5 @@ angular
     .directive('fullScroll', fullScroll)
     .directive('closeOffCanvas', closeOffCanvas)
     .directive('fileChange', fileChange)
+    .directive('getimageUrl', getimageUrl)
     

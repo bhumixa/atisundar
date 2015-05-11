@@ -65,6 +65,11 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             templateUrl: "views/productdetail.html",
             data: { pageTitle: 'Products' }
         })
+        .state('products.addproduct', {
+            url: "/addproduct",
+            templateUrl: "views/addproduct.html",
+            data: { pageTitle: 'Add new Product' }
+        })
         //productdetail
 }
 angular
