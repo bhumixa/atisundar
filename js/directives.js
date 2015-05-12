@@ -85,10 +85,10 @@ function iboxTools($timeout) {
                 }, 50);
             },
                 // Function for close ibox
-                $scope.closebox = function () {
-                    var ibox = $element.closest('div.ibox');
-                    ibox.remove();
-                }
+            $scope.closebox = function () {
+                var ibox = $element.closest('div.ibox');
+                ibox.remove();
+            }
         }
     };
 };
@@ -258,7 +258,7 @@ function ionRangeSlider() {
 function dropZone() {
     return function(scope, element, attrs) {
         element.dropzone({
-            url: "/upload",
+            url: "/home/bhavin/Desktop/atisundarAdmin/js/upload/",
             maxFilesize: 100,
             paramName: "uploadfile",
             maxThumbnailFilesize: 5,
@@ -358,14 +358,25 @@ function fullScroll($timeout){
     };
 }
 
-function getimageUrl($firebaseObject){
+function getimageUrl($firebaseArray){
     return {
         link: function(scope, element, attrs){ 
         var id  =  attrs.myAttr  
         var atrStr = '';
         var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products/"+id)
-        var i = $firebaseObject(allproductsRef);
-        console.log(i)
+        var i = $firebaseArray(allproductsRef);
+        i.$loaded(function (list) {            
+            var image = list.$getRecord('cimages');
+            element.removeAttr('my-attr');                  
+            element.attr('src', 'http://res.cloudinary.com/atisundar/image/upload/g_face,w_100,h_150,c_fill/'+image); 
+            element.attr('class',"img-responsive")
+        });
+       // element.removeAttr('my-attr');                  
+       // element.attr('href', i); 
+        /*var image = i.get('cimages');
+        //console.log(i)
+        //var image = i.get("cimages");
+        console.log(image)*/
        
            /* allproductsRef.orderByValue().on("value", function(snapshot) {
                 //var value = snapshot.val().products;
@@ -375,8 +386,7 @@ function getimageUrl($firebaseObject){
                 console.log(imageName +'uoiui')
                 element.removeAttr('my-attr');                  
                 element.attr('href', imageName); 
-            })*/
-                 
+            })*/                 
         }
     };
 }
@@ -409,26 +419,7 @@ report.directive('resetLink', function($parse, $log ) {
     }
   };
 });*/
-angular.module('atisundar' ).filter('getUrl', function($firebaseObject) {
-  return function(input) {
-    //console.log(input)
-     var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products/"+input)
-     /*var i = $firebaseObject(allproductsRef);
-     console.log(i.cimages)*/
-    allproductsRef.orderByValue().on("value", function(snapshot) {
-        //var value = snapshot.val().products;
-        //console.log();
-        //var vals = snapshot.val();
-        /*var imageName = snapshot.val().cimages*/
-        console.log(imageName)
-        return imageName;
-    })
-       /* ref3.once("value", function (ss) {
-            resolve(ss.val())
-        })*/
-    /*return input ? '\u2713' : '\u2718';*/
-  };
-});
+
 /**
  *
  * Pass all functions into module

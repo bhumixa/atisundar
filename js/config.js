@@ -68,7 +68,16 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
         .state('products.addproduct', {
             url: "/addproduct",
             templateUrl: "views/addproduct.html",
-            data: { pageTitle: 'Add new Product' }
+            data: { pageTitle: 'Add new Product' },
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['css/plugins/dropzone/basic.css','css/plugins/dropzone/dropzone.css','js/plugins/dropzone/dropzone.js']
+                        }
+                    ]);
+                }
+            }
         })
         //productdetail
 }
