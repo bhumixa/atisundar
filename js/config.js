@@ -40,7 +40,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url:"/uploadcontacts",
             templateUrl: "views/uploadcontacts.html",
             data: { pageTitle: 'upload Contacts' },
-            resolve: {
+            /*resolve: {
                 loadPlugin: function ($ocLazyLoad) {
                     return $ocLazyLoad.load([
                         {
@@ -48,7 +48,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
                         }
                     ]);
                 }
-            }
+            }*/
         })
         .state('products', {
             abstract: true,
@@ -79,7 +79,11 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
                 }
             }
         })
-        //productdetail
+        .state('products.uploadproducts', {
+            url:"/uploadproducts",
+            templateUrl: "views/uploadproducts.html",
+            data: { pageTitle: 'upload Products'}
+        });
 }
 angular
     .module('atisundar')

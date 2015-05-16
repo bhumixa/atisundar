@@ -4,7 +4,8 @@
         'ui.router',                    // Routing
         'oc.lazyLoad',                  // ocLazyLoad
         'ui.bootstrap',                //Ui Bootstrap
-        'firebase'              		// firebase
+        'firebase' ,					// firebase
+        'ngFileUpload'             		//ngFileUpload
     ])
 })();
 

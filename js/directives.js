@@ -258,18 +258,28 @@ function ionRangeSlider() {
 function dropZone() {
     return function(scope, element, attrs) {
         element.dropzone({
-            url: "/home/bhavin/Desktop/atisundarAdmin/js/upload/",
+            url: "/home/bhavin/Desktop/atisundarAdmin/js/upload",
             maxFilesize: 100,
             paramName: "uploadfile",
             maxThumbnailFilesize: 5,
             init: function() {
                 scope.files.push({file: 'added'});
                 this.on('success', function(file, json) {
+                    console.log(file)
                 });
                 this.on('addedfile', function(file) {
-                    scope.$apply(function(){
-                        alert(file);
-                        scope.files.push({file: 'added'});
+                    scope.$apply(function(){ 
+                    console.log(file.name)                      ;
+                   
+                       // scope.files.push({file: 'added'});
+                        //var tmppath = URL.createObjectURL(event.target.file);
+                       // console.log(tmppath)
+                        /*var mockFile = {
+                          name: file.name,
+                          size: file.size,
+                          type: 'image/jpeg',
+                        };
+                        console.log(mockFile)*/
                     });
                 });
                 this.on('drop', function(file) {

@@ -126,8 +126,10 @@ function productdetailCtrl($scope, $rootScope, $stateParams, $firebaseObject) {
 
 /*addproductCtrl*/
 
-function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
+function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http, Upload) {
 
+	
+	  
 	/*var mainRef = new Firebase("https://educe.firebaseio.com//products/products")
 	mainRef.child('category').equalTo('Saree').once('value', function(snapshot) {
 	   console.log(snapshot)
@@ -207,11 +209,80 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
     };
 
     $scope.MyFiles=[];
+/*
+    $('#fileUpload').on('change',function ()
+        {
+            var uploadedImg = $('#fileUpload').val();
+			alert(uploadedImg)
+			console.log(uploadedImg)
+        });*/
+
+	$scope.handler = function(e,files){
+		var reader = new FileReader();
+		//console.log(files[0])		
+
+		for (var i = 0, f; f = files[i]; i++) {
+			var tmppath = URL.createObjectURL(e.target.files[i]);
+		    console.log(tmppath)
+				//$("img").fadeIn("fast").attr('src',tmppath);
+			var img = $('<img class="dynamic">'); //Equivalent: $(document.createElement('img'))
+			img.attr('src', tmppath);
+			img.appendTo('#imagediv');
+			var i = reader.readAsDataURL(files[i]);
+			console.log(i +'kikk')
+		}
+
+	    reader.onload=function(e){
+	        var string = e.target.result;
+	    }
+	    //var i  = reader.readAsDataURL(element.files[0]);
+		//var tmppath = URL.createObjectURL(event.target.files[0]);
+		/*console.log(tmppath)
+    	$("img").fadeIn("fast").attr('src',URL.createObjectURL(event.target.files[0]));
+    */
+    /*var request = $http({
+		method: "post",
+		url: window.location.href + "upload.php",
+		data: {
+		    email: '$scope.email'
+		},
+		headers : {'Content-Type': 'application/x-www-form-urlencoded'}  
+		});
+
+		
+		request.success(function (data) {
+			alert('d' +data)
+		});
+		request.error(function (data) {
+			alert('errd')
+		});*/
+    	/*var file = files[0];
+        console.log(file);
+        $scope.upload = Upload.upload({
+        	method: 'POST',    
+            url: 'upload.php',	                      
+            file: file
+        }).success(function(data, status, headers, config) {
+            $scope.message = data;                
+        }).error(function(data, status) {
+            $scope.message = data;
+        });*/
+    	/*for (var i = 0; i < files.length; i++) {
+	        
+	    }*/
+	    
+	}
+}
+
+/*uploadproductsCtrl*/
+function uploadproductsCtrl($scope, $rootScope) {
+    // All data will be store in this object
+    $scope.MyFiles=[];
 
 	$scope.handler = function(e,files){
 	    var reader = new FileReader();
 	    reader.onload=function(e){
-	        /*var string = e.target.result.split("\n");	        
+	        var string = e.target.result.split("\n");	        
 	       // 
 	        $(string).each(function( index, value ) {
 	        	console.log(value)
@@ -219,7 +290,7 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
 	        		var csvvalue = value.split(",");
 	        		$("#uploadedDetail").append("<h3> <strong>"+csvvalue[0]+" "+csvvalue[1]+"</h3> </strong>")
 	        	}
-			});*/
+			});
 	        //console.log(csvvalue)
 	        /*var myString = string.split("\n");
 	        console.log(myString +' i')*/
@@ -229,8 +300,8 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
 	    }
 	    reader.readAsText(files[0]);
 	}
-}
 
+}
 
 /**
  *  MainCtrl - controller
@@ -253,3 +324,4 @@ angular
     .controller('productCtrl', productCtrl)
     .controller('productdetailCtrl', productdetailCtrl)
     .controller('addproductCtrl', addproductCtrl)
+    .controller('uploadproductsCtrl', uploadproductsCtrl)
