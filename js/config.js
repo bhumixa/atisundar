@@ -21,6 +21,12 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url: "/dashboards",
             templateUrl: "views/common/content.html",
         })
+        .state('dashboards.timeline', {
+            url: "/timeline",
+            templateUrl: "views/timeline.html",
+            data: { pageTitle: 'Timeline' }
+        })
+
         .state('contacts', {
             abstract: true,
             url: "/contacts",
@@ -88,6 +94,10 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
 angular
     .module('atisundar')
     .config(config)
+    /*.config(['$httpProvider', function($httpProvider) {
+        $httpProvider.defaults.useXDomain = true;
+        delete $httpProvider.defaults.headers.common['X-Requested-With'];
+    }])*/
     .run(function($rootScope, $state) {
         $rootScope.$state = $state;
     });

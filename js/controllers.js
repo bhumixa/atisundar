@@ -134,6 +134,33 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 	mainRef.child('category').equalTo('Saree').once('value', function(snapshot) {
 	   console.log(snapshot)
 	});*/
+   /*var dataObj = {
+			name : '$scope.name',
+			employees : '$scope.employees',
+			headoffice : '$scope.headoffice'
+	};	
+	 $http.post('http://localhost:3030/upload',
+                {
+                    headers: {
+                        //'Authorization': 'Basic dGVzdDp0ZXN0',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: dataObj,
+                    withCredentials: true
+                });*/
+    /*$http.post('http://localhost:3030/upload', headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },data: {dataObj}).
+	  success(function(data, status, headers, config) {
+	  	alert(data)
+	    // this callback will be called asynchronously
+	    // when the response is available
+	  }).
+	  error(function(data, status, headers, config) {
+	    // called asynchronously if an error occurs
+	    alert('msg')
+	    // or server returns response with an error status.
+	  });*/
 
 	$scope.files = [] ;
 	$scope.formData = {};
@@ -228,23 +255,38 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 			var img = $('<img class="dynamic">'); //Equivalent: $(document.createElement('img'))
 			img.attr('src', tmppath);
 			img.appendTo('#imagediv');
-			var i = reader.readAsDataURL(files[i]);
-			console.log(i +'kikk')
 		}
 
 	    reader.onload=function(e){
 	        var string = e.target.result;
 	    }
+
 	    //var i  = reader.readAsDataURL(element.files[0]);
 		//var tmppath = URL.createObjectURL(event.target.files[0]);
 		/*console.log(tmppath)
     	$("img").fadeIn("fast").attr('src',URL.createObjectURL(event.target.files[0]));
     */
+
+    /*for (var i = 0, f; f = files[i]; i++) {
+
+	    $http({
+	        url: 'http://localhost:3030/upload',
+	        method: "POST",
+	        data: { 'files' : 'sdfsd' }
+	    })
+	    .then(function(response) {
+	    	alert('msg')
+	            // success
+	    }, 
+	    function(response) { // optional
+	           alert('msg')
+	    });
+	}*/
     /*var request = $http({
 		method: "post",
-		url: window.location.href + "upload.php",
+		url: "http://localhost:3030/upload",
 		data: {
-		    email: '$scope.email'
+		    files: files
 		},
 		headers : {'Content-Type': 'application/x-www-form-urlencoded'}  
 		});
@@ -303,6 +345,52 @@ function uploadproductsCtrl($scope, $rootScope) {
 
 }
 
+function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
+	
+	$scope.loader = {
+	 loading: false,
+	};
+	$scope.loader.loading = true ;
+
+	$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
+		$scope.loader.loading = false ;
+	});
+	var cardref = new Firebase("https://educe.firebaseio.com//cards") 
+	firstMessagesQuery = cardref.limitToFirst(10)
+	$scope.cards = $firebaseArray(firstMessagesQuery);
+	/*var ref = new Firebase('https://educe.firebaseio.com/chat');
+	var message = {
+		name:'admin',
+		text: 'welcome to Atisundar'
+	}
+	var chatuser = '';
+	$scope.login = function(user)	{
+		$scope.newUser = user;		
+		chatuser = user
+		ref.child(user).push(message);
+		var chatuserref = new Firebase('https://educe.firebaseio.com/chat/'+chatuser);
+		$scope.messages = $firebaseArray(chatuserref);
+	}
+
+	
+	
+	//var messages = $firebaseObject(ref.child('messages')).$asArray();
+
+	$scope.handleKeyup = function handleKeyup(e) {
+		var chatuserref = new Firebase('https://educe.firebaseio.com/chat/'+chatuser);
+		if(e.keyCode == 13) {
+			var name = 'admin';
+			var text = $scope.newMessage.text;
+			var message = {
+				name:'admin',
+				text: $scope.newMessage.text
+			}
+			chatuserref.push(message);
+            $('#messageInput').val('');
+		}
+	}*/
+}
+
 /**
  *  MainCtrl - controller
  */
@@ -325,3 +413,4 @@ angular
     .controller('productdetailCtrl', productdetailCtrl)
     .controller('addproductCtrl', addproductCtrl)
     .controller('uploadproductsCtrl', uploadproductsCtrl)
+    .controller('timelineCtrl', timelineCtrl)

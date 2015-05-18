@@ -1,0 +1,15 @@
+<div class="card warning" ng-click="showCard()">
+    <div class="item item-divider">
+        {{card.name}} by {{card.authorName}}, {{duration}} {{relTime}}
+    </div>
+    <div class="item item-text-wrap">
+        <p>
+           {{card.text}}
+            {{id}}//{{card.f1}}//{{card.f2}}
+        </p>
+        <p>
+            <a ng-show="showCommentCount()" href="#" class="subdued">{{card.commentCount}} Comments</a>
+        </p>
+    </div>
+
+</div>

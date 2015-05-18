@@ -6454,3 +6454,50 @@ imgdetail{
 }
 
 
+.under {
+  position: absolute;
+  bottom: 200px;
+  right: 200px;
+}
+#container {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+}
+.chat {
+  border: 1px solid #999;
+  display: inline-block;
+  vertical-align: bottom;
+  position: relative;
+  margin: 0 5px;
+  pointer-events: auto;
+}
+.title {
+  padding: 0.5em;
+  background-color: #1ab394;
+  color: white;
+}
+.text {
+  padding: 10px;
+}
+
+#chatboxshow{
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+
+#loadDiv{
+    z-index:9999;
+    background: transparent;
+}
+#load{
+    width:20%;
+    height:100%;
+    z-index:9999;
+    background: transparent;
+    margin-left: 350px;
+    vertical-align: middle;  
+}
+

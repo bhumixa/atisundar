@@ -1,0 +1,35 @@
+  <div class="item item-avatar">
+      <img src="mcfly.jpg">
+      <h2 ng-cloak>{{card.author}}</h2>
+      <p>{{duration}} {{relTime}}</p>
+  </div>
+
+  <div class="item item-body">
+      <p>
+          Generic Card {{id}} {{card.f1}} {{card.f2}} {{card.f3}}
+          {{card.text}}
+      </p>
+      <p>
+          <a href="#" class="subdued">{{card.likes}} {{'Likes'}}</a>
+          <a href="#" class="subdued">{{card.commentCount}} Comments</a>
+      </p>
+  </div>
+
+  <div class="item tabs tabs-secondary tabs-icon-left">
+      <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
+          <i class="icon ion-thumbsup"></i>
+          {{'Like'}}
+      </a>
+      <a ng-if="liked" class="tab-item" ng-click="likeCard()">
+          <i class="icon ion-thumbsup positive"></i>
+          <span class="positive"> {{'Like'}} </span>
+      </a>
+
+      <a class="tab-item" ng-click="showCard()">
+          <i class="icon ion-chatbox"></i>
+          Comment
+      </a>
+
+  </div>
+
+

@@ -401,6 +401,341 @@ function getimageUrl($firebaseArray){
     };
 }
 
+function dccard($firebase, $timeout){
+    var directive = {};
+    directive.restrict='E';
+    directive.scope = {
+        id: '@',
+        view: '@'
+    };
+
+    directive.controller = function($scope,$state,$firebase){
+        $scope.comments =[];
+        $scope.liked = false
+        console.log("In dc card controller...."+$scope.id)
+
+        var userLike = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id+"/likers")
+        var likeEffect = 0
+        userLike.once("value",function(ss){
+            if (ss.val()){
+                //user already likes it
+                console.log("likes  "+$scope.id)
+                $scope.liked = true
+            }else{
+                console.log("Does not like : "+$scope.id)
+            }
+        })
+
+        var removeCommentFromScope = function(k,$scope){
+            for (x in $scope.comments){
+                if ($scope.comments[x].thread == k){
+                    $scope.comments.splice(x, 1)
+                }
+            }
+        }
+
+        var addCommentToScope=function(key,val,$scope){
+
+            //check if comment is not already shown
+            for (ec in $scope.comments){
+                if ($scope.comments[ec].thread == key){
+                    //comment already shown
+                    return
+                }
+            }
+
+            card = val
+            card.relTime = moment(card.created).fromNow()
+            var newr = []
+            //console.log("REPLIES === "+JSON.stringify(card.replies))
+            for (_r in card.replies){
+                var r = card.replies[_r]
+                //console.log(">>>>>>>>>>>>>"+_r)
+                var newr1 = {}
+                newr1.comment = r.comment
+                newr1.created = r.created
+                newr1.name = r.name
+                newr1.user = r.user
+                newr1.relTime = moment(r.created).fromNow()
+                newr.push(newr1)
+            }
+            card.replies = newr
+            card.thread = key
+            //console.log("REL TIME  " + JSON.stringify(card))
+            $scope.comments.push(card)
+
+           /* var div = '<h2>'+card.name+'</h2>';
+            $( div ).appendTo( "#commentDiv" );*/
+            
+        }
+
+        $scope.showComments = function(){
+            var userComments = new Firebase("https://educe.firebaseio.com/cardComments/"+$scope.id)
+            
+            userComments.on("child_added",function(data){
+                //console.log(data.val())
+                removeCommentFromScope(data.key(), $scope)
+                addCommentToScope(data.key(), data.val(), $scope)
+
+            })
+            
+            
+        }
+
+        $scope.showCommentsIcon = function(){
+            if ($scope.view == "detail"){
+                return false
+            }
+            return true
+        }
+
+        $scope.showCommentCount = function(){
+            if ($scope.card.commentCount && $scope.card.commentCount > 0){
+                return true
+            }
+            return false
+        }
+
+        $scope.showLikeCount = function(){
+            if ($scope.card.likes && $scope.card.likes > 0){
+                return true
+            }
+            return false
+        }
+
+        $scope.showCard = function(){
+            console.log("========> Show CARD ===> Sending to card view = "+$scope.card.type)
+            /*if ($scope.card.type == "Image"){
+                $state.go("main.tabs.home.product",{product:$scope.card.productid, tab:'home'})
+            }
+
+            if ($scope.card.type == "Announcement"){
+                $state.go("main.tabs.home.cardDetail",{card:$scope.id})
+            }
+
+            if ($scope.card.type == "AnnouncementImage"){
+                $state.go("main.tabs.home.cardDetail",{card:$scope.id})
+            }
+
+            if ($scope.card.type == "Order"){
+                $state.go("main.tabs.home.cardDetail",{card:$scope.id})
+            }
+
+
+            if ($scope.card.type == "Form"){
+                $state.go("main.tabs.home.form",{form: $scope.card.name, card:$scope.id})
+            }*/
+        }
+
+        $scope.likeCard = function() {
+            var userLike = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id+"/likers")
+            var likeEffect = 0
+            userLike.once("value",function(ss) {
+                if (ss.val()) {
+                    console.log("LIKE CARD In directive")
+                    //check if user likes card already
+                    //user already likes it
+                    userLike.remove()
+                    likeEffect = -1
+                } else {
+                    userLike.set("1")
+                    likeEffect = 1
+                }
+
+                var upvotesRef = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id+"/likes");
+                upvotesRef.transaction(function (current_value) {
+                    console.log(" Card "+$scope.id + " like count "+likeEffect)
+                    if (likeEffect == 1){
+                        $scope.liked = true
+                    }else{
+                        $scope.liked = false
+                    }
+                    return (current_value || 0) + likeEffect;
+
+                });
+            })
+        }
+    }
+
+    directive.link=function($scope, element, attrs,controller){
+
+        $scope.getContentURL = function(){
+            var u = './views/tab-home-card.html'
+            //console.log("Scope card = "+$scope.card.type)
+            if ($scope.card){
+               if ($scope.card.type){
+                   //console.log("Card Type = "+$scope.card.type)
+                   u = './views/tab-home-card-'+$scope.card.type+'.html'
+                   //console.log("Card Template for id = "+$scope.id + "  = "+u)
+               }
+            }
+
+            $scope.height=300
+            $scope.width=200
+
+            return u
+        }
+
+
+
+        console.log("in dc card link");
+        console.log("...Got id as "+$scope.id);
+
+        var ref = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id)
+        ref.on("value",function(snapshot){
+            console.log( "XXXXXXXXXXXXXXCard: "+ snapshot.val() + " " + snapshot.key())
+            var card = snapshot.val();
+
+            $timeout(function(){
+                $scope.$apply(function() {
+                    $scope.card = card
+
+                    var relTime = moment(card.created).fromNow()
+                    $scope.duration=""
+                    $scope.relTime = relTime
+                    if (relTime.indexOf("ago") != -1){
+                        var tp = relTime.split(" ")
+                        $scope.duration = tp[0]
+                        tp.splice(0,1)
+                        //FIX for other relative time formats like a few seconds ago, now
+                        var translatable = tp.join(" ")
+                    }
+                    $scope.relTime = translatable
+                    console.log("Card author = " + $scope.card.author)
+                    //console.log(card)
+                        //element.html("<pre>"+card.author+"</pre>")
+                    })  },0,false);
+
+        })
+    };
+
+    directive.template  = '<div ng-include="getContentURL()"></div>'
+
+    return directive  
+}
+
+function onFinishRender($timeout){
+    return {
+        restrict: 'A',
+        link: function (scope, element, attr) {
+            if (scope.$last === true) {
+                $timeout(function () {
+                    scope.$emit('ngRepeatFinished');
+                });
+            }
+        }
+    }
+}
+
+function cardcomments(){
+//.directive('cardcomments',function($timeout,CardService){
+        var directive = {};
+        directive.restrict='E';
+        directive.scope = {
+            card: '@',
+            toggleCommentsBar: '&',
+            cardThread: '&'
+        };
+
+        directive.controller = function($scope,$state, $q){
+            $scope.comments = []
+            console.log("$scope.card ="+$scope.card)
+
+            var getComments = function($scope, c){
+
+            console.log("Getting comments for "+c)
+
+            var ref = new Firebase("https://educe.firebaseio.com/cardComments/"+c)
+            var s = $scope
+            ref.on("child_changed",function(data){
+                console.log("Child changed fired ......")
+                //remove the old
+                removeCommentFromScope(data.key(), s)
+                //add the new
+                addCommentToScope(data.key(), data.val(), s)
+            })
+
+
+            ref.on("child_added",function(data){
+                    addCommentToScope(data.key(), data.val(), $scope)
+            })
+
+        }
+
+        var getInitComments = function(c){
+            console.log("Now Getting init comments for card = "+ c)
+            return $q(function(resolve,reject){
+                var ref = new Firebase("https://educe.firebaseio.com/cardComments/"+c)
+                ref.on("value",function(data){
+                    resolve(data.val())
+                })
+            })
+        }
+
+        var addCommentToScope=function(key,val,$scope){
+
+            //check if comment is not already shown
+            for (ec in $scope.comments){
+                if ($scope.comments[ec].thread == key){
+                    //comment already shown
+                    return
+                }
+            }
+
+            card = val
+            card.relTime = moment(card.created).fromNow()
+            var newr = []
+            //console.log("REPLIES === "+JSON.stringify(card.replies))
+            for (_r in card.replies){
+                var r = card.replies[_r]
+                //console.log(">>>>>>>>>>>>>"+_r)
+                var newr1 = {}
+                newr1.comment = r.comment
+                newr1.created = r.created
+                newr1.name = r.name
+                newr1.user = r.user
+                newr1.relTime = moment(r.created).fromNow()
+                newr.push(newr1)
+            }
+            card.replies = newr
+            card.thread = key
+            //console.log("REL TIME  " + JSON.stringify(card))
+            $scope.comments.push(card)
+        }
+
+        getComments($scope,$scope.card)
+
+
+            //product comments are stored with handle appended to the circle name as the card key
+        getInitComments($scope.card).then(function(d){
+                //loop over comments to add them in scope using service
+                for (c in d){
+                    console.log("Adding comment = "+c + " to scope")
+                    addCommentToScope(c,d[c],$scope)
+                }
+            },function(e){alert(e)})
+
+
+        }
+
+        directive.link = function($scope,element,attrs,controller){
+            $scope.replyTo = function(c){
+                console.log("REPLY To in directive called wiht c ="+c)
+                console.log("Card Thread is ="+$scope.cardThread)
+                $scope.cardThread = c
+                console.log("Card Thread is ="+$scope.cardThread)
+                $scope.toggleCommentsBar()($scope.cardThread)
+            }
+
+        }
+
+        directive.templateUrl = "./views/comments.html"
+
+        return directive
+
+
+}
+
 /*function getUrl($scope, $rootScope, $firebaseArray){
     var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products")
     return function(input) {
@@ -452,4 +787,7 @@ angular
     .directive('closeOffCanvas', closeOffCanvas)
     .directive('fileChange', fileChange)
     .directive('getimageUrl', getimageUrl)
+    .directive('dccard',dccard)
+    .directive('onFinishRender', onFinishRender)
+    .directive('cardcomments', cardcomments)
     

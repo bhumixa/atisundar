@@ -34,12 +34,17 @@
 
 <!-- Main view  -->
 <div ui-view></div>
+<!-- <div ng-controller="MessagesCtrl"  id="chat_div">
+    <button ng-click="login()" ng-hide="authData">Log In</button>
+    <input ng-model="newMessage.text" ng-keyup="handleKeyup($event)">
+    <div ng-repeat="message in data.messages"> <b>{{ message.author }}:</b> {{ message.text }} </div>
+</div> -->
 
 <!-- jQuery and Bootstrap -->
 <script src="js/jquery/jquery-2.1.1.min.js"></script>
 <script src="js/plugins/jquery-ui/jquery-ui.js"></script>
 <script src="js/bootstrap/bootstrap.min.js"></script>
-
+<script src="js/moment.js"></script>
 <!-- MetsiMenu -->
 <script src="js/plugins/metisMenu/jquery.metisMenu.js"></script>
 
@@ -70,6 +75,9 @@
 <script src="js/config.js"></script>
 <script src="js/directives.js"></script>
 <script src="js/controllers.js"></script>
+
+
+
 <!-- <script src="js/translations.js"></script> -->
 
 </body>

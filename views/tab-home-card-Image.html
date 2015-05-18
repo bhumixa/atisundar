@@ -1,0 +1,32 @@
+<div class="card"  >
+    <div class="item" ng-click="showCard()">
+        <h2>{{card.text}}</h2>
+    </div>
+
+    <div class="item item-image" ng-click="showCard()">
+        <img width="{{width}}" src="http://res.cloudinary.com/atisundar/image/upload/w_{{height}},h_{{height}},c_fill/{{card.source}}.jpg" />
+    </div>
+
+    <div class="item">
+        <a href="#" ng-show="showLikeCount()" class="subdued">{{card.likes}} {{'Likes'}}</a>
+        <a href="#" ng-show="showCommentCount()" class="subdued">{{card.commentCount}} Comments</a>
+    </div>
+
+    <div class="item tabs tabs-white tabs-secondary tabs-icon-left">
+        <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
+            <i class="icon ion-thumbsup"></i>
+            {{'Like'}}
+        </a>
+        <a ng-if="liked" class="tab-item" ng-click="likeCard()">
+            <i class="icon ion-thumbsup positive"></i>
+            <span class="positive"> {{'Like'}} </span>
+        </a>
+
+        <a class="tab-item" ng-click="showCard()">
+            <i class="icon ion-chatbox"></i>
+            Comment
+        </a>
+
+    </div>
+
+</div>

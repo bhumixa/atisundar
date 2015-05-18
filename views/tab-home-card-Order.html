@@ -1,0 +1,36 @@
+<div class="card order-thankyou-card" ng-click="showCard()">
+    <div class="item item-divider">
+        Thank you, {{card.authorName}} for your order.
+    </div>
+    <div class="item item-text-wrap">
+        <div class="list order-list list-inset" >
+            Order: #{{card.number}} placed  {{duration}} {{relTime}}
+
+            <a class="item item-thumbnail-left" href="#" ng-repeat="i in card.items">
+                <img src="http://res.cloudinary.com/atisundar/image/upload/w_50,h_50,c_fill/{{i.image}}.jpg">
+                <h2><strong>{{i.name}}</strong></h2>
+                <p>{{i.q}} x Rs. {{i.price}}/-</p>
+            </a>
+
+        </div>
+    </div>
+
+    <div class="item item-divider">
+        <a href="#" ng-show="showCommentCount()" class="subdued">{{card.commentCount}} Comments</a>
+
+        Order Summary:
+        <div class="text-right total-price">{{card.pcs}} Products &middot; Rs. {{card.netAmount}}/-</div>
+
+
+    </div>
+
+
+    <div ng-if="!showCommentsIcon()" class="item item-input text-center action-container">
+        <button ui-sref="main.tabs.shop.index" class="button button-material button-assertive">Browse more products</button>
+    </div>
+
+
+
+
+
+</div>
