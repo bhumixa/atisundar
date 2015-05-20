@@ -6501,3 +6501,11 @@ imgdetail{
     vertical-align: middle;  
 }
 
+.noselected{
+    visibility: hidden;
+}
+
+.selected{
+    visibility: visible;
+}
+

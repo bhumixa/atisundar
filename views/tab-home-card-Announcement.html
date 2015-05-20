@@ -6,35 +6,41 @@
         <p>{{duration}} {{relTime}}</p>
     </div>
 
-    <div class="item item-text-wrap" ng-click="showCard()">
+    <div class="item item-text-wrap">
         <p>
             {{card.message}}
         </p>
+       
+            <p>
+                <a ng-show=showLikeCount() href="" class="subdued">{{card.likes}} {{'Likes'}}</a>
 
-        <p>
-            <a ng-show=showLikeCount() href="#" class="subdued">{{card.likes}} {{'Likes'}}</a>
-
-            <a ng-show='showCommentCount()' href="" class="subdued" ng-click="showComments()" >{{card.commentCount}} Comments </a>
-        </p>
-
+                <a ng-show='showCommentCount()' href="" class="subdued" ng-click="showComments()" >{{card.commentCount}} Comments </a>
+            </p>
     </div>
 
     <div class="item tabs tabs-secondary tabs-icon-left">
-        <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
-            <i class="icon ion-thumbsup"></i>
-            {{'Like'}}
-        </a>
-        <a ng-if="liked" class="tab-item" ng-click="likeCard()">
-            <i class="icon ion-thumbsup positive"></i>
-            <span class="positive"> {{'Like'}} </span>
-        </a>
+        <div class="row">
+            <div class="col-sm-2">
 
-        <a class="tab-item" ng-show='showCommentsIcon()' ng-click="showCard()">
-            <i class="icon ion-chatbox"></i>
-            Comment
-        </a>
+               <!--  <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
+                    <i class="icon ion-thumbsup"></i>
+                    {{'Like'}}
+                </a>
+                <a ng-if="liked" class="tab-item" ng-click="likeCard()">
+                    <i class="icon ion-thumbsup positive"></i>
+                    <span class="positive"> {{'Like'}} </span>
+                </a> -->
 
+                <a class="tab-item" ng-show='showCommentsIcon()' ng-click="addComments()">
+                    <i class="icon ion-chatbox"></i>
+                    Comment
+                </a>
+            </div>           
+        </div>
     </div> 
+    <div class="item tabs tabs-secondary tabs-icon-left noselected" id="comArea_{{id}}" >
+        <textarea ng-model="comment" ng-enter="submitComment(id, comment)" id="txt_{{id}}"> </textarea>
+    </div>
 
     
     <div ng-repeat="c in comments">

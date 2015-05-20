@@ -401,7 +401,7 @@ function getimageUrl($firebaseArray){
     };
 }
 
-function dccard($firebase, $timeout){
+function dccard($firebase, $timeout, $firebaseArray){
     var directive = {};
     directive.restrict='E';
     directive.scope = {
@@ -409,7 +409,7 @@ function dccard($firebase, $timeout){
         view: '@'
     };
 
-    directive.controller = function($scope,$state,$firebase){
+    directive.controller = function($scope,$state,$firebase, $firebaseArray){
         $scope.comments =[];
         $scope.liked = false
         console.log("In dc card controller...."+$scope.id)
@@ -426,58 +426,40 @@ function dccard($firebase, $timeout){
             }
         })
 
-        var removeCommentFromScope = function(k,$scope){
-            for (x in $scope.comments){
-                if ($scope.comments[x].thread == k){
-                    $scope.comments.splice(x, 1)
-                }
-            }
+        
+
+        $scope.addComments = function(){
+            $("#comArea_"+$scope.id).removeClass( "noselected" ).addClass( "selected" );
         }
 
-        var addCommentToScope=function(key,val,$scope){
-
-            //check if comment is not already shown
-            for (ec in $scope.comments){
-                if ($scope.comments[ec].thread == key){
-                    //comment already shown
-                    return
-                }
+        $scope.submitComment = function(cardid, comment){
+            var addCommentref = new Firebase("https://educe.firebaseio.com/cardComments/"+$scope.id)
+            var ctime = new Date().getTime()
+            var cardData = {
+                name:'admin',
+                created: ctime,
+                comment:comment
             }
+            addCommentref.push(cardData);
+            var upvotesRef = new Firebase("http://educe.firebaseio.com/cards/"+$scope.id+"/commentCount");
+            upvotesRef.transaction(function (current_value) {
+                console.log(" Card "+$scope.id + " comment count " +current_value)
+                $("#txt_"+$scope.id).val('');
+                $("#comArea_"+$scope.id).removeClass( "selected" ).addClass( "noselected" );
+                return (current_value || 0) + 1;
 
-            card = val
-            card.relTime = moment(card.created).fromNow()
-            var newr = []
-            //console.log("REPLIES === "+JSON.stringify(card.replies))
-            for (_r in card.replies){
-                var r = card.replies[_r]
-                //console.log(">>>>>>>>>>>>>"+_r)
-                var newr1 = {}
-                newr1.comment = r.comment
-                newr1.created = r.created
-                newr1.name = r.name
-                newr1.user = r.user
-                newr1.relTime = moment(r.created).fromNow()
-                newr.push(newr1)
-            }
-            card.replies = newr
-            card.thread = key
-            //console.log("REL TIME  " + JSON.stringify(card))
-            $scope.comments.push(card)
-
-           /* var div = '<h2>'+card.name+'</h2>';
-            $( div ).appendTo( "#commentDiv" );*/
-            
+            });
         }
 
         $scope.showComments = function(){
             var userComments = new Firebase("https://educe.firebaseio.com/cardComments/"+$scope.id)
-            
-            userComments.on("child_added",function(data){
+             $scope.comments = $firebaseArray(userComments);
+           /* userComments.on("child_added",function(data){
                 //console.log(data.val())
                 removeCommentFromScope(data.key(), $scope)
                 addCommentToScope(data.key(), data.val(), $scope)
 
-            })
+            })*/
             
             
         }
@@ -627,115 +609,21 @@ function onFinishRender($timeout){
     }
 }
 
-function cardcomments(){
-//.directive('cardcomments',function($timeout,CardService){
-        var directive = {};
-        directive.restrict='E';
-        directive.scope = {
-            card: '@',
-            toggleCommentsBar: '&',
-            cardThread: '&'
-        };
-
-        directive.controller = function($scope,$state, $q){
-            $scope.comments = []
-            console.log("$scope.card ="+$scope.card)
-
-            var getComments = function($scope, c){
-
-            console.log("Getting comments for "+c)
-
-            var ref = new Firebase("https://educe.firebaseio.com/cardComments/"+c)
-            var s = $scope
-            ref.on("child_changed",function(data){
-                console.log("Child changed fired ......")
-                //remove the old
-                removeCommentFromScope(data.key(), s)
-                //add the new
-                addCommentToScope(data.key(), data.val(), s)
-            })
 
 
-            ref.on("child_added",function(data){
-                    addCommentToScope(data.key(), data.val(), $scope)
-            })
-
-        }
-
-        var getInitComments = function(c){
-            console.log("Now Getting init comments for card = "+ c)
-            return $q(function(resolve,reject){
-                var ref = new Firebase("https://educe.firebaseio.com/cardComments/"+c)
-                ref.on("value",function(data){
-                    resolve(data.val())
-                })
-            })
-        }
-
-        var addCommentToScope=function(key,val,$scope){
-
-            //check if comment is not already shown
-            for (ec in $scope.comments){
-                if ($scope.comments[ec].thread == key){
-                    //comment already shown
-                    return
-                }
+function ngEnter() {
+    return function (scope, element, attrs) {
+        element.bind("keydown keypress", function (event) {
+            if(event.which === 13) {
+                scope.$apply(function (){
+                    scope.$eval(attrs.ngEnter);
+                });
+ 
+                event.preventDefault();
             }
-
-            card = val
-            card.relTime = moment(card.created).fromNow()
-            var newr = []
-            //console.log("REPLIES === "+JSON.stringify(card.replies))
-            for (_r in card.replies){
-                var r = card.replies[_r]
-                //console.log(">>>>>>>>>>>>>"+_r)
-                var newr1 = {}
-                newr1.comment = r.comment
-                newr1.created = r.created
-                newr1.name = r.name
-                newr1.user = r.user
-                newr1.relTime = moment(r.created).fromNow()
-                newr.push(newr1)
-            }
-            card.replies = newr
-            card.thread = key
-            //console.log("REL TIME  " + JSON.stringify(card))
-            $scope.comments.push(card)
-        }
-
-        getComments($scope,$scope.card)
-
-
-            //product comments are stored with handle appended to the circle name as the card key
-        getInitComments($scope.card).then(function(d){
-                //loop over comments to add them in scope using service
-                for (c in d){
-                    console.log("Adding comment = "+c + " to scope")
-                    addCommentToScope(c,d[c],$scope)
-                }
-            },function(e){alert(e)})
-
-
-        }
-
-        directive.link = function($scope,element,attrs,controller){
-            $scope.replyTo = function(c){
-                console.log("REPLY To in directive called wiht c ="+c)
-                console.log("Card Thread is ="+$scope.cardThread)
-                $scope.cardThread = c
-                console.log("Card Thread is ="+$scope.cardThread)
-                $scope.toggleCommentsBar()($scope.cardThread)
-            }
-
-        }
-
-        directive.templateUrl = "./views/comments.html"
-
-        return directive
-
-
+        });
+    };
 }
-
 /*function getUrl($scope, $rootScope, $firebaseArray){
     var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products")
     return function(input) {
@@ -789,5 +677,6 @@ angular
     .directive('getimageUrl', getimageUrl)
     .directive('dccard',dccard)
     .directive('onFinishRender', onFinishRender)
-    .directive('cardcomments', cardcomments)
+   // .directive('cardcomments', cardcomments)
+    .directive('ngEnter', ngEnter)
     

@@ -356,8 +356,9 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
 		$scope.loader.loading = false ;
 	});
 	var cardref = new Firebase("https://educe.firebaseio.com//cards") 
-	firstMessagesQuery = cardref.limitToFirst(10)
-	$scope.cards = $firebaseArray(firstMessagesQuery);
+	/*firstMessagesQuery = cardref.limitToFirst(10)
+	$scope.cards = $firebaseArray(firstMessagesQuery);*/
+	$scope.cards = $firebaseArray(cardref);
 	/*var ref = new Firebase('https://educe.firebaseio.com/chat');
 	var message = {
 		name:'admin',
