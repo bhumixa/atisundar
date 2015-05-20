@@ -624,6 +624,21 @@ function ngEnter() {
         });
     };
 }
+
+function infiniteScroll(){
+    return {
+        link:function (scope, element, attrs) {
+            var offset = parseInt(attrs.threshold) || 0;
+            var e = element[0];
+
+            element.bind('scroll', function () {
+                if (scope.$eval(attrs.canLoad) && e.scrollTop + e.offsetHeight >= e.scrollHeight - offset) {
+                    scope.$apply(attrs.infiniteScroll);
+                }
+            });
+        }
+    };
+}
 /*function getUrl($scope, $rootScope, $firebaseArray){
     var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products")
     return function(input) {
@@ -677,6 +692,6 @@ angular
     .directive('getimageUrl', getimageUrl)
     .directive('dccard',dccard)
     .directive('onFinishRender', onFinishRender)
-   // .directive('cardcomments', cardcomments)
+    .directive('infiniteScroll', infiniteScroll)
     .directive('ngEnter', ngEnter)
     

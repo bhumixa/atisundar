@@ -5,7 +5,8 @@
         'oc.lazyLoad',                  // ocLazyLoad
         'ui.bootstrap',                //Ui Bootstrap
         'firebase' ,					// firebase
-        'ngFileUpload'             		//ngFileUpload
+        'ngFileUpload',            		//ngFileUpload
+        'infinite-scroll'              //infinite-scroll
     ])
 })();
 

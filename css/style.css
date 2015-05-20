@@ -2607,7 +2607,7 @@ a.forum-item-title:hover {
 }
 @media only screen and (min-width: 1170px) {
     .center-orientation .vertical-timeline-block {
-        margin: 4em 0;
+       /* margin: 4em 0;*/
     }
     .center-orientation .vertical-timeline-block:first-child {
         margin-top: 0;
@@ -6507,5 +6507,9 @@ imgdetail{
 
 .selected{
     visibility: visible;
+}
+.cardbox{
+    background: white none repeat scroll 0 0;
+    border-bottom: 1px solid #e7eaec;
 }
 

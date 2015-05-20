@@ -18,10 +18,10 @@
 
 	    <div class="row animated fadeInRight">
 	        <div class="col-lg-12">
-	        	<div class="ibox-content" id="ibox-content">
-                    <div id="vertical-timeline" class="vertical-container dark-timeline center-orientation">
-                    	
-                        <div class="vertical-timeline-block" ng-repeat="card in cards" on-finish-render="ngRepeatFinished">
+	        	<div class="center-orientation " id="ibox-content">
+                    <div id="vertical-timeline" class="vertical-container dark-timeline center-orientation" infinite-scroll="cardPagination()">
+                    
+                        <div class="vertical-timeline-block cardbox" ng-repeat="card in cards" on-finish-render="ngRepeatFinished" >
                         	 <dccard id="{{card.$id}}"></dccard>
 
                         	
