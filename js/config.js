@@ -16,12 +16,27 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
     });
 
     $stateProvider
+        .state('login', {
+           // abstract: true,
+            url: "/login",
+            templateUrl: "views/login.html",
+        }) //
+        .state('register', {
+           // abstract: true,
+            url: "/register",
+            templateUrl: "views/register.html",
+        })
         .state('dashboards', {
            // abstract: true,
             url: "/dashboards",
             templateUrl: "views/common/content.html",
         })
-        .state('dashboards.timeline', {
+        .state('atisundar', {
+            abstract: true,
+            url: "/atisundar",
+            templateUrl: "views/common/content.html",
+        })
+        .state('atisundar.timeline', {
             url: "/timeline",
             templateUrl: "views/timeline.html",
             data: { pageTitle: 'Timeline' }

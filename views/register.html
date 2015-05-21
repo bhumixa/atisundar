@@ -1,0 +1,38 @@
+<div class="middle-box text-center loginscreen   animated fadeInDown" ng-controller="registerCtrl">
+        <div>
+            <div>
+
+                
+
+            </div>
+           
+            <p>Create account</p>
+            <form class="m-t" role="form">
+               	 <div class="form-group">
+                    <input type="email" class="form-control" placeholder="Email" ng-model="formData.email" required="" >
+                </div>
+                
+                <div class="form-group">
+                    <input type="password" class="form-control" placeholder="Password" ng-model="formData.password" required="" >
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Mobile" ng-model="formData.mobile" required="" >
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="Brand" ng-model="formData.brand" required="" >
+                </div>
+              
+
+               <!--  <div class="form-group">
+                        <div class="checkbox i-checks"><label> <input type="checkbox"><i></i> Agree the terms and policy </label></div>
+                </div> -->
+                <button type="submit" class="btn btn-primary block full-width m-b" ng-click="submitForm()">Register</button>
+
+                <p class="text-muted text-center"><small>Already have an account?</small></p>
+                <a class="btn btn-sm btn-white btn-block" href="#/login">Login</a>
+            </form>
+            
+        </div>
+    </div>

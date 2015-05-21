@@ -4,29 +4,45 @@ var DataListRef = new Firebase('https://educe.firebaseio.com//brands//atisundar'
  *  loginCtrl - controller
  */
 
- function loginCtrl($scope, $rootScope) {
+ function loginCtrl($scope, $rootScope, $state) {
     // All data will be store in this object
     $scope.formData = {};
     // After login submit
     $scope.loginForm = function() {
     	if($scope.formData.email && $scope.formData.password){
-    		alert('msg')
     		var ref = new Firebase("https://educe.firebaseio.com/");
-    		var authClient = new FirebaseAuthClient(ref, function(error, user) {
+    		ref.authWithPassword({
+			  email    : $scope.formData.email,
+			  password : $scope.formData.password
+			}, function(error, authData) {
 			  if (error) {
-			    alert(error);
-			    return;
-			  }
-			  if (user) {
-			    // User is already logged in.
-			    doLogin(user);
+			    console.log("Login Failed!", error);
 			  } else {
-			  	alert('not')
+			   	$state.go('dashboards')
 			  }
 			});
     	}        
     };
+}
 
+function registerCtrl($scope, $rootScope, $state){
+	$scope.formData = {};
+
+	$scope.submitForm = function() {
+		if($scope.formData.email && $scope.formData.password && $scope.formData.mobile && $scope.formData.brand){
+			var ref = new Firebase("https://educe.firebaseio.com/");
+			ref.createUser({
+			  email    : $scope.formData.email ,
+			  password : $scope.formData.password,
+			}, function(error, userData) {
+			  if (error) {
+			    console.log("Error creating user:", error);
+			  } else {
+			   	$state.go('dashboards')
+			  }
+			});
+		}
+	}
 }
 
 /*addcontactCtrl*/
@@ -346,25 +362,76 @@ function uploadproductsCtrl($scope, $rootScope) {
 }
 
 function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
-	
+	var paginator=undefined;
+	var itemsPerPage = 10;
+	var itemsAvailable=true;
+	var cards=[]
+
 	$scope.loader = {
 	 loading: false,
 	};
 	$scope.loader.loading = true ;
+	var cardref = new Firebase("https://educe.firebaseio.com/users/919925037646/atisundar/cards") 
 
 	$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
 		$scope.loader.loading = false ;
+		
 	});
-	var cardref = new Firebase("https://educe.firebaseio.com//cards") 
-	firstMessagesQuery = cardref.limitToFirst(10)
-	$scope.cards = $firebaseArray(firstMessagesQuery);
-	/*$scope.cards = $firebaseArray(cardref);
-*/
-	$scope.start = 1;
-	$scope.end = 10;
-	$scope.cardPagination = function(){
-		alert('cardPagination')
+
+	//var ref = new Firebase("http://mj6uc.firebaseio.com/users/"+userID+"/"+brand+"/cards")
+	
+	//$scope.cards = {};
+
+	/*var cardsQuery = cardref.orderByValue().limitToFirst(2)
+	$scope.cards = $firebaseArray(cardsQuery);*/
+	$scope.cards = $firebaseArray(cardref);
+
+
+	
+	/*cardref.orderByKey().startAt(2).limitToFirst(2).on("child_added", function(snapshot) {
+	  console.log(snapshot.key())
+	  alert(snapshot.key())
+	  console.log('-----------********')
+	});*/
+	var addData = function($scope, key){
+		cardref.orderByKey().startAt(key).limit(2).on("child_added", function(snapshot) {
+		  $scope.cards.push(snapshot)		 
+		});
 	}
+
+	var addCards = function(c){
+        if ($.inArray(c,cards)== -1){
+            cards.push(c)
+        }else{
+            console.log("Not adding duplicate card "+c)
+        }
+
+    }
+	
+	$scope.cardPagination = function(){
+		paginator = new Paginator(cardref, itemsPerPage);
+		paginator.nextPage(function (vals) {
+                            //console.log("Got vals = "+vals)
+	        console.log("Got vals = " + JSON.stringify(vals))
+	        for (x in vals) {
+	            addCards(x)
+	        }
+	       
+	        $scope.cards = cards;
+	      })
+		/*if($scope.start  == 0){
+			$scope.start = 11;
+		}
+		var Query = cardref.startAt(3).limitToFirst(2);
+		$scope.start = parseInt($scope.start) + 10;
+		$scope.cards = $firebaseArray(Query);
+		alert($scope.start )*/
+	}
+	/*var cardref = new Firebase("https://educe.firebaseio.com//cards") 
+	firstMessagesQuery = cardref.limitToFirst(10)
+	$scope.cards = $firebaseArray(firstMessagesQuery);*/
+	/*$scope.cards = $firebaseArray(cardref);*/
+	
 	/*var ref = new Firebase('https://educe.firebaseio.com/chat');
 	var message = {
 		name:'admin',
@@ -401,8 +468,12 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
 /**
  *  MainCtrl - controller
  */
-function MainCtrl() {
-
+function MainCtrl($location) {
+	if(localStorage.getItem("email")){
+		$location.url('#/dashboards')
+	}else{
+		$location.url('#/login')
+	}
     this.userName = 'Example user';
     this.helloText = 'Welcome in SeedProject';
     this.descriptionText = 'It is an application skeleton for a typical AngularJS web app. You can use it to quickly bootstrap your angular webapp projects and dev environment for these projects.';
@@ -414,6 +485,7 @@ angular
     .module('atisundar')
     .controller('MainCtrl', MainCtrl)
     .controller('loginCtrl', loginCtrl)
+    .controller('registerCtrl', registerCtrl)
     .controller('addcontactCtrl', addcontactCtrl)
     .controller('uploadcontactsCtrl', uploadcontactsCtrl)
     .controller('productCtrl', productCtrl)

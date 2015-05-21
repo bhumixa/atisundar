@@ -72,11 +72,16 @@
             </li> -->
             <li ng-class="{active: $state.includes('dashboards')}">
                 <a href=""><i class="fa fa-desktop"></i> <span class="nav-label">Dashboard</span><span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level" ng-class="{in: $state.includes('dashboards')}">
-                    <li ui-sref-active="active"><a ui-sref="dashboards.timeline">Timeline</a></li>
+               
+            </li> 
+
+            <li ng-class="{active: $state.includes('atisundar')}">
+                <a href=""><i class="fa fa-desktop"></i> <span class="nav-label">Atisundar</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" ng-class="{in: $state.includes('atisundar')}">
+                    <li ui-sref-active="active"><a ui-sref="atisundar.timeline">Timeline</a></li>
                     
                 </ul>
-            </li>
+            </li> 
 
             <li ng-class="{active: $state.includes('contacts')}">                
                 <a href=""><i class="fa fa-group"></i> <span class="nav-label">Contacts</span><span class="fa arrow"></span></a>
