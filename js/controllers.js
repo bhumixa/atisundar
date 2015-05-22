@@ -1,53 +1,165 @@
 var DataListRef = new Firebase('https://educe.firebaseio.com//brands//atisundar');
 
+
 /**
  *  loginCtrl - controller
  */
 
- function loginCtrl($scope, $rootScope, $state) {
+ function loginCtrl($scope, $rootScope, $state, userDataService) {
     // All data will be store in this object
+    /*var i = "bhumi.patel2512@gmail.com";
+    encryptemail(i);
+
+    var n = encryptemail(i);
+    var j = decryptemail(n);
+    alert(j);*/
+
     $scope.formData = {};
+    $scope.error = {};
+    //$('#loadingDiv').show();
     // After login submit
     $scope.loginForm = function() {
-    	if($scope.formData.email && $scope.formData.password){
+
+    	if($scope.formData.email && $scope.formData.password && $scope.formData.brand){    		
     		var ref = new Firebase("https://educe.firebaseio.com/");
     		ref.authWithPassword({
 			  email    : $scope.formData.email,
 			  password : $scope.formData.password
 			}, function(error, authData) {
 			  if (error) {
-			    console.log("Login Failed!", error);
+			  	$scope.$apply(function() {
+			  		$scope.error.msg = error.message;
+			  	});				   
 			  } else {
+			  	//var mobile = '91'+$scope.formData.mobile;
+			  	//localStorage.setItem("mobile", mobile)
+			  	var email = encryptemail($scope.formData.email); 
+			  	localStorage.setItem("email", email) 
+				localStorage.setItem("brand", $scope.formData.brand);
+
+				userDataService.setbrand($scope.formData.brand)
 			   	$state.go('dashboards')
 			  }
-			});
+			});    		
     	}        
-    };
+    }
+
+    
 }
 
-function registerCtrl($scope, $rootScope, $state){
+function registerCtrl($scope, $rootScope, $state, userDataService){
 	$scope.formData = {};
+	$scope.error = {};
 
 	$scope.submitForm = function() {
-		if($scope.formData.email && $scope.formData.password && $scope.formData.mobile && $scope.formData.brand){
-			var ref = new Firebase("https://educe.firebaseio.com/");
-			ref.createUser({
-			  email    : $scope.formData.email ,
-			  password : $scope.formData.password,
-			}, function(error, userData) {
-			  if (error) {
-			    console.log("Error creating user:", error);
-			  } else {
-			   	$state.go('dashboards')
-			  }
-			});
+		if($scope.formData.email && $scope.formData.password){
+			if($scope.formData.mobile){
+				if($scope.formData.brand){
+					var ref = new Firebase("https://educe.firebaseio.com/");
+					ref.createUser({
+					  email    : $scope.formData.email ,
+					  password : $scope.formData.password,
+					}, function(error, userData) {
+					  if (error) {
+					    $scope.$apply(function() {
+					  		$scope.error.msg = error.message;
+					  	});	
+					  } else {
+					   	//$state.go('dashboards')
+					   	var userref = new Firebase("https://educe.firebaseio.com/users");
+					   	var mobile = '91'+$scope.formData.mobile;
+					   	var brand = $scope.formData.brand;	
+					   	var name = $scope.formData.name;
+					   	var email = encryptemail($scope.formData.email);
+
+					   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
+					   	userref.child(email).set(mobile);					   	
+
+					    var n  = userref.child(mobile);
+					    n.child(brand).set({cards:'ss'})
+
+					    var brandref = new Firebase("https://educe.firebaseio.com/brands");
+					   
+					    var brandchild  = brandref.child(brand);
+					    var adminch = brandchild.child('admins');
+					    adminch.child(mobile).set(name)
+					    localStorage.setItem("email", email) 
+					    localStorage.setItem("brand", brand)
+					    userDataService.setbrand(brand)
+					    $state.go('dashboards')
+					  }
+					});
+				}else{
+					$scope.error.brand = "please enter your brand"
+				}
+			}else{
+				$scope.error.mobile = "please enter valid mobile"
+			}
+			
+		}else{
+			$scope.error.email = "please enter email and password"
 		}
 	}
 }
 
+/*navigationCtrl*/
+function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeout, userDataService){
+	var email = localStorage.getItem("email");
+	var brand = localStorage.getItem("brand");
+	var name = '';
+	var mobile = '';
+
+	$scope.brand = userDataService.getbrand(brand);
+	var userbrandref = new Firebase("https://educe.firebaseio.com/brands/"+brand+"/admins");
+	var userref = new Firebase("https://educe.firebaseio.com/users");
+
+	userref.orderByKey().equalTo(email).on("child_added", function(snapshot) {
+		mobile =  snapshot.val();
+		userDataService.setMobile(mobile);
+		userbrandref.orderByKey().equalTo(mobile).on("child_added", function(snapshot) {
+		  	name = snapshot.val();
+		  	$timeout(function(){
+			  	$scope.$apply(function() {
+			  		$scope.name = name;
+			  		console.log($scope.name )
+			  	});
+		  	},0,false);
+		});
+	});
+
+	
+
+	/*var userbrands = new Firebase("https://educe.firebaseio.com/users/"+mobile);
+	$scope.userbrands = $firebaseArray(userbrands);*/
+
+	/*$scope.logout = function(){
+		localStorage.clear();
+		$state.go('login')
+	}
+
+	$scope.chooseBrand = function(brand){
+		alert(brand)
+	}
+*/
+	/*var nameQuery = userbrandref.orderByKey().equalTo(mobile);
+	var data = $firebaseObject(nameQuery);*/
+	/*
+	function nameAdd(mobile){
+		userbrandref.orderByKey().equalTo(mobile).on("child_added", function(snapshot) {
+		  console.log(snapshot.key());
+		  	name = snapshot.val();
+		  	
+		 // $scope.name = snapshot.val()
+		});
+	}*/
+	/*var array = $firebaseArray(userbrandref);*/
+	//console.log(array)
+}
+
 /*addcontactCtrl*/
-function addcontactCtrl($scope, $rootScope) {
+function addcontactCtrl($scope, $rootScope, userDataService) {
     // All data will be store in this object
+    var brand = userDataService.getbrand();
     $scope.formData = {};
     // After login submit
     
@@ -62,7 +174,7 @@ function addcontactCtrl($scope, $rootScope) {
 
 
 /*uploadcontactsCtrl*/
-function uploadcontactsCtrl($scope, $rootScope) {
+function uploadcontactsCtrl($scope, $rootScope, userDataService) {
     // All data will be store in this object
     $scope.MyFiles=[];
 
@@ -91,7 +203,7 @@ function uploadcontactsCtrl($scope, $rootScope) {
 }
 
 /*productCtrl*/
-function productCtrl($scope, $rootScope, $firebaseArray) {
+function productCtrl($scope, $rootScope, $firebaseArray, userDataService) {
 
 	var brandref = new Firebase("https://educe.firebaseio.com//brands/atisundar/products")
 	$scope.productList = $firebaseArray(brandref);
@@ -133,7 +245,7 @@ function productCtrl($scope, $rootScope, $firebaseArray) {
 }
 
 /*productdetailCtrl*/
-function productdetailCtrl($scope, $rootScope, $stateParams, $firebaseObject) {
+function productdetailCtrl($scope, $rootScope, $stateParams, $firebaseObject, userDataService) {
 	$scope.productId = $stateParams.productId;
 	var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products/"+$scope.productId)
     $scope.productDails = $firebaseObject(allproductsRef);
@@ -361,7 +473,7 @@ function uploadproductsCtrl($scope, $rootScope) {
 
 }
 
-function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
+function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray, userDataService) {
 	var paginator=undefined;
 	var itemsPerPage = 10;
 	var itemsAvailable=true;
@@ -371,7 +483,12 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
 	 loading: false,
 	};
 	$scope.loader.loading = true ;
-	var cardref = new Firebase("https://educe.firebaseio.com/users/919925037646/atisundar/cards") 
+
+	var brand = userDataService.getbrand();
+	var mobile = userDataService.getMobile();
+
+	var cardref = new Firebase("https://educe.firebaseio.com/users/"+mobile+"/"+brand+"/cards") 
+
 
 	$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
 		$scope.loader.loading = false ;
@@ -465,11 +582,19 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray) {
 	}*/
 }
 
+function topnavbarCtrl($scope, $rootScope, $stateParams, $state){
+	$scope.logout = function(){
+		localStorage.clear();
+		$state.go('login')
+	}
+}
+
 /**
  *  MainCtrl - controller
  */
-function MainCtrl($location) {
-	if(localStorage.getItem("email")){
+function MainCtrl($location ,userDataService) {
+	if(localStorage.getItem("email") && localStorage.getItem("brand")){
+		userDataService.setbrand(localStorage.getItem("brand"))
 		$location.url('#/dashboards')
 	}else{
 		$location.url('#/login')
@@ -479,6 +604,19 @@ function MainCtrl($location) {
     this.descriptionText = 'It is an application skeleton for a typical AngularJS web app. You can use it to quickly bootstrap your angular webapp projects and dev environment for these projects.';
 
 };
+
+
+function encryptemail(email){
+	var emailFn = email.replace(".", "{"); 
+	return emailFn
+}
+
+function decryptemail(email){
+	var emailFn = email.replace("{", "."); 
+	return emailFn
+}
+
+
 
 
 angular
@@ -493,3 +631,5 @@ angular
     .controller('addproductCtrl', addproductCtrl)
     .controller('uploadproductsCtrl', uploadproductsCtrl)
     .controller('timelineCtrl', timelineCtrl)
+    .controller('topnavbarCtrl', topnavbarCtrl)
+    .controller('navigationCtrl', navigationCtrl)

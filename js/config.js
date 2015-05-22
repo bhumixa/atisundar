@@ -31,12 +31,12 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url: "/dashboards",
             templateUrl: "views/common/content.html",
         })
-        .state('atisundar', {
+        .state('branddetails', {
             abstract: true,
-            url: "/atisundar",
+            url: "/branddetails",
             templateUrl: "views/common/content.html",
         })
-        .state('atisundar.timeline', {
+        .state('branddetails.timeline', {
             url: "/timeline",
             templateUrl: "views/timeline.html",
             data: { pageTitle: 'Timeline' }

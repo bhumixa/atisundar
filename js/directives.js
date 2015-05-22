@@ -8,7 +8,7 @@ function pageTitle($rootScope, $timeout) {
         link: function(scope, element) {
             var listener = function(event, toState, toParams, fromState, fromParams) {
                 // Default title - load on Dashboard 1
-                var title = 'Atisundar | Welcome';
+                var title = 'Welcome';
                 // Create your own title pattern
                 if (toState.data && toState.data.pageTitle) title = 'Atisundar | ' + toState.data.pageTitle;
                 $timeout(function() {
@@ -401,6 +401,10 @@ function getimageUrl($firebaseArray){
     };
 }
 
+function username($firebase, $timeout, $firebaseArray){
+
+}
+
 function dccard($firebase, $timeout, $firebaseArray){
     var directive = {};
     directive.restrict='E';
@@ -690,7 +694,7 @@ angular
     .directive('closeOffCanvas', closeOffCanvas)
     .directive('fileChange', fileChange)
     .directive('getimageUrl', getimageUrl)
-    .directive('dccard',dccard)
+    .directive('dccard',dccard)    
     .directive('onFinishRender', onFinishRender)
     .directive('infiniteScroll', infiniteScroll)
     .directive('ngEnter', ngEnter)
