@@ -1,0 +1,43 @@
+<div  ng-controller="editformCtrl">
+    <div class="row wrapper border-bottom white-bg page-heading" >
+        <div class="col-lg-9">
+            <h2>Forms</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/dashboards">Home</a>
+                </li>
+                
+                <li class="active">
+                    <strong>Edit Form</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+       <fieldset>
+            <form class="m-t" role="form">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <div ng-if="message" class="alert alert-success"> {{message}} </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-10">
+                        <div class="form-group">
+                            <label>Form name *</label>
+                            <input id="name" name="name" ng-model="formData.name" type="text" class="form-control required" ng-required="true">
+                        </div>    
+                        <div class="form-group">
+                            <label>Html </label>
+                            <textarea rows="4" cols="150" id="html" name="html" ng-model="formData.html" type="text" class="form-control required" >
+
+                            </textarea>
+                        </div>                                       
+                    </div>
+                 
+                </div>
+                <button type="submit" class="btn btn-primary" ng-click="submitForm()">Submit</button>   
+            </form>    
+        </fieldset>
+    </div>
+</div>

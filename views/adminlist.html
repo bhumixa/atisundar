@@ -1,0 +1,38 @@
+<div  ng-controller="adminlistCtrl">
+<div class="row wrapper border-bottom white-bg page-heading">
+    <div class="col-lg-9">
+        <h2>Contacts</h2>
+        <ol class="breadcrumb">
+            <li>
+                <a href="/dashboards">Home</a>
+            </li>
+            
+            <li class="active">
+                <strong>Admin Contacts</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+<div class="row">
+<div class="col-lg-4">
+    <div class="contact-box" ng-repeat = "user in userlist" > {{user.$id}}
+        <a href="#/contacts/editcontact/{{user.$id}}">
+            <div class="col-sm-4">
+                <div class="text-center">
+                    <img alt="image" class="img-circle m-t-xs img-responsive" src="img/a2.jpg">
+
+                    <div class="m-t-xs font-bold">  </div>
+                </div>
+            </div>
+            <div class="col-sm-8">                
+                <div getuser-data my-attr="{{user.$id}}"> </div>
+            </div>
+            <div class="clearfix"></div>
+        </a>
+    </div>
+</div>
+
+</div>
+</div>
+</div>

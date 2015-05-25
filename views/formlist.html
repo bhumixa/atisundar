@@ -1,0 +1,31 @@
+
+<div  ng-controller="formlistCtrl">
+    <div class="row wrapper border-bottom white-bg page-heading">
+        <div class="col-lg-9">
+            <h2>Forms</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/dashboards">Home</a>
+                </li>
+                
+                <li class="active">
+                    <strong>Form List</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+                <div class="col-lg-11">
+                    <div ng-repeat="form in formslist">
+                        <a href="#/forms/editform/{{form.$id}}">
+                        <div class="contact-box">
+                            <h3><strong>{{form.name}}</strong></h3>                           
+                        </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -31,14 +31,19 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url: "/dashboards",
             templateUrl: "views/common/content.html",
         })
-        .state('branddetails', {
+        .state('timeline', {
             abstract: true,
-            url: "/branddetails",
+            url: "/timeline",
             templateUrl: "views/common/content.html",
         })
-        .state('branddetails.timeline', {
-            url: "/timeline",
+        .state('timeline.view', {
+            url: "/view",
             templateUrl: "views/timeline.html",
+            data: { pageTitle: 'Timeline' }
+        })
+        .state('timeline.post', {
+            url: "/post",
+            templateUrl: "views/timelinepost.html",
             data: { pageTitle: 'Timeline' }
         })
 
@@ -56,7 +61,12 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url: "/addcontact",
             templateUrl: "views/addcontact.html",
             data: { pageTitle: 'Add new Contact' }
-        })
+        }) 
+        .state('contacts.editcontact', {
+            url: "/editcontact/:contactId",
+            templateUrl: "views/editcontact.html",
+            data: { pageTitle: 'Add new Contact' }
+        }) 
         .state('contacts.uploadcontacts', {
             url:"/uploadcontacts",
             templateUrl: "views/uploadcontacts.html",
@@ -104,7 +114,52 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url:"/uploadproducts",
             templateUrl: "views/uploadproducts.html",
             data: { pageTitle: 'upload Products'}
-        });
+        })
+        .state('forms', {
+            abstract: true,
+            url: "/forms",
+            templateUrl:  "views/common/content.html",
+        })
+        .state('forms.formlist', {
+            url:"/formlist",
+            templateUrl: "views/formlist.html",
+            data: { pageTitle: 'Form List'}
+        })
+        .state('forms.addform', {
+            url:"/addform",
+            templateUrl: "views/addform.html",
+            data: { pageTitle: 'Add Form'}
+        }) //
+        .state('forms.editform', {
+            url:"/editform/:formId",
+            templateUrl: "views/editform.html",
+            data: { pageTitle: 'Edit Form'}
+        })
+        .state('settings', {
+            abstract: true,
+            url: "/settings",
+            templateUrl:  "views/common/content.html",
+        })
+        .state('settings.homepage', {
+            url:"/homepage",
+            templateUrl: "views/homepage.html",
+            data: { pageTitle: 'Home Page'}
+        })
+        .state('settings.backgroundimage', {
+            url:"/background",
+            templateUrl: "views/backgroundimage.html",
+            data: { pageTitle: 'Background'}
+        }) 
+        .state('settings.adminlist', {
+            url:"/adminlist",
+            templateUrl: "views/adminlist.html",
+            data: { pageTitle: 'Admin List'}
+        })
+        .state('settings.addadmin', {
+            url:"/addadmin",
+            templateUrl: "views/addadmin.html",
+            data: { pageTitle: 'Add Admin'}
+        })
 }
 angular
     .module('atisundar')

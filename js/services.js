@@ -1,6 +1,7 @@
 function userDataService(){
 	var brand = '';
 	var mobile = '';
+	var name = '';
 	/*return function(value) {
 		brand = value;
 		alert(brand)
@@ -19,6 +20,12 @@ function userDataService(){
 		getMobile:function() {
 			return mobile;
 		},
+		setName : function(value){
+			name = value
+		},
+		getName : function(){
+			return name 
+		}
 	}
 }
 

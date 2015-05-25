@@ -1,4 +1,4 @@
-
+var firebaseUrl = "https://educe.firebaseio.com/";
 
 /**
  * pageTitle - Directive for set Page title - mata title
@@ -368,12 +368,63 @@ function fullScroll($timeout){
     };
 }
 
+function getuserData($firebaseObject, $timeout){
+    return {
+        link: function($scope, element, attrs){ 
+        var id  =  attrs.myAttr  
+        var atrStr = '';
+        var userDataRef =  new Firebase(firebaseUrl+"users/"+id);
+       /* var data = $firebaseObject(userDataRef);
+        var n = userDataRef.child(data.$id).val(); 
+        console.log(n)*/
+            userDataRef.once('value', function(Snapshot) {
+              var data = Snapshot.val();
+                for (n in data) {
+                    var dataUser = data[n];
+                    //console.log(dataUser.address)
+                    var email
+                    if(dataUser.email){
+                       email  =  decryptemail(dataUser.email);
+                    }
+                   
+                    $timeout(function(){
+
+                        $scope.$apply(function() {
+                        $scope.userData = dataUser
+                        $scope.email = email
+                        //console.log(card)
+                            //element.html("<pre>"+card.author+"</pre>")
+                        })  },0,false);
+
+                }
+                 console.log('---')
+             // console.log(data.val())
+              /*$timeout(function(){
+
+                $scope.$apply(function() {
+                    $scope.userData = data
+
+                    //console.log(card)
+                        //element.html("<pre>"+card.author+"</pre>")
+                    })  },0,false);*/
+              // val now contains the object { first: 'Fred', last: 'Flintstone' }.
+            });
+            /*data.$loaded(function (list) {  
+               var address = list.child('address');
+               console.log(address)
+               var n = userDataRef.child(list);
+            });*/
+        },
+        template :'<div ><h3><strong>{{userData.name}}</strong></h3> <p>{{email}}<p> <address> <i class="fa fa-map-marker"></i> {{userData.address}}<address> <p>M: {{user.$id}} </p></div>'
+    };
+}
+
 function getimageUrl($firebaseArray){
     return {
         link: function(scope, element, attrs){ 
         var id  =  attrs.myAttr  
         var atrStr = '';
-        var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products/"+id)
+        var allproductsRef = new Firebase(firebaseUrl+"products/products/"+id)
         var i = $firebaseArray(allproductsRef);
         i.$loaded(function (list) {            
             var image = list.$getRecord('cimages');
@@ -418,7 +469,7 @@ function dccard($firebase, $timeout, $firebaseArray){
         $scope.liked = false
         console.log("In dc card controller...."+$scope.id)
 
-        var userLike = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id+"/likers")
+        var userLike = new Firebase(firebaseUrl+"cards/"+$scope.id+"/likers")
         var likeEffect = 0
         userLike.once("value",function(ss){
             if (ss.val()){
@@ -437,7 +488,7 @@ function dccard($firebase, $timeout, $firebaseArray){
         }
 
         $scope.submitComment = function(cardid, comment){
-            var addCommentref = new Firebase("https://educe.firebaseio.com/cardComments/"+$scope.id)
+            var addCommentref = new Firebase(firebaseUrl+"cardComments/"+$scope.id)
             var ctime = new Date().getTime()
             var cardData = {
                 name:'admin',
@@ -514,7 +565,7 @@ function dccard($firebase, $timeout, $firebaseArray){
         }
 
         $scope.likeCard = function() {
-            var userLike = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id+"/likers")
+            var userLike = new Firebase(firebaseUrl+"cards/"+$scope.id+"/likers")
             var likeEffect = 0
             userLike.once("value",function(ss) {
                 if (ss.val()) {
@@ -528,7 +579,7 @@ function dccard($firebase, $timeout, $firebaseArray){
                     likeEffect = 1
                 }
 
-                var upvotesRef = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id+"/likes");
+                var upvotesRef = new Firebase(firebaseUrl+"cards/"+$scope.id+"/likes");
                 upvotesRef.transaction(function (current_value) {
                     console.log(" Card "+$scope.id + " like count "+likeEffect)
                     if (likeEffect == 1){
@@ -567,7 +618,7 @@ function dccard($firebase, $timeout, $firebaseArray){
         console.log("in dc card link");
         console.log("...Got id as "+$scope.id);
 
-        var ref = new Firebase("https://educe.firebaseio.com/cards/"+$scope.id)
+        var ref = new Firebase(firebaseUrl+"cards/"+$scope.id)
         ref.on("value",function(snapshot){
             console.log( "XXXXXXXXXXXXXXCard: "+ snapshot.val() + " " + snapshot.key())
             var card = snapshot.val();
@@ -672,6 +723,14 @@ report.directive('resetLink', function($parse, $log ) {
   };
 });*/
 
+
+function getTime(){
+    return function(date){
+        //var chTime = new Date(Date.parse(date)).toUTCString();      
+        var date = moment(date).fromNow()
+        return date;       
+    };
+}
 /**
  *
  * Pass all functions into module
@@ -694,8 +753,10 @@ angular
     .directive('closeOffCanvas', closeOffCanvas)
     .directive('fileChange', fileChange)
     .directive('getimageUrl', getimageUrl)
+    .directive('getuserData', getuserData)
     .directive('dccard',dccard)    
     .directive('onFinishRender', onFinishRender)
     .directive('infiniteScroll', infiniteScroll)
     .directive('ngEnter', ngEnter)
+    .filter('getTime', getTime)
     

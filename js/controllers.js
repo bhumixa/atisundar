@@ -1,4 +1,4 @@
-var DataListRef = new Firebase('https://educe.firebaseio.com//brands//atisundar');
+var firebaseUrl = "https://educe.firebaseio.com/";
 
 
 /**
@@ -6,11 +6,13 @@ var DataListRef = new Firebase('https://educe.firebaseio.com//brands//atisundar'
  */
 
  function loginCtrl($scope, $rootScope, $state, userDataService) {
+
     // All data will be store in this object
-    /*var i = "bhumi.patel2512@gmail.com";
+   /* var i = 'bhumi_.gmail.com'
     encryptemail(i);
 
     var n = encryptemail(i);
+     alert(n);
     var j = decryptemail(n);
     alert(j);*/
 
@@ -19,9 +21,8 @@ var DataListRef = new Firebase('https://educe.firebaseio.com//brands//atisundar'
     //$('#loadingDiv').show();
     // After login submit
     $scope.loginForm = function() {
-
     	if($scope.formData.email && $scope.formData.password && $scope.formData.brand){    		
-    		var ref = new Firebase("https://educe.firebaseio.com/");
+    		var ref = new Firebase(firebaseUrl);
     		ref.authWithPassword({
 			  email    : $scope.formData.email,
 			  password : $scope.formData.password
@@ -55,7 +56,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 		if($scope.formData.email && $scope.formData.password){
 			if($scope.formData.mobile){
 				if($scope.formData.brand){
-					var ref = new Firebase("https://educe.firebaseio.com/");
+					var ref = new Firebase(firebaseUrl);
 					ref.createUser({
 					  email    : $scope.formData.email ,
 					  password : $scope.formData.password,
@@ -66,7 +67,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 					  	});	
 					  } else {
 					   	//$state.go('dashboards')
-					   	var userref = new Firebase("https://educe.firebaseio.com/users");
+					   	var userref = new Firebase(firebaseUrl+"users");
 					   	var mobile = '91'+$scope.formData.mobile;
 					   	var brand = $scope.formData.brand;	
 					   	var name = $scope.formData.name;
@@ -78,7 +79,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 					    var n  = userref.child(mobile);
 					    n.child(brand).set({cards:'ss'})
 
-					    var brandref = new Firebase("https://educe.firebaseio.com/brands");
+					    var brandref = new Firebase(firebaseUrl+"brands");
 					   
 					    var brandchild  = brandref.child(brand);
 					    var adminch = brandchild.child('admins');
@@ -110,14 +111,15 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 	var mobile = '';
 
 	$scope.brand = userDataService.getbrand(brand);
-	var userbrandref = new Firebase("https://educe.firebaseio.com/brands/"+brand+"/admins");
-	var userref = new Firebase("https://educe.firebaseio.com/users");
+	var userbrandref = new Firebase(firebaseUrl+"brands/"+brand+"/admins");
+	var userref = new Firebase(firebaseUrl+"users");
 
 	userref.orderByKey().equalTo(email).on("child_added", function(snapshot) {
 		mobile =  snapshot.val();
 		userDataService.setMobile(mobile);
 		userbrandref.orderByKey().equalTo(mobile).on("child_added", function(snapshot) {
 		  	name = snapshot.val();
+		  	userDataService.setName(name);
 		  	$timeout(function(){
 			  	$scope.$apply(function() {
 			  		$scope.name = name;
@@ -164,9 +166,33 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
     // After login submit
     
     $scope.submitForm = function() {
-    	if($scope.formData.name && $scope.formData.lastName){
-    		alert('msg')
-    		
+    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email){
+    		var userref = new Firebase(firebaseUrl+"users");
+		   	var mobile = '91'+$scope.formData.mobile;
+		   	var name = $scope.formData.name;
+		   	var email = encryptemail($scope.formData.email);
+		   	var company = $scope.formData.company;
+		   	var address = $scope.formData.address;
+		   	var image = $scope.formData.image;
+
+		   	var userData = {
+		   		'company':company,
+		   		'name':name,
+		   		'email':email,
+		   		'address':address,
+		   		'image':image
+		   	}
+		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
+		   	userref.child(email).set(mobile);					   	
+
+		    var n  = userref.child(mobile);
+		    n.child(brand).set(userData)
+
+		    var brandref = new Firebase(firebaseUrl+"brands/"+brand);
+		    var adminch = brandref.child('users');
+		    adminch.child(mobile).set(name);
+		    $scope.message = "Data succesfully Inserted";
+		    $scope.formData = '';
     	}        
     };
 
@@ -177,6 +203,9 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 function uploadcontactsCtrl($scope, $rootScope, userDataService) {
     // All data will be store in this object
     $scope.MyFiles=[];
+    var userref = new Firebase(firebaseUrl+"users");
+    var brand = userDataService.getbrand();
+    var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
 
 	$scope.handler = function(e,files){
 	    var reader = new FileReader();
@@ -186,8 +215,38 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService) {
 	        $(string).each(function( index, value ) {
 	        	console.log(value)
 	        	if(value != ''){
-	        		var csvvalue = value.split(",");
-	        		$("#uploadedDetail").append("<h3> <strong>"+csvvalue[0]+" "+csvvalue[1]+"</h3> </strong>")
+	        		//alert(index)
+	        		if(index !=0){
+	        			var csvvalue = value.split(",");
+				   
+					   	var name = csvvalue[0];
+					   	var mobile = '91'+csvvalue[1];
+					   	var company = csvvalue[2];
+					   	var email = encryptemail(csvvalue[3]);;				   	
+					   	var address = csvvalue[4];
+					   	var image = csvvalue[5];
+
+					   	var userData = {
+					   		'company':company,
+					   		'name':name,
+					   		'email':email,
+					   		'address':address,
+					   		'image':image
+					   	}
+					   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
+					   	userref.child(email).set(mobile);					   	
+
+					    var n  = userref.child(mobile);
+					    n.child(brand).set(userData)
+
+					   /* var brandref = new Firebase("https://educe.firebaseio.com/brands/"+brand);
+					    var adminch = brandref.child('users');*/
+					    brandref.child(mobile).set(name);
+					   // $scope.message = "Data succesfully Inserted";
+
+		        		$("#uploadedDetail").append("<h3> <strong>"+name+" "+mobile+" "+company+" "+email+" "+address+"</h3> </strong>")
+		        		
+	        		}
 	        	}
 			});
 	        //console.log(csvvalue)
@@ -205,7 +264,8 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService) {
 /*productCtrl*/
 function productCtrl($scope, $rootScope, $firebaseArray, userDataService) {
 
-	var brandref = new Firebase("https://educe.firebaseio.com//brands/atisundar/products")
+	var brand = userDataService.getbrand();
+	var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products")
 	$scope.productList = $firebaseArray(brandref);
 
 	$scope.searchCategory = function(category){
@@ -247,17 +307,17 @@ function productCtrl($scope, $rootScope, $firebaseArray, userDataService) {
 /*productdetailCtrl*/
 function productdetailCtrl($scope, $rootScope, $stateParams, $firebaseObject, userDataService) {
 	$scope.productId = $stateParams.productId;
-	var allproductsRef = new Firebase("https://educe.firebaseio.com//products/products/"+$scope.productId)
+	var allproductsRef = new Firebase(firebaseUrl+"products/products/"+$scope.productId)
     $scope.productDails = $firebaseObject(allproductsRef);
     console.log($scope.productDails)
 }
 
 /*addproductCtrl*/
 
-function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http, Upload) {
+function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http, Upload, userDataService) {
 
 	
-	  
+	  var brand = userDataService.getbrand();
 	/*var mainRef = new Firebase("https://educe.firebaseio.com//products/products")
 	mainRef.child('category').equalTo('Saree').once('value', function(snapshot) {
 	   console.log(snapshot)
@@ -293,7 +353,7 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 	$scope.files = [] ;
 	$scope.formData = {};
 	$scope.errors = {};
-    var brandref = new Firebase("https://educe.firebaseio.com//brands/atisundar/products/products/")     
+    var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products/products/")     
     $scope.products = $firebaseArray(brandref);
     $scope.formData.brand = 'atisundar';
 
@@ -315,7 +375,7 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
     	if($scope.formData.name){
     		if($scope.formData.category){
     			if($scope.formData.price){
-    				var mainref = new Firebase("https://educe.firebaseio.com//products/products")    	
+    				var mainref = new Firebase(firebaseUrl+"products/products")    	
 			    	/*$scope.products = $firebaseArray(brandref);
 			    	var i = $scope.products.push($scope.formData);*/
 			    	/*brandref.on('child_added', function(snapshot) {
@@ -333,7 +393,7 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 					var productIdID = newProductRef.key();
 					console.log(productIdID)
 					if(productIdID){
-						var brandref = new Firebase("https://educe.firebaseio.com//brands/atisundar/products");			
+						var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
 						brandref.child(productIdID).set(brandProductData);
 						$scope.message = "Product succesfully Added";
 						$scope.formData = '';
@@ -487,7 +547,7 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray, userData
 	var brand = userDataService.getbrand();
 	var mobile = userDataService.getMobile();
 
-	var cardref = new Firebase("https://educe.firebaseio.com/users/"+mobile+"/"+brand+"/cards") 
+	var cardref = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand+"/cards") 
 
 
 	$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
@@ -589,6 +649,171 @@ function topnavbarCtrl($scope, $rootScope, $stateParams, $state){
 	}
 }
 
+function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject){
+	$scope.formData = {};
+
+	var brand = userDataService.getbrand();
+	var homeref = new Firebase(firebaseUrl+"brands/"+brand);
+
+	var homeData  = new Firebase(firebaseUrl+"brands/"+brand+'/home');
+	$scope.formData = $firebaseObject(homeData);
+
+	$scope.submitForm = function(){
+		var imgName = $scope.formData.image; 
+		var text = $scope.formData.text;
+		var query = $scope.formData.query;
+		var logo = $scope.formData.logo;
+		
+		var data = {
+			"image" : imgName,
+	        "logo" : logo,
+	        "query" : query,
+	        "text" : text,
+		}
+
+		if(imgName && text && query && logo){
+			homeref.child('home').set(data);
+			$scope.message = "Data succesfully Updated";
+		}
+	}
+}
+
+function backgroundCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject){
+	$scope.formData = {};
+
+	var brand = userDataService.getbrand();
+	var homeref = new Firebase(firebaseUrl+"brands/"+brand);
+
+	var homeData  = new Firebase(firebaseUrl+"brands/"+brand+'/background');
+	$scope.formData = $firebaseObject(homeData);
+
+	$scope.submitForm = function(){
+		if($scope.formData.image){
+			var data = {
+				'image':$scope.formData.image
+			}
+			homeref.child('background').set(data);
+			$scope.message = "Data succesfully Updated";
+		}		
+	}
+}
+
+function formlistCtrl ($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+	$scope.formData = {};
+	var brand = userDataService.getbrand();
+	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/forms");
+	$scope.formslist = $firebaseArray(brandformref);
+}
+
+function addformCtrl ($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+	$scope.formData = {};
+	var brand = userDataService.getbrand();
+	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
+	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/forms");
+	var name = userDataService.getName();
+
+	$scope.submitForm = function(){
+		var ctime = new Date().getTime();
+		if($scope.formData.name && $scope.formData.id){
+			var id = $scope.formData.id;
+			var data = {
+				'html':$scope.formData.html,
+				'name':$scope.formData.name,
+				'id':$scope.formData.id,
+				'added-on': ctime,
+				'created-by':name
+			}
+			brandformref.child(id).set(data);
+			//brandformref.set(data);
+			$scope.message = "Data succesfully Created";
+			$scope.formData = {};
+		}		
+	}
+
+}
+
+function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+	$scope.formData = {};
+
+	var brand = userDataService.getbrand();
+	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
+
+	var formId = $stateParams.formId;
+	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/forms/"+formId);
+
+	$scope.formData = $firebaseObject(brandformref);
+
+	var name = userDataService.getName();
+
+	$scope.submitForm = function(){
+		var ctime = new Date().getTime();
+		if($scope.formData.name && $scope.formData.id){
+			var id = $scope.formData.id;
+			var data = {
+				'html':$scope.formData.html,
+				'name':$scope.formData.name,
+				'added-on': ctime,
+				'created-by':name
+			}
+			brandformref.set(data);
+			//brandformref.set(data);
+			$scope.message = "Data succesfully Updated";
+			$scope.formData = {};
+		}		
+	}
+
+}
+
+function contactlistCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+	/*$scope.userlist = {};*/
+	var brand = userDataService.getbrand();
+	var branduserref = new Firebase(firebaseUrl+"brands/"+brand+'/users');
+	$scope.userlist = $firebaseArray(branduserref);
+}
+
+function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+	/*$scope.userlist = {};*/
+	var brand = userDataService.getbrand();
+	var contactId = $stateParams.contactId;
+
+	var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+	$scope.formData = $firebaseObject(branduserref);
+
+	console.log($scope.formData)
+
+	$scope.submitForm = function() {
+    	if($scope.formData.name){
+		   	var name = $scope.formData.name;
+		   	var email = $scope.formData.email;
+		   	var company = $scope.formData.company;
+		   	var address = $scope.formData.address;
+		   	var image = $scope.formData.image;
+
+		   	var userData = {
+		   		'company':company,
+		   		'name':name,
+		   		'email':email,
+		   		'address':address,
+		   		'image':image
+		   	}			   	
+
+		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId);
+		   	
+		   	userRef.child(brand).set(userData)
+
+		    
+		    $scope.message = "Data succesfully Updated";
+    	}        
+    };
+}
+
+function adminlistCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+	/*$scope.userlist = {};*/
+	var brand = userDataService.getbrand();
+	var branduserref = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
+	$scope.userlist = $firebaseArray(branduserref);
+
+}
 /**
  *  MainCtrl - controller
  */
@@ -633,3 +858,12 @@ angular
     .controller('timelineCtrl', timelineCtrl)
     .controller('topnavbarCtrl', topnavbarCtrl)
     .controller('navigationCtrl', navigationCtrl)
+    .controller('homepageCtrl', homepageCtrl)
+    .controller('backgroundCtrl', backgroundCtrl)
+    .controller('formlistCtrl', formlistCtrl)
+    .controller('addformCtrl', addformCtrl)
+    .controller('editformCtrl', editformCtrl)
+    .controller('contactlistCtrl', contactlistCtrl)
+    .controller('editcontactCtrl', editcontactCtrl)
+    .controller('adminlistCtrl', adminlistCtrl)
+    
