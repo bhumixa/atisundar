@@ -18,54 +18,76 @@
 	<div class="wrapper wrapper-content  animated fadeInRight">
 		<div class="row">
 		<div id="productdetails" class="col-lg-12">
-			<div class="col-lg-6">	
+			<!-- <div class="col-lg-6">	
 				<img alt="No image"  class="img-responsive" src="http://res.cloudinary.com/atisundar/image/upload/{{productDails.cimages[0]}}"> 
-			</div>
-			<div class="col-lg-6">	
-				<div class="row">
-					<div class="col-lg-2 pull-left"> 
-			  			<strong >  Name:  </strong>  	
-			  		</div>
-			  		<div class="col-lg-9 pull-left"> {{productDails.name}}  </div> 
-			   	</div>  
-			   	<div class="row">
-					<div class="col-lg-2 pull-left">
-			  			<strong >  Price:  </strong>  	
-			  		</div>
-			  		<div class="col-lg-9 pull-left"> {{productDails.price}}  </div> 
-			   	</div>
-			   	<div class="row">
-					<div class="col-lg-2 pull-left">
-			  			<strong >  Brand:  </strong>  	
-			  		</div>
-			  		<div class="col-lg-9 pull-left"> {{productDails.circle}}  </div> 
-			   	</div>
-			   	<div class="row">
-					<div class="col-lg-2 pull-left">
-			  			<strong >  Category:  </strong>  	
-			  		</div>
-			  		<div class="col-lg-9 pull-left"> {{productDails.category}}  </div> 
-			   	</div>	 
-			   	
-			   	<div class="row">
-					<div class="col-lg-2 pull-left">
-			  			<strong >  Fabric:  </strong>  	
-			  		</div>
-			  		<div class="col-lg-9 pull-left"> {{productDails.fabric}}  </div> 
-			   	</div>	 
-			   	<div class="row">
-					<div class="col-lg-2 pull-left">
-			  			<strong >  Work:  </strong>  	
-			  		</div>
-			  		<div class="col-lg-9 pull-left"> {{productDails.work}}  </div> 
-			   	</div>	
-			   	<div class="row">
-					<div class="col-lg-2 pull-left">
-			  			<strong >  Images:  </strong>  	
-			  		</div>
-			  		<div class="col-lg-9 pull-left"> {{productDails.cimages[0]}}  </div> 
-			   	</div>	 
-		   	</div> 	
+			</div> -->
+			<fieldset>
+	            <form class="m-t" role="form">
+	                <div class="row">
+	                    <div class="col-lg-12">
+	                        <div class="form-group">
+	                            <div ng-if="message" class="alert alert-success"> {{message}} </div>
+	                        </div>
+	                    </div>
+	                    <div class="col-lg-10">
+	                        <div class="form-group">
+	                            <label>Name </label>
+	                            <input id="name" name="name" ng-model="formData.name" type="text" class="form-control required" ng-required="true">
+	                        </div>    
+	                        <div class="form-group">
+	                            <label>Price </label>
+	                           <input id="price" name="price" ng-model="formData.price" type="text" class="form-control required" ng-required="true">
+	                        </div>  
+	                        <div class="form-group">
+	                            <label>Mrprice </label>
+	                           <input id="mrprice" name="mrprice" ng-model="formData.mrprice" type="text" class="form-control required" >
+	                        </div>
+	                        <div class="form-group">
+	                            <label>Details </label>
+	                            <textarea rows="4" cols="150" id="details" name="details" ng-model="formData.details" type="text" class="form-control required" >
+
+                            	</textarea>
+	                        </div>  
+	                       	<div class="form-group">
+	                            <label>Color </label>
+	                           <input id="color" name="color" ng-model="formData.color" type="text" class="form-control required" >
+	                        </div>
+	                        <div class="form-group">
+	                            <label>Handle </label>
+	                           <input id="handle" name="handle" ng-model="formData.handle" type="text" class="form-control required" >
+	                        </div>
+	                        <div class="form-group">
+	                            <label>Sku </label>
+	                           <input id="sku" name="sku" ng-model="formData.sku" type="text" class="form-control required" >
+	                        </div>
+	                        <div class="form-group">
+	                            <label>Category </label>
+	                            <select name="category"  class="form-control" ng-model="formData.category" ng-required="true">
+				                	<option value="">choose Category</option>
+				                	<option value="Saree">Saree</option>
+				                	<option value="Salwar Kameez">Salwar Kameez</option>
+				                	<option value="Kurti">Kurti</option>
+				                </select>
+	                        </div>    
+	                        <div class="form-group">
+	                            <label>Fabric </label>
+	                           <input id="fabric" name="fabric" ng-model="formData.fabric" type="text" class="form-control required" ng-required="true">
+	                        </div>   
+	                        <div class="form-group">
+	                            <label>Work </label>
+	                           <input id="work" name="work" ng-model="formData.work" type="text" class="form-control required" ng-required="true">
+	                        </div>
+	                        <div class="form-group">
+	                            <label>Images </label>
+	                           <input id="cimages" name="cimages" ng-model="formData.cimages" type="text" class="form-control required" ng-required="true">
+	                        </div>                                 
+	                    </div>
+	                 
+	                </div>
+	                <button type="submit" class="btn btn-primary" ng-click="submitForm()">Submit</button>   
+	            </form>    
+	        </fieldset>
+	
 		</div>
 		</div>
 	</div>

@@ -8,9 +8,7 @@ var firebaseUrl = "https://educe.firebaseio.com/";
  function loginCtrl($scope, $rootScope, $state, userDataService) {
 
     // All data will be store in this object
-   /* var i = 'bhumi_.gmail.com'
-    encryptemail(i);
-
+    /*var i = 'bhumi_.gmail.com'
     var n = encryptemail(i);
      alert(n);
     var j = decryptemail(n);
@@ -77,7 +75,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 					   	userref.child(email).set(mobile);					   	
 
 					    var n  = userref.child(mobile);
-					    n.child(brand).set({cards:'ss'})
+					    n.child(brand).set({'email':email, 'name':name})
 
 					    var brandref = new Firebase(firebaseUrl+"brands");
 					   
@@ -164,7 +162,8 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
     var brand = userDataService.getbrand();
     $scope.formData = {};
     // After login submit
-    
+    var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
+
     $scope.submitForm = function() {
     	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email){
     		var userref = new Firebase(firebaseUrl+"users");
@@ -191,6 +190,10 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		    var brandref = new Firebase(firebaseUrl+"brands/"+brand);
 		    var adminch = brandref.child('users');
 		    adminch.child(mobile).set(name);
+
+		    var company = companyref.child(company);
+		    company.child(mobile).set(name);
+
 		    $scope.message = "Data succesfully Inserted";
 		    $scope.formData = '';
     	}        
@@ -206,6 +209,8 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService) {
     var userref = new Firebase(firebaseUrl+"users");
     var brand = userDataService.getbrand();
     var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
+    var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
+		   
 
 	$scope.handler = function(e,files){
 	    var reader = new FileReader();
@@ -239,9 +244,13 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService) {
 					    var n  = userref.child(mobile);
 					    n.child(brand).set(userData)
 
+					    brandref.child(mobile).set(name);
+
+					    var company = companyref.child(company);
+		    			company.child(mobile).set(name);
 					   /* var brandref = new Firebase("https://educe.firebaseio.com/brands/"+brand);
 					    var adminch = brandref.child('users');*/
-					    brandref.child(mobile).set(name);
+					    
 					   // $scope.message = "Data succesfully Inserted";
 
 		        		$("#uploadedDetail").append("<h3> <strong>"+name+" "+mobile+" "+company+" "+email+" "+address+"</h3> </strong>")
@@ -306,10 +315,44 @@ function productCtrl($scope, $rootScope, $firebaseArray, userDataService) {
 
 /*productdetailCtrl*/
 function productdetailCtrl($scope, $rootScope, $stateParams, $firebaseObject, userDataService) {
+	var brand = userDataService.getbrand();
 	$scope.productId = $stateParams.productId;
+
 	var allproductsRef = new Firebase(firebaseUrl+"products/products/"+$scope.productId)
-    $scope.productDails = $firebaseObject(allproductsRef);
-    console.log($scope.productDails)
+    $scope.formData = $firebaseObject(allproductsRef);
+
+    $scope.submitForm = function() {
+    	if($scope.formData.name && $scope.formData .price && $scope.formData.category){
+    		var brandProductData = {
+				name:$scope.formData.name,
+				price: $scope.formData.price
+			}
+			var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products/"+$scope.productId);			
+			brandref.update(brandProductData);
+			var images = [];
+			if($scope.formData.cimages){	
+				var i = $scope.formData.cimages.toString();
+				images = i.split(',');
+			}
+			
+    		var data = {
+    			'category':$scope.formData.category,
+    			'cimages':images,
+    			'circle':brand,
+    			'color':$scope.formData.color,
+    			'details':$scope.formData.details,
+    			'fabric':$scope.formData.fabric,
+    			'handle':$scope.formData.handle,
+    			'mrprice':$scope.formData.mrprice,
+    			'name':$scope.formData.name,
+    			'price':$scope.formData.price,
+    			'sku':$scope.formData.sku,
+    			'work':$scope.formData.work,
+    		}
+    		allproductsRef.update(data);
+    		$scope.message = "Product succesfully Updated";
+    	}
+    }
 }
 
 /*addproductCtrl*/
@@ -388,7 +431,25 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 						name:$scope.formData.name,
 						price: $scope.formData.price
 					}
-					var newProductRef = mainref.push($scope.formData);
+
+					var images = [];
+					images = $scope.formData.cimages.split(',');
+		    		var data = {
+		    			'category':$scope.formData.category,
+		    			'cimages':images,
+		    			'circle':brand,
+		    			'color':$scope.formData.color,
+		    			'details':$scope.formData.details,
+		    			'fabric':$scope.formData.fabric,
+		    			'handle':$scope.formData.handle,
+		    			'mrprice':$scope.formData.mrprice,
+		    			'name':$scope.formData.name,
+		    			'price':$scope.formData.price,
+		    			'sku':$scope.formData.sku,
+		    			'work':$scope.formData.work,
+		    		}
+
+					var newProductRef = mainref.push(data);
 					// Get the unique ID generated by push()
 					var productIdID = newProductRef.key();
 					console.log(productIdID)
@@ -505,28 +566,71 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 }
 
 /*uploadproductsCtrl*/
-function uploadproductsCtrl($scope, $rootScope) {
+function uploadproductsCtrl($scope, $rootScope, userDataService) {
     // All data will be store in this object
     $scope.MyFiles=[];
+    var brand = userDataService.getbrand();
 
 	$scope.handler = function(e,files){
 	    var reader = new FileReader();
 	    reader.onload=function(e){
 	        var string = e.target.result.split("\n");	        
-	       // 
+	       	var mainref = new Firebase(firebaseUrl+"products/products")
+
 	        $(string).each(function( index, value ) {
-	        	console.log(value)
 	        	if(value != ''){
+	        		if(index !=0){
 	        		var csvvalue = value.split(",");
-	        		$("#uploadedDetail").append("<h3> <strong>"+csvvalue[0]+" "+csvvalue[1]+"</h3> </strong>")
+
+	        		var category = csvvalue[0];
+	        		var cimages = csvvalue[1];
+	        		var circle = csvvalue[2];
+	        		var color = csvvalue[3]; 
+	        		var details = csvvalue[4];
+	        		var fabric = csvvalue[5];
+	        		var handle = csvvalue[6];
+	        		var mrprice = csvvalue[7];
+	        		var name = csvvalue[8];
+	        		var price = csvvalue[9];
+	        		var sku = csvvalue[10];
+	        		var work = csvvalue[11];
+	        		var images = new Array();
+	        		if(cimages){
+	        			images = cimages.split('/');
+	        		}
+
+	        		var data = {
+	        			'category':category,
+	        			'cimages':images,
+	        			'circle':circle,
+	        			'color':color,
+	        			'details':details,
+	        			'fabric':fabric,
+	        			'handle':handle,
+	        			'mrprice':mrprice,
+	        			'name':name,
+	        			'price':price,
+	        			'sku':sku,
+	        			'work':work,
+	        		}
+
+	        		var brandProductData = {
+						name:name,
+						price:price
+					}
+
+	        		var newProductRef = mainref.push(data);
+					// Get the unique ID generated by push()
+					var productIdID = newProductRef.key();
+					if(productIdID){
+						var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
+						brandref.child(productIdID).set(brandProductData);
+					}
+
+	        		$("#uploadedDetail").append("<h3> <strong>"+category+" "+images+" "+circle+" "+color+"</h3> </strong>")
+	        	  }
 	        	}
-			});
-	        //console.log(csvvalue)
-	        /*var myString = string.split("\n");
-	        console.log(myString +' i')*/
-	        //$("#uploadedDetail").append(myString);
-	        //var obj= $filter('csvToObj')(string);
-	        //do what you want with obj !
+			});	        
 	    }
 	    reader.readAsText(files[0]);
 	}
@@ -663,12 +767,23 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 		var text = $scope.formData.text;
 		var query = $scope.formData.query;
 		var logo = $scope.formData.logo;
+
+		var left = $scope.formData.left; 
+		var scrollx = $scope.formData.scrollx;
+		var scrolly = $scope.formData.scrolly;
+		var zoom = $scope.formData.zoom;
+		var top = $scope.formData.top;
 		
 		var data = {
 			"image" : imgName,
 	        "logo" : logo,
 	        "query" : query,
 	        "text" : text,
+	        "left":left,
+	        "scrollx":scrollx,
+	        "scrolly":scrolly,
+	        "zoom":zoom,
+	        "top":top
 		}
 
 		if(imgName && text && query && logo){
@@ -714,18 +829,17 @@ function addformCtrl ($scope, $rootScope, $stateParams, $state, userDataService,
 
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();
-		if($scope.formData.name && $scope.formData.id){
-			var id = $scope.formData.id;
+		if($scope.formData.name){
+			//var id = $scope.formData.id;
 			var data = {
 				'html':$scope.formData.html,
 				'name':$scope.formData.name,
-				'id':$scope.formData.id,
 				'added-on': ctime,
 				'created-by':name
 			}
-			brandformref.child(id).set(data);
+			brandformref.push(data);
 			//brandformref.set(data);
-			$scope.message = "Data succesfully Created";
+			$scope.message = "Form succesfully Created";
 			$scope.formData = {};
 		}		
 	}
@@ -747,8 +861,7 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();
-		if($scope.formData.name && $scope.formData.id){
-			var id = $scope.formData.id;
+		if($scope.formData.name){
 			var data = {
 				'html':$scope.formData.html,
 				'name':$scope.formData.name,
@@ -777,6 +890,8 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 	var contactId = $stateParams.contactId;
 
 	var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+
+
 	$scope.formData = $firebaseObject(branduserref);
 
 	console.log($scope.formData)
@@ -788,6 +903,13 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		   	var company = $scope.formData.company;
 		   	var address = $scope.formData.address;
 		   	var image = $scope.formData.image;
+		   	var mobile = $scope.formData.mobile;
+
+		   	var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+company);
+			companyref.child(contactId).set(name);
+
+			var mainuseref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
+			mainuseref.child(contactId).set(name);
 
 		   	var userData = {
 		   		'company':company,
@@ -797,10 +919,8 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		   		'image':image
 		   	}			   	
 
-		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId);
-		   	
+		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId);		   	
 		   	userRef.child(brand).set(userData)
-
 		    
 		    $scope.message = "Data succesfully Updated";
     	}        
@@ -814,6 +934,145 @@ function adminlistCtrl($scope, $rootScope, $stateParams, $state, userDataService
 	$scope.userlist = $firebaseArray(branduserref);
 
 }
+
+function addadminCtrl($scope, $rootScope, userDataService) {
+    // All data will be store in this object
+    var brand = userDataService.getbrand();
+    $scope.formData = {};
+    // After login submit
+    
+    $scope.submitForm = function() {
+    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email){
+    		var userref = new Firebase(firebaseUrl+"users");
+		   	var mobile = '91'+$scope.formData.mobile;
+		   	var name = $scope.formData.name;
+		   	var email = encryptemail($scope.formData.email);
+		   	var company = $scope.formData.company;
+		   	var address = $scope.formData.address;
+		   	var image = $scope.formData.image;
+
+		   	var userData = {
+		   		'company':company,
+		   		'name':name,
+		   		'email':email,
+		   		'address':address,
+		   		'image':image
+		   	}
+		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
+		   	userref.child(email).set(mobile);					   	
+
+		    var n  = userref.child(mobile);
+		    n.child(brand).set(userData)
+
+		    var brandref = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
+		    //var adminch = brandref.child('admins');
+		    brandref.child(mobile).set(name);
+		    $scope.message = "Admin succesfully added";
+		    $scope.formData = '';
+    	}        
+    };
+}
+
+
+function uploaddispatchCtrl($scope, $rootScope, userDataService) {
+    // All data will be store in this object
+    $scope.MyFiles=[];
+    var brand = userDataService.getbrand();
+    var mobile = userDataService.getMobile();
+    var name = userDataService.getName();
+    var invoiceno = "456";
+    var mainref = new Firebase(firebaseUrl+"cards/")
+	/*mainref.on("child_added", function(snapshot) {
+	  console.log(snapshot.key());
+	});*/
+	$scope.despatchList ={}
+	$scope.handler = function(e,files){
+	    var reader = new FileReader();
+	    reader.onload=function(e){
+	        var string = e.target.result.split("\n");
+	       	var invoiceArray = [];
+	       	var keyArray = [];
+
+	        $(string).each(function( index, value ) {
+	        	if(value != ''){
+	        		if(index !=0){
+	        		var csvvalue = value.split(",");
+
+	        		var date = csvvalue[0];
+	        		var transport = csvvalue[1];
+	        		var LRno = csvvalue[2];
+	        		var invoiceno = csvvalue[3]; 
+	        		var parcelno = csvvalue[4];
+	        		var company = csvvalue[5];
+	        		var item = csvvalue[6];
+	        		var rate = csvvalue[7];
+	        		var pieces = csvvalue[8];
+
+	        		var itemdata ={
+        				'item':item,
+        				'rate':rate,
+	        			'pieces':pieces
+        			}
+        			/*var data = {
+        				'author':mobile,
+	        			'authorName':name,
+	        			'brand':brand,
+	        			'created':new Date().getTime(),
+	        			//'time':category,
+	        			'date':date,
+	        			'transport':transport,
+	        			'LRno':LRno,
+	        			'invoiceno':invoiceno,
+	        			'parcelno':parcelno,
+	        			'company':company,
+	        			'type':'Invoice'
+	        		}
+	        		$scope.despatchList.push(data);*/
+
+	        		if ($.inArray(invoiceno,invoiceArray) == -1){	        			
+	        			var itemArry = itemdata
+	        			var data = {
+	        				'author':mobile,
+		        			'authorName':name,
+		        			'brand':brand,
+		        			'created':new Date().getTime(),
+		        			//'time':category,
+		        			'date':date,
+		        			'transport':transport,
+		        			'LRno':LRno,
+		        			'invoiceno':invoiceno,
+		        			'parcelno':parcelno,
+		        			'company':company,
+		        			'type':'Invoice'
+		        		}
+		              	invoiceArray.push(invoiceno);
+		              	var nweData = mainref.push(data);
+		              	var cardkey = nweData.key();
+
+		              	var cardref = new Firebase(firebaseUrl+"cards/"+cardkey)
+		              	cardref.child('items').push(itemdata);
+
+		              	keyArray.push(invoiceno, cardkey);
+
+		              	addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
+		              	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)
+		              	
+		            }else{
+		            	var index = keyArray.indexOf(invoiceno); 
+		            	var key = keyArray[index+1];
+
+		            	var cardref = new Firebase(firebaseUrl+"cards/"+key+"/items")
+		              	cardref.push(itemdata);
+		            }
+	        		//$("#uploadedDetail").append("<h3>"+date+" "+transport+" "+LRno+" "+invoiceno+"</h3>")
+	        	  }
+	        	}
+			});	        
+	    }
+	    reader.readAsText(files[0]);
+	}
+}
+
 /**
  *  MainCtrl - controller
  */
@@ -832,13 +1091,54 @@ function MainCtrl($location ,userDataService) {
 
 
 function encryptemail(email){
-	var emailFn = email.replace(".", "{"); 
-	return emailFn
+	/*var emailFn = email.replace(".", "{"); 
+	return emailFn*/
+
+	var newchar = '__dot__'
+	email = email.split('.').join(newchar);
+	return email;
 }
 
 function decryptemail(email){
-	var emailFn = email.replace("{", "."); 
-	return emailFn
+	/*var emailFn = email.replace("{", "."); 
+	return emailFn*/
+	var newchar = '.'
+	email = email.split('__dot__').join(newchar);
+	return email;
+}
+
+function addCardsToAdmins(cardkey, brand, mobile, firebaseUrl){
+	var adminref = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
+	var status = '';
+  	adminref.on("child_added", function(snapshot) {
+	  	var userMobile = snapshot.key();
+
+	  	if(userMobile == mobile){
+	  		status = "edit"
+	  	}else{
+	  		status = "view"
+	  	}
+	  	var userRef = new Firebase(firebaseUrl+"users/"+userMobile+"/"+brand+"/cards");	
+  		userRef.child(cardkey).set(status);
+	});
+}
+
+function addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company){
+	var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+company);
+	var status = '';
+	companyref.on("child_added", function(snapshot) {
+	  	console.log(snapshot.key());
+	  	var userMobile = snapshot.key();
+
+	  	if(userMobile == mobile){
+	  		status = "edit"
+	  	}else{
+	  		status = "view"
+	  	}
+	  	console.log(status)
+	  	var userRef = new Firebase(firebaseUrl+"users/"+userMobile+"/"+brand+"/cards");	
+  		userRef.child(cardkey).set(status);
+	});
 }
 
 
@@ -866,4 +1166,6 @@ angular
     .controller('contactlistCtrl', contactlistCtrl)
     .controller('editcontactCtrl', editcontactCtrl)
     .controller('adminlistCtrl', adminlistCtrl)
+    .controller('addadminCtrl', addadminCtrl)
+    .controller('uploaddispatchCtrl', uploaddispatchCtrl)
     

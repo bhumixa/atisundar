@@ -109,6 +109,14 @@
                 </ul>
             </li>
 
+            <li ng-class="{active: $state.includes('uploads')}">                
+                <a href=""><i class="fa fa-arrow-circle-o-up"></i> <span class="nav-label">Uploads</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" ng-class="{in: $state.includes('uploads')}">
+                    <li ui-sref-active="active"><a ui-sref="uploads.dispatch">Dispatch</a></li>
+                </ul>
+            </li>
+
+
             <li ng-class="{active: $state.includes('settings')}">                
                 <a href=""><i class="fa fa-gears"></i> <span class="nav-label">Settings</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level" ng-class="{in: $state.includes('settings')}">

@@ -135,6 +135,16 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             templateUrl: "views/editform.html",
             data: { pageTitle: 'Edit Form'}
         })
+        .state('uploads', {
+            abstract: true,
+            url: "/uploads",
+            templateUrl:  "views/common/content.html",
+        })
+        .state('uploads.dispatch', {
+            url:"/dispatch",
+            templateUrl: "views/uploaddispatch.html",
+            data: { pageTitle: 'Upload Dispatch'}
+        })
         .state('settings', {
             abstract: true,
             url: "/settings",

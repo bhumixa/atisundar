@@ -731,6 +731,15 @@ function getTime(){
         return date;       
     };
 }
+
+function convertString(){
+    return function(string){
+        alert(string)
+        //var chTime = new Date(Date.parse(date)).toUTCString();      
+       // var string = string.toString(); 
+        return string;       
+    };  
+}
 /**
  *
  * Pass all functions into module
@@ -759,4 +768,5 @@ angular
     .directive('infiniteScroll', infiniteScroll)
     .directive('ngEnter', ngEnter)
     .filter('getTime', getTime)
+    .filter('convertString', convertString)
     
