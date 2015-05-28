@@ -1,0 +1,119 @@
+ <div class="row">
+    <div class="col-sm-1">
+        <div class="cardImage">
+            <img src="p3.jpg" class="img-circle"> 
+        </div>
+    </div>
+    <div class="col-sm-10">
+    <div class="item item-avatar">
+      <h2 ng-cloak> {{card.authorName}} {{card.author}}</h2>
+      <p>{{duration}} {{relTime}}</p>
+  </div>
+
+  <div class="item item-body" ng-init="items.total = {}">
+      <p>
+         Invoice No : {{card.invoiceno}} dispatch to you via transport: {{card.transport}} , LR No: {{card.LRno}} on date {{card.date}} 
+      </p>
+      <p>
+      	<strong> Company : </strong>{{card.company}} 
+      </p>
+      
+      <p>
+      	<strong> Transport : </strong>{{card.transport}} 
+      </p>
+      <p>
+      	<strong> Date : </strong>{{card.date}} 
+      </p>
+      <p>
+      	<strong> LR No : </strong>{{card.LRno}} 
+      </p>
+      <div class="ibox-content">
+	    <table datatable="" class="table table-striped table-bordered table-hover dataTables-example">
+	      	<thead>
+		      	<tr class="gradeX"> 
+		  			<th> Item </th>
+		  			<th>  Quantity </th> 	
+		  			<th> Rate </th>
+		  			<th> Amount </th>
+		  		</tr>
+	  		</thead>
+	  		<tbody>
+		  		<tr ng-repeat = "item in card.items" class="gradeX"> 
+		  			<td> {{item.item}} </td>
+		  			<td> {{item.pieces}} </td>
+		  			<td> {{item.rate}} </td>
+		  			<td>  - </td>
+		  		</tr>
+		  		<tr class="gradeX"> 
+		  			<td> </td>
+		  			<td getpieces-total my-attr="{{card.items}}"> </td>
+		  			<td> </td>
+		  			<td getamount-total my-attr="{{card.items}}"> </td>
+		  		</tr>
+		  	</tbody>
+	    </table>
+	   </div>
+      	<!-- <div ng-repeat="item in card.items">
+      		{{item.pieces}} <div ng-init="items.total.pieces = items.total.pieces + item.pieces" > </div>
+      	</div>
+      	{{items.total.pieces}} -->
+      	
+      	<!-- <table datatable="" class="table table-striped table-bordered table-hover dataTables-example">
+      		<tr> 
+      			<th> Company </th>
+      			<th> Invoice No </th> 	
+      			<th> Parcel No </th>
+      			<th> Transport </th>     
+      			<th> Pieces </th> 
+      		</tr>
+      		<tr>
+      			<td> {{card.company}} </td>
+      			<td> {{card.invoiceno}} </td>
+      			<td> {{card.parcelno}} </td>
+      			<td> {{card.transport}} </td>
+      		</tr>
+      	</table> -->
+      	
+      
+      <p>
+          <a href="" class="subdued">{{card.likes}} {{'Likes'}}</a>
+          <a href="" class="subdued" ng-click="showComments()">{{card.commentCount}} Comments</a>
+      </p>
+  </div>
+
+  <div class="item tabs tabs-secondary tabs-icon-left">
+      <!-- <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
+          <i class="icon ion-thumbsup"></i>
+          {{'Like'}}
+      </a>
+      <a ng-if="liked" class="tab-item" ng-click="likeCard()">
+          <i class="icon ion-thumbsup positive"></i>
+          <span class="positive"> {{'Like'}} </span>
+      </a> -->
+
+      <a class="tab-item"  ng-click="addComments()">
+          <i class="icon ion-chatbox"></i>
+          Comment
+      </a>
+
+  </div>
+<div class="item tabs tabs-secondary tabs-icon-left noselected" id="comArea_{{id}}" >
+        <textarea ng-model="comment" ng-enter="submitComment(id, comment)" id="txt_{{id}}"> </textarea>
+    </div>
+     <div ng-repeat="c in comments">
+
+        <img src="http://placehold.it/200x200">
+        <h2>{{c.name}} </h2>
+        <span style="font-size:10px; color:#AAAAAA;">{{c.relTime}}</span>
+        <p>{{c.comment}}</p>
+        
+        <span class="list list-inset comment-thread-list">
+            <span class="item" ng-repeat="r in c.replies">
+                <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.relTime}}</span></h4>
+
+                <p>{{r.comment}}</p>
+            </span> 
+        </span>
+    </div>
+</div>
+</div>

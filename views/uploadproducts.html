@@ -38,8 +38,16 @@
 	            	Upload CSV 
 	            	<input type="file" file-change="handler($event,files)" ng-model="MyFiles" class="custom-file-input"/>		            	
 	       		</span>
-	       		<div class="ibox-content" ng-if="productList">
+	       		<div ng-if="productList">
 		       			<div class="row">
+		       				<div class="col-lg-12">
+						    	<div class="form-group">
+				                    <div ng-if="message" class="alert alert-success"> <h3> {{message}} </h3> </div>
+				                </div>
+			                </div>
+		       				<div class="pull-left">
+		       					<button type="submit" class="btn btn-primary" ng-click="Save()">Save</button>	
+		       				</div>
 		        			<div class="pull-right">
 		       					<input type="text" ng-model="txtsearch" placeholder="Search">
 		       				</div>
@@ -58,7 +66,9 @@
 					            <th>Handle</th>
 					            <th>Mrprice</th>
 					            <th>Sku</th>
-					            <th>Work</th>    
+					            <th>Work</th>   
+					            <th>Status</th>
+					            <th>Errors</th> 
 					        </tr>
 					        </thead>
 					        <tbody>
@@ -75,6 +85,11 @@
 					            <td>{{ product.mrprice }}</td>
 					            <td>{{ product.sku }}</td>
 					            <td>{{ product.work }}</td>
+					            <td> 
+					            	<i class="fa fa-check" ng-show="{{product.status}}"></i>
+					            	<i class="fa fa-times" ng-show="!{{product.status}}"></i>
+					            </td>
+					            <td class="error"> <p ng-repeat = "error in product.errors"> {{error.error}} </p> </td>
 					        </tr>
 					        </tbody>
 					    </table>

@@ -158,10 +158,8 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 
 /*addcontactCtrl*/
 function addcontactCtrl($scope, $rootScope, userDataService) {
-    // All data will be store in this object
     var brand = userDataService.getbrand();
     $scope.formData = {};
-    // After login submit
     var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
 
     $scope.submitForm = function() {
@@ -204,6 +202,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 
 /*uploadcontactsCtrl*/
 function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
+
     // All data will be store in this object
     $scope.MyFiles=[];
     var userref = new Firebase(firebaseUrl+"users");
@@ -215,40 +214,77 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 	$scope.handler = function(e,files){
 	    var reader = new FileReader();
 	    reader.onload=function(e){
-	        var string = e.target.result.split("\n");	        
-	       // 
+	        var string = e.target.result.split("\n");
 	        $(string).each(function( index, value ) {
 	        	console.log(value)
 	        	if(value != ''){
 	        		if(index !=0){
 	        			var csvvalue = value.split(",");
-				   
+				   		var status = true;
+				   		var errors = [];
 					   	var name = csvvalue[0];
 					   	var mobile = '91'+csvvalue[1];
 					   	var company = csvvalue[2];
-					   	var email = encryptemail(csvvalue[3]);;				   	
+					   	var email = '';
+					   	if(csvvalue[3]){
+					   		if(!isValidEmailAddress(csvvalue[3])){
+					   			status = false;
+		        				errors.push({"error":"Email is invalid"})
+					   		}else{
+					   			email = encryptemail(csvvalue[3]);
+					   		}					   		
+					   	}
+					   				   	
 					   	var address = csvvalue[4];
 					   	var image = csvvalue[5];
 
-					   	var userData = {
+					   	if(!csvvalue[0]){
+		        			status = false;
+		        			errors.push({"error":"Name not found"})
+		        		}
+
+		        		if(!csvvalue[1]){
+		        			status = false;
+		        			errors.push({"error":"Mobile not found"})
+		        		}else{
+		        			if(isNaN(csvvalue[1]) == true){
+		        				status = false;
+		        				errors.push({"error":"Mobile is invalid"})
+		        			}
+		        		}
+
+		        		if(!csvvalue[2]){
+		        			status = false;
+		        			errors.push({"error":"Company not found"})
+		        		}
+
+		        		if(!csvvalue[3]){
+		        			status = false;
+		        			errors.push({"error":"Email not found"})
+		        		}
+
+		        		if(!csvvalue[4]){
+		        			status = false;
+		        			errors.push({"error":"Address not found"})
+		        		}
+
+		        		if(!csvvalue[5]){
+		        			status = false;
+		        			errors.push({"error":"Image not found"})
+		        		}
+
+
+		        		var diaplaydata = {
 					   		'company':company,
 					   		'name':name,
+					   		'mobile':mobile,
 					   		'email':email,
 					   		'address':address,
-					   		'image':image
+					   		'image':image,
+					   		'status':status,
+					   		'errors':errors
 					   	}
-
-	        			contactList.push(userData);
-
-					   	userref.child(email).set(mobile);					   	
-
-					    var n  = userref.child(mobile);
-					    n.child(brand).set(userData)
-
-					    brandref.child(mobile).set(name);
-
-					    var company = companyref.child(company);
-		    			company.child(mobile).set(name);
+					   	contactList.push(diaplaydata);
 	        		}
 	        	}
 	        	if(index == string.length-1){
@@ -259,16 +295,46 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 				  	},0,false);
 				}
 			});
-	        //console.log(csvvalue)
-	        /*var myString = string.split("\n");
-	        console.log(myString +' i')*/
-	        //$("#uploadedDetail").append(myString);
-	        //var obj= $filter('csvToObj')(string);
-	        //do what you want with obj !
 	    }
 	    reader.readAsText(files[0]);
 	}
 
+	$scope.Save = function (){
+		var contactData = $scope.contactList		
+		var count = 0;
+
+		contactData.forEach(function(items){ 
+			count++;
+		 	var company = items.company;
+		 	var mobile = items.mobile;
+		 	var name = items.name;
+		 	var email = items.email;
+		 	var address = items.address;		 	
+		 	var image = items.image; 	
+			
+			var userData = {
+		   		'company':company,
+		   		'name':name,
+		   		'email':email,
+		   		'address':address,
+		   		'image':image
+		   	}	        			
+
+		   	userref.child(email).set(mobile);					   	
+
+		    var n  = userref.child(mobile);
+		    n.child(brand).set(userData)
+
+		    brandref.child(mobile).set(name);
+
+		    var company = companyref.child(company);
+			company.child(mobile).set(name);
+			
+            if(count == contactData.length){
+            	$scope.message = "Data succesfully Inserted";
+            }
+		 })
+	}
 }
 
 /*productCtrl*/
@@ -309,9 +375,6 @@ function productCtrl($scope, $rootScope, $firebaseArray, userDataService) {
 	/*ref3.once("value", function (ss) {
         resolve(ss.val())
     })*/
-	
-
-
 }
 
 /*productdetailCtrl*/
@@ -571,13 +634,15 @@ function uploadproductsCtrl($scope, $rootScope, userDataService, $timeout) {
     // All data will be store in this object
     $scope.MyFiles=[];
     var brand = userDataService.getbrand();
+    var mainref = new Firebase(firebaseUrl+"products/products")
+
 
     var productList = [];
 	$scope.handler = function(e,files){
 	    var reader = new FileReader();
 	    reader.onload=function(e){
 	        var string = e.target.result.split("\n");	        
-	       	var mainref = new Firebase(firebaseUrl+"products/products")
+	       	
 
 	        $(string).each(function( index, value ) {
 	        	if(value != ''){
@@ -597,12 +662,66 @@ function uploadproductsCtrl($scope, $rootScope, userDataService, $timeout) {
 	        		var sku = csvvalue[10];
 	        		var work = csvvalue[11];
 	        		var images = new Array();
+
+	        		var status = true;
+				   	var errors = [];
+
 	        		if(cimages){
 	        			images = cimages.split('/');
 	        		}
 
-	        		var data = {
-	        			'category':category,
+	        		if(!csvvalue[0]){
+	        			status = false;
+	        			errors.push({"error":"Category not found"})
+	        		}
+	        		if(!csvvalue[1]){
+	        			status = false;
+	        			errors.push({"error":"Image not found"})
+	        		}
+	        		if(!csvvalue[2]){
+	        			status = false;
+	        			errors.push({"error":"Circle not found"})
+	        		}
+	        		if(!csvvalue[3]){
+	        			status = false;
+	        			errors.push({"error":"Color not found"})
+	        		}
+	        		if(!csvvalue[4]){
+	        			status = false;
+	        			errors.push({"error":"Details not found"})
+	        		}
+	        		if(!csvvalue[5]){
+	        			status = false;
+	        			errors.push({"error":"Fabric not found"})
+	        		}
+	        		if(!csvvalue[6]){
+	        			status = false;
+	        			errors.push({"error":"Handle not found"})
+	        		}
+	        		if(!csvvalue[7]){
+	        			status = false;
+	        			errors.push({"error":"Mrprice not found"})
+	        		}
+	        		if(!csvvalue[8]){
+	        			status = false;
+	        			errors.push({"error":"Name not found"})
+	        		}
+	        		if(!csvvalue[9]){
+	        			status = false;
+	        			errors.push({"error":"Price not found"})
+	        		}
+	        		if(!csvvalue[10]){
+	        			status = false;
+	        			errors.push({"error":"SKU not found"})
+	        		}
+	        		if(!csvvalue[11]){
+	        			status = false;
+	        			errors.push({"error":"Work not found"})
+	        		}
+
+
+	        		var diaplaydata = {
+				   		'category':category,
 	        			'cimages':images,
 	        			'circle':circle,
 	        			'color':color,
@@ -614,20 +733,12 @@ function uploadproductsCtrl($scope, $rootScope, userDataService, $timeout) {
 	        			'price':price,
 	        			'sku':sku,
 	        			'work':work,
-	        		}
+				   		'status':status,
+				   		'errors':errors
+				   	}
+					productList.push(diaplaydata)
 
-	        		productList.push(data)
-	        		var brandProductData = {
-						name:name,
-						price:price
-					}
-
-	        		var newProductRef = mainref.push(data);
-					var productIdID = newProductRef.key();
-					if(productIdID){
-						var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
-						brandref.child(productIdID).set(brandProductData);
-					}
+	        		
 				   }
 	        	}
 	        	if(index == string.length-1){
@@ -640,6 +751,59 @@ function uploadproductsCtrl($scope, $rootScope, userDataService, $timeout) {
 			});	        
 	    }
 	    reader.readAsText(files[0]);
+	}
+
+	$scope.Save = function (){
+		var productData = $scope.productList		
+		var count = 0;
+
+		productData.forEach(function(items){ 
+			count++;
+		 	var category = items.category;
+		 	var cimages = items.cimages;
+		 	var circle = items.circle;
+		 	var color = items.color;
+		 	var details = items.details;		 	
+		 	var fabric = items.fabric; 	
+
+		 	var handle = items.handle;
+		 	var mrprice = items.mrprice;
+		 	var name = items.name;
+		 	var price = items.price;
+		 	var sku = items.sku;		 	
+		 	var work = items.work; 	
+			
+			var data = {
+    			'category':category,
+    			'cimages':cimages,
+    			'circle':circle,
+    			'color':color,
+    			'details':details,
+    			'fabric':fabric,
+    			'handle':handle,
+    			'mrprice':mrprice,
+    			'name':name,
+    			'price':price,
+    			'sku':sku,
+    			'work':work,
+    		}
+
+    		
+    		var brandProductData = {
+				name:name,
+				price:price
+			}
+
+    		var newProductRef = mainref.push(data);
+			var productIdID = newProductRef.key();
+			if(productIdID){
+				var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
+				brandref.child(productIdID).set(brandProductData);
+			}			
+            if(count == productData.length){
+            	$scope.message = "Data succesfully Inserted";
+            }
+		 })
 	}
 
 }
@@ -981,9 +1145,10 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 }
 
 
-function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout) {
+function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, firebaseServices) {
     // All data will be store in this object
     $scope.MyFiles=[];
+    //$scope.message = "Data succesfully Inserted";
     var brand = userDataService.getbrand();
     var mobile = userDataService.getMobile();
     var name = userDataService.getName();
@@ -1005,8 +1170,80 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout) {
 	        	if(value != ''){
 	        		if(index !=0){
 	        		var csvvalue = value.split(",");
+	        		var status = true;
+	        		var errors = [];
+	        		var date = csvvalue[0]; 
+	        		if(csvvalue[0]){
+	        			if(csvvalue[0] == moment(csvvalue[0]).format('YYYY-MM-DD')){
+		        			status = true
+		        		}else{
+		        			status = false;
+		        			errors.push({"error":"Date format is Wrong"})
+		        		}	        		
+	        		}else{
+	        			status = false;
+	        			errors.push({"error":"Date not found"})
+	        		}
 
-	        		var date = csvvalue[0];
+	        		if(!csvvalue[1]){
+	        			status = false;
+	        			errors.push({"error":"Transport not found"})
+	        		}
+	        		if(!csvvalue[2]){
+	        			status = false;
+	        			errors.push({"error":"LR no not found"})
+	        		}
+	        		if(!csvvalue[3]){
+	        			status = false;
+	        			errors.push({"error":"Invoice no not found"})
+	        		}
+	        		if(!csvvalue[4]){
+	        			status = false;
+	        			errors.push({"error":"Parcel no not found"})
+	        		}
+	        		if(!csvvalue[5]){
+	        			status = false;
+	        			errors.push({"error":"Company Name not found"})
+	        		}else{
+						var companyref = new Firebase(firebaseUrl+"brands/"+brand+'/companyusers');
+						
+						firebaseServices.checkIfcompanyExists(csvvalue[5], brand).then(function(d){
+							if (d == false){
+								status = false;
+	        			  		errors.push({"error":"Company data not found in current Brand"});
+	        			  		$timeout(function(){
+								  	$scope.$apply(function() {
+								  		$scope.dispatchList = dispatchList;
+								  	});
+							  	},0,false);
+							}
+						},function(e){
+							console.log(e)
+						})						
+	        		}
+	        		if(!csvvalue[6]){
+	        			status = false;
+	        			errors.push({"error":"Item not found"})
+	        		}
+	        		if(!csvvalue[7]){
+	        			status = false;
+	        			errors.push({"error":"Rate not found"})
+	        		}else{
+	        			if(isNaN(csvvalue[7])==true){
+	        				status = false;
+	        				errors.push({"error":"Rate is Invalid"})
+	        			}
+	        		}
+
+	        		if(!csvvalue[8]){
+	        			status = false;
+	        			errors.push({"error":"Pieces not found"})
+	        		}else{
+	        			if(isNaN(csvvalue[8])==true){
+	        				errors.push({"error":"Pieces is Invalid"})
+	        			}
+	        		}
+
 	        		var transport = csvvalue[1];
 	        		var LRno = csvvalue[2];
 	        		var invoiceno = csvvalue[3]; 
@@ -1036,11 +1273,13 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout) {
 	        			'invoiceno':invoiceno,
 	        			'parcelno':parcelno,
 	        			'company':company,
-	        			'type':'Invoice'
+	        			'type':'Invoice',
+	        			'status':status,
+	        			'errors':errors
 	        		}
 	        		dispatchList.push(scopedata);
 
-		        		if ($.inArray(invoiceno,invoiceArray) == -1){	        			
+		        		/*if ($.inArray(invoiceno,invoiceArray) == -1){	        			
 		        			var itemArry = itemdata
 		        			var data = {
 		        				'author':mobile,
@@ -1074,7 +1313,7 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout) {
 
 			            	var cardref = new Firebase(firebaseUrl+"cards/"+key+"/items")
 			              	cardref.push(itemdata);
-			            }
+			            }*/
 		        	}
 
 
@@ -1083,13 +1322,82 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout) {
         		    $timeout(function(){
 					  	$scope.$apply(function() {
 					  		$scope.dispatchList = dispatchList;
-					  		console.log($scope.dispatchList )
+					  		
 					  	});
 				  	},0,false);
 				}
 			});	        
 	    }
 	    reader.readAsText(files[0]);
+	}
+
+	$scope.Save = function (){
+		alert('save')
+		var invoiceArray = [];
+	    var keyArray = [];
+
+		var dispatchData = $scope.dispatchList
+		var n = 0;
+
+		dispatchData.forEach(function(items){ 
+			n++;
+		 	var author = items.author;
+		 	var authorName = items.authorName;
+		 	var brand = items.brand;
+		 	var created = items.created;		 	
+		 	var date = items.date; 	
+			var transport = items.transport;
+    		var LRno = items.LRno;
+    		var invoiceno = items.invoiceno;
+    		var parcelno = items.parcelno;
+    		var company = items.company;
+    		var item = items.item;
+    		var rate = items.rate;
+    		var pieces = items.pieces;
+
+    		var itemdata ={
+				'item':item,
+				'rate':rate,
+    			'pieces':pieces
+			}
+
+			if ($.inArray(invoiceno,invoiceArray) == -1){	        			
+    			var itemArry = itemdata
+    			var data = {
+    				'author':author,
+        			'authorName':authorName,
+        			'brand':brand,
+        			'created':new Date().getTime(),
+        			'date':date,
+        			'transport':transport,
+        			'LRno':LRno,
+        			'invoiceno':invoiceno,
+        			'parcelno':parcelno,
+        			'company':company,
+        			'type':'Invoice'
+        		}
+              	invoiceArray.push(invoiceno);
+              	var nweData = mainref.push(data);
+              	var cardkey = nweData.key();
+
+              	var cardref = new Firebase(firebaseUrl+"cards/"+cardkey)
+              	cardref.child('items').push(itemdata);
+
+              	keyArray.push(invoiceno, cardkey);
+
+              	addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
+              	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)              	
+            }else{
+            	var index = keyArray.indexOf(invoiceno); 
+            	var key = keyArray[index+1];
+
+            	var cardref = new Firebase(firebaseUrl+"cards/"+key+"/items")
+              	cardref.push(itemdata);
+            }
+            if(n == dispatchData.length){
+            	$scope.message = "Data succesfully Inserted";
+            }
+		 })
 	}
 }
 
@@ -1269,6 +1577,25 @@ function addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company){
   		userRef.child(cardkey).set(status);
 	});
 }
+
+function isValidEmailAddress(emailAddress) {
+    var pattern = new RegExp(/^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.?$/i);
+    return pattern.test(emailAddress);
+};
+
+/*function checkIfcompanyExists(comp, brand) {
+	return $q(function(resolve, reject){
+		var company = comp;
+		var brandref = new Firebase(firebaseUrl+"brands/"+brand+'/companyusers');
+
+		brandref.child(company).once('value', function(snapshot) {
+	      var exists = (snapshot.val() !== null);
+	      resolve(exists);
+	    });
+	
+	})
+
+}*/
 
 
 

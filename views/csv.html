@@ -1,0 +1,29 @@
+<div  ng-controller="csvconverterCtrl">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-9">
+		        <h2>Dashboard</h2>
+		        <ol class="breadcrumb">
+		            <li>
+		                <a href="#/dashboards">Home</a>
+		            </li>
+		            
+		            <li class="active">
+		                <strong>CSV converter</strong>
+		            </li>
+		        </ol>	       
+		</div>
+	</div> 
+	<div class="wrapper wrapper-content">
+		<div class="row">
+	        <div class="col-lg-12">	           
+	            <span class="btn btn-danger btn-file">
+	            	Upload CSV 
+	            	<input type="file" file-change="handler($event,files)" ng-model="MyFiles" class="custom-file-input"/>		            	
+	       		</span>
+	       		<div id="uploadedDetail">
+
+	       		</div>
+	        </div>
+	    </div>
+	</div>
+</div>

@@ -6512,4 +6512,7 @@ imgdetail{
     background: white none repeat scroll 0 0;
     border-bottom: 1px solid #e7eaec;
 }
+.error{
+    color: red;
+}
 

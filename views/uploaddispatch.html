@@ -38,8 +38,17 @@
 		            	<input type="file" file-change="handler($event,files)" ng-model="MyFiles" class="custom-file-input"/>		            	
 		       		</span>
 		       		
-		       		<div class="ibox-content" ng-if="dispatchList">
+		       		<div class="ibox-content" ng-if="dispatchList" id="dispatchGrid">
 		       			<div class="row">
+		       				<div class="col-lg-12">
+						    	<div class="form-group">
+				                    <div ng-if="message" class="alert alert-success"> <h3> {{message}} </h3> </div>
+				                </div>
+			                </div>
+		       				<div class="pull-left">
+		       					<button type="submit" class="btn btn-primary" ng-click="Save()">Save</button>	
+		       				</div>
+
 		        			<div class="pull-right">
 		       					<input type="text" ng-model="txtsearch" placeholder="Search">
 		       				</div>
@@ -55,21 +64,28 @@
 					            <th>Company</th>
 					            <th>Item</th>
 					            <th>Rate</th>
-					            <th>Pieces</th>					            
+					            <th>Pieces</th>	
+					            <th>Status</th>
+					            <th>Errors</th>					            
 					        </tr>
 					        </thead>
 					        <tbody>
 					        <tr ng-repeat="dispatch in dispatchList | filter:txtsearch" >
-					            <td>{{ despatch.date }}</td>
-					            <td>{{ despatch.transport }}</td>
-					            <td>{{ despatch.LRno }}</td>
-					            <td>{{ despatch.invoiceno }}</td>
-					            <td>{{ despatch.parcelno }}</td>
-					            <td>{{ despatch.company }}</td>
-					            <td>{{ despatch.item }}</td>
-					            <td>{{ despatch.rate }}</td>
-					            <td>{{ despatch.pieces }}</td>
-
+					            <td>{{ dispatch.date }}</td>
+					            <td>{{ dispatch.transport }}</td>
+					            <td>{{ dispatch.LRno }}</td>
+					            <td>{{ dispatch.invoiceno }}</td>
+					            <td>{{ dispatch.parcelno }}</td>
+					            <td>{{ dispatch.company }}</td>
+					            <td>{{ dispatch.item }}</td>
+					            <td>{{ dispatch.rate }}</td>
+					            <td>{{ dispatch.pieces }}</td>
+					            <td> 
+					            	<i class="fa fa-check" ng-show="{{dispatch.status}}"></i>
+					            	<i class="fa fa-times" ng-show="!{{dispatch.status}}"></i>
+					            </td>
+					            <!-- <td class="error"> {{ dispatch.error.date}} {{ dispatch.error.transport}}</td> -->
+					             <td class="error"> <p ng-repeat = "error in dispatch.errors"> {{error.error}} </p> </td>
 					           <!--  <td>{{ despatch.firstName }}</td>
 					            <td>{{ despatch.lastName }}</td> -->
 					        </tr>
