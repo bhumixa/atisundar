@@ -144,6 +144,16 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url:"/dispatch",
             templateUrl: "views/uploaddispatch.html",
             data: { pageTitle: 'Upload Dispatch'}
+        }) //
+        .state('converter', {
+            abstract: true,
+            url: "/converters",
+            templateUrl:  "views/common/content.html",
+        })
+        .state('converter.csv', {
+            url:"/csv",
+            templateUrl: "views/csv.html",
+            data: { pageTitle: 'Upload CSV '}
         })
         .state('settings', {
             abstract: true,

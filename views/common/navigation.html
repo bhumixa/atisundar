@@ -116,6 +116,13 @@
                 </ul>
             </li>
 
+            <li ng-class="{active: $state.includes('converter')}">                
+                <a href=""><i class="fa fa-exchange"></i> <span class="nav-label">Converters</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" ng-class="{in: $state.includes('converter')}">
+                    <li ui-sref-active="active"><a ui-sref="converter.csv">CSV Converter</a></li>
+                </ul>
+            </li>
+
 
             <li ng-class="{active: $state.includes('settings')}">                
                 <a href=""><i class="fa fa-gears"></i> <span class="nav-label">Settings</span><span class="fa arrow"></span></a>

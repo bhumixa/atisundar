@@ -456,6 +456,57 @@ function username($firebase, $timeout, $firebaseArray){
 
 }
 
+function getpiecesTotal($timeout){
+    return {
+        link: function($scope, element, attrs){            
+            var items = attrs.myAttr;
+            console.log(items)
+            var data = JSON.parse(items);
+            var total = 0;
+            var n = 0;
+            for(var x in data){
+                total += parseInt(data[x].pieces);
+                $timeout(function(){
+                    $scope.$apply(function() {
+                        $scope.total = total
+                })  },0,false);
+                /*if(n == data.length-1){
+                    console.log(total)
+                }*/
+            }            
+        },
+        template : '<p>Total: {{total}} </p>'
+      };
+}
+
+
+function getamountTotal($timeout){
+    return {
+        link: function($scope, element, attrs){            
+            var items = attrs.myAttr;
+            console.log(items)
+            var data = JSON.parse(items);
+            var amount = 0;
+            var n = 0;
+            for(var x in data){
+                var qunty =  parseInt(data[x].pieces);
+                var rate =  parseInt(data[x].rate)
+                var price = qunty * rate;
+                
+                amount += parseInt(price);
+                $timeout(function(){
+                    $scope.$apply(function() {
+                        $scope.amount = amount
+                })  },0,false);
+                /*if(n == data.length-1){
+                    console.log(total)
+                }*/
+            }            
+        },
+        template : '<p>Rs: {{amount}} </p>'
+      };
+}
+
 function dccard($firebase, $timeout, $firebaseArray){
     var directive = {};
     directive.restrict='E';
@@ -764,6 +815,8 @@ angular
     .directive('getimageUrl', getimageUrl)
     .directive('getuserData', getuserData)
     .directive('dccard',dccard)    
+    .directive('getpiecesTotal', getpiecesTotal)
+    .directive('getamountTotal', getamountTotal)
     .directive('onFinishRender', onFinishRender)
     .directive('infiniteScroll', infiniteScroll)
     .directive('ngEnter', ngEnter)

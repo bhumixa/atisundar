@@ -38,9 +38,47 @@
 	            	Upload CSV 
 	            	<input type="file" file-change="handler($event,files)" ng-model="MyFiles" class="custom-file-input"/>		            	
 	       		</span>
-	       		<div id="uploadedDetail">
-
-	       		</div>
+	       		<div class="ibox-content" ng-if="productList">
+		       			<div class="row">
+		        			<div class="pull-right">
+		       					<input type="text" ng-model="txtsearch" placeholder="Search">
+		       				</div>
+		       			</div>
+					    <table datatable="ng" class="table table-striped table-bordered table-hover dataTables-example">
+					        <thead>
+					        <tr>
+					        	<th>Name</th>
+					            <th>Price</th>
+					            <th>Category</th>
+					            <th>Images</th>
+					            <th>Circle</th>
+					            <th>Color</th>
+					            <th>Details</th>
+					            <th>Fabric</th>
+					            <th>Handle</th>
+					            <th>Mrprice</th>
+					            <th>Sku</th>
+					            <th>Work</th>    
+					        </tr>
+					        </thead>
+					        <tbody>
+					        <tr ng-repeat="product in productList | filter:txtsearch" >
+					        	<td>{{ product.name }}</td>
+					            <td>{{ product.price }}</td>
+					            <td>{{ product.category }}</td>
+					            <td>{{ product.cimages }}</td>
+					            <td>{{ product.circle }}</td>
+					            <td>{{ product.color }}</td>
+					            <td>{{ product.details }}</td>					            
+					            <td>{{ product.fabric }}</td>
+					            <td>{{ product.handle }}</td>
+					            <td>{{ product.mrprice }}</td>
+					            <td>{{ product.sku }}</td>
+					            <td>{{ product.work }}</td>
+					        </tr>
+					        </tbody>
+					    </table>
+					</div>
 	        </div>
 	    </div>
 
