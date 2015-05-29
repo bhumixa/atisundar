@@ -168,7 +168,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   	var mobile = '91'+$scope.formData.mobile;
 		   	var name = $scope.formData.name;
 		   	var email = encryptemail($scope.formData.email);
-		   	var company = $scope.formData.company;
+		   	var company = encryptemail($scope.formData.company);
 		   	var address = $scope.formData.address;
 		   	var image = $scope.formData.image;
 
@@ -212,6 +212,8 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 		   
     var contactList = [];
 	$scope.handler = function(e,files){
+		contactList.length = 0
+		$scope.contactList = '';
 	    var reader = new FileReader();
 	    reader.onload=function(e){
 	        var string = e.target.result.split("\n");
@@ -305,7 +307,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 
 		contactData.forEach(function(items){ 
 			count++;
-		 	var company = items.company;
+		 	var company = encryptemail(items.company);
 		 	var mobile = items.mobile;
 		 	var name = items.name;
 		 	var email = items.email;
@@ -334,6 +336,11 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
             	$scope.message = "Data succesfully Inserted";
             }
 		 })
+	}
+
+	$scope.reset = function(){
+		contactList.length = 0
+		$scope.contactList = '';
 	}
 }
 
@@ -639,6 +646,8 @@ function uploadproductsCtrl($scope, $rootScope, userDataService, $timeout) {
 
     var productList = [];
 	$scope.handler = function(e,files){
+		productList.length = 0
+		$scope.productList = '';
 	    var reader = new FileReader();
 	    reader.onload=function(e){
 	        var string = e.target.result.split("\n");	        
@@ -804,6 +813,11 @@ function uploadproductsCtrl($scope, $rootScope, userDataService, $timeout) {
             	$scope.message = "Data succesfully Inserted";
             }
 		 })
+	}
+
+	$scope.reset = function(){
+		productList.length = 0
+		$scope.productList = '';
 	}
 
 }
@@ -1005,6 +1019,7 @@ function addformCtrl ($scope, $rootScope, $stateParams, $state, userDataService,
 			var data = {
 				'html':$scope.formData.html,
 				'name':$scope.formData.name,
+				'description':$scope.formData.description,
 				'added-on': ctime,
 				'created-by':name
 			}
@@ -1036,6 +1051,7 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 			var data = {
 				'html':$scope.formData.html,
 				'name':$scope.formData.name,
+				'description':$scope.formData.description,
 				'added-on': ctime,
 				'created-by':name
 			}
@@ -1055,23 +1071,32 @@ function contactlistCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 	$scope.userlist = $firebaseArray(branduserref);
 }
 
-function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataService, firebaseServices, $timeout, $firebaseObject, $firebaseArray){
 	/*$scope.userlist = {};*/
 	var brand = userDataService.getbrand();
 	var contactId = $stateParams.contactId;
 
-	var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+	//var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
 
 
-	$scope.formData = $firebaseObject(branduserref);
+	firebaseServices.fetchContactData(contactId, brand).then(function(result){
+		if (result){
+			$timeout(function(){
+			  	$scope.$apply(function() {
+			  		$scope.formData = result;
+			  	});
+		  	},0,false);
+		}
+	});
 
-	console.log($scope.formData)
+
+	//$scope.formData = $firebaseObject(branduserref);
 
 	$scope.submitForm = function() {
     	if($scope.formData.name){
 		   	var name = $scope.formData.name;
 		   	var email = $scope.formData.email;
-		   	var company = $scope.formData.company;
+		   	var company = encryptemail($scope.formData.company);
 		   	var address = $scope.formData.address;
 		   	var image = $scope.formData.image;
 		   	var mobile = $scope.formData.mobile;
@@ -1160,6 +1185,8 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
 	//$scope.dispatchList = {}
 	var dispatchList = [];
 	$scope.handler = function(e,files){
+		dispatchList.length = 0
+		$scope.dispatchList = '';
 	    var reader = new FileReader();
 	    reader.onload=function(e){
 	        var string = e.target.result.split("\n");
@@ -1210,13 +1237,46 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
 						firebaseServices.checkIfcompanyExists(csvvalue[5], brand).then(function(d){
 							if (d == false){
 								status = false;
-	        			  		errors.push({"error":"Company data not found in current Brand"});
-	        			  		$timeout(function(){
-								  	$scope.$apply(function() {
-								  		$scope.dispatchList = dispatchList;
-								  	});
-							  	},0,false);
+	        			  		errors.push({"error":"Company data not found in current Brand"});	        			  		
 							}
+							var transport = csvvalue[1];
+			        		var LRno = csvvalue[2];
+			        		var invoiceno = csvvalue[3]; 
+			        		var parcelno = csvvalue[4];
+			        		var company = csvvalue[5];
+			        		var item = csvvalue[6];
+			        		var rate = csvvalue[7];
+			        		var pieces = csvvalue[8];
+
+							var itemdata ={
+		        				'item':item,
+		        				'rate':rate,
+			        			'pieces':pieces
+		        			}
+		        			var scopedata = {
+		        				'author':mobile,
+			        			'authorName':name,
+			        			'brand':brand,
+			        			'created':new Date().getTime(),
+			        			'item':item,
+		        				'rate':rate,
+			        			'pieces':pieces,
+			        			'date':date,
+			        			'transport':transport,
+			        			'LRno':LRno,
+			        			'invoiceno':invoiceno,
+			        			'parcelno':parcelno,
+			        			'company':company,
+			        			'type':'Invoice',
+			        			'status':status,
+			        			'errors':errors
+			        		}
+			        		dispatchList.push(scopedata);
+        			  		$timeout(function(){
+							  	$scope.$apply(function() {
+							  		$scope.dispatchList = dispatchList;
+							  	});
+						  	},0,false);
 						},function(e){
 							console.log(e)
 						})						
@@ -1244,40 +1304,7 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
 	        			}
 	        		}
 
-	        		var transport = csvvalue[1];
-	        		var LRno = csvvalue[2];
-	        		var invoiceno = csvvalue[3]; 
-	        		var parcelno = csvvalue[4];
-	        		var company = csvvalue[5];
-	        		var item = csvvalue[6];
-	        		var rate = csvvalue[7];
-	        		var pieces = csvvalue[8];
-
 	        		
-	        		var itemdata ={
-        				'item':item,
-        				'rate':rate,
-	        			'pieces':pieces
-        			}
-        			var scopedata = {
-        				'author':mobile,
-	        			'authorName':name,
-	        			'brand':brand,
-	        			'created':new Date().getTime(),
-	        			'item':item,
-        				'rate':rate,
-	        			'pieces':pieces,
-	        			'date':date,
-	        			'transport':transport,
-	        			'LRno':LRno,
-	        			'invoiceno':invoiceno,
-	        			'parcelno':parcelno,
-	        			'company':company,
-	        			'type':'Invoice',
-	        			'status':status,
-	        			'errors':errors
-	        		}
-	        		dispatchList.push(scopedata);
 
 		        		/*if ($.inArray(invoiceno,invoiceArray) == -1){	        			
 		        			var itemArry = itemdata
@@ -1399,6 +1426,12 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
             }
 		 })
 	}
+
+	$scope.reset = function(){
+		dispatchList.length = 0
+		$scope.dispatchList = '';
+	}
+
 }
 
 function csvconverterCtrl($scope, $rootScope, userDataService) {

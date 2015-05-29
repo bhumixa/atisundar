@@ -774,6 +774,13 @@ report.directive('resetLink', function($parse, $log ) {
   };
 });*/
 
+function decryptString(){
+    return function(string){
+        var newchar = '.'
+        string = string.split('__dot__').join(newchar);
+        return string;
+    } 
+}
 
 function getTime(){
     return function(date){
@@ -822,4 +829,5 @@ angular
     .directive('ngEnter', ngEnter)
     .filter('getTime', getTime)
     .filter('convertString', convertString)
+    .filter('decryptString', decryptString)
     
