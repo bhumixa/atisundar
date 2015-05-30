@@ -1,19 +1,11 @@
 var firebaseUrl = "https://educe.firebaseio.com/";
 
-
 /**
  *  loginCtrl - controller
  */
 
  function loginCtrl($scope, $rootScope, $state, userDataService) {
-
-    // All data will be store in this object
-    /*var i = 'bhumi_.gmail.com'
-    var n = encryptemail(i);
-     alert(n);
-    var j = decryptemail(n);
-    alert(j);*/
-
+ 	$("#cb").hide();
     $scope.formData = {};
     $scope.error = {};
     //$('#loadingDiv').show();
@@ -42,11 +34,10 @@ var firebaseUrl = "https://educe.firebaseio.com/";
 			});    		
     	}        
     }
-
-    
 }
 
 function registerCtrl($scope, $rootScope, $state, userDataService){
+	$("#cb").hide();
 	$scope.formData = {};
 	$scope.error = {};
 
@@ -93,8 +84,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 				}
 			}else{
 				$scope.error.mobile = "please enter valid mobile"
-			}
-			
+			}			
 		}else{
 			$scope.error.email = "please enter email and password"
 		}
@@ -639,7 +629,28 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 /*uploadproductsCtrl*/
 function uploadproductsCtrl($scope, $rootScope, userDataService, $timeout) {
     // All data will be store in this object
-    $scope.MyFiles=[];
+    
+
+}
+
+function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataService, $timeout) {
+	var categoryId = $stateParams.categoryId;
+	$scope.category = '';
+
+	$scope.categoryId = $stateParams.categoryId;
+	if(categoryId == "saree"){
+		$scope.category =  "Saree"
+	}else if(categoryId == "salwar"){
+		$scope.category = "Salwar Suits"
+	}else if(categoryId == "gowns"){
+		$scope.category = "Gowns"
+	}else if(categoryId == "lehnga"){
+		$scope.category = "Lehnga"
+	}else if(categoryId == "kurti"){
+		$scope.category = "Kurti"
+	}
+
+	$scope.MyFiles=[];
     var brand = userDataService.getbrand();
     var mainref = new Firebase(firebaseUrl+"products/products")
 
@@ -931,7 +942,40 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray, userData
 	}*/
 }
 
-function topnavbarCtrl($scope, $rootScope, $stateParams, $state){
+function topnavbarCtrl($scope, $rootScope, $stateParams, $state, userDataService, $timeout, $firebaseArray){
+
+	$scope.$on('mobileUpdated', function() {
+	    var brand = userDataService.getbrand();
+	    var mobile = userDataService.getMobile();
+	    var name = userDataService.getName();
+	    
+	    var userRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand);
+	    userRef.child('unreadnotifications').once('value', function(snapshot) {
+	    	$timeout(function(){
+			  	$scope.$apply(function() {
+			  		$scope.notiCount = snapshot.val();
+			  	});
+		  	},0,false);	     
+	    }); 
+
+	    var userRenotificationRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand+"/notifications");
+	    $scope.notifications = $firebaseArray(userRenotificationRef);
+
+	       
+    });
+
+	
+    /*var notification = $firebaseObject(userRef);
+    console.log(notification)*/
+   // var userRef = new Firebase("http://mj6uc.firebaseio.com/users/"+user+"/"+brand+"/unreadnotifications")
+    /*userRef.child('unreadnotifications').once('value', function(snapshot) {
+    	console.log(snapshot.val())
+     
+    });
+
+    */
+
+
 	$scope.logout = function(){
 		localStorage.clear();
 		$state.go('login')
@@ -1543,6 +1587,71 @@ function csvconverterCtrl($scope, $rootScope, userDataService) {
 	}
 }
 
+
+
+/*function messagesCtrl($scope, $rootScope, $state,$location ,userDataService){
+	var brand = userDataService.getbrand();
+    var mobile = userDataService.getMobile();
+    var name = userDataService.getName();
+    $scope.visible = false;
+    if(brand){
+    	 $scope.visible = true;
+    }
+}*/
+
+function chatCtrl($scope, $rootScope, $stateParams, $firebaseArray, userDataService) {
+	var brand = userDataService.getbrand();
+    var mobile = userDataService.getMobile();
+
+    $scope.$on('nameUpdated', function() {	    
+	   $scope.username = userDataService.getName();     
+    });
+
+    $scope.visible = false
+    if(brand){
+    	 $scope.visible = true;
+    }
+
+	$scope.newMessage = {};
+	var ref = new Firebase(firebaseUrl+'/chat');
+	
+	
+	var chatuser = '';
+	$scope.login = function(user)	{
+		if(user){
+			var message = {
+				name: $scope.username,
+				text: 'hello ! I am '+$scope.username+'. How can i help you?'
+			}
+			$scope.newUser = user;		
+			chatuser = user
+			ref.child(user).push(message);
+			var chatuserref = new Firebase(firebaseUrl+'/chat/'+chatuser);
+			$scope.messages = $firebaseArray(chatuserref);
+		}else{
+			$scope.message = "Please enter your name"
+		}
+	}
+	//var messages = $firebaseObject(ref.child('messages')).$asArray();
+
+	$scope.handleKeyup = function handleKeyup(e) {
+		var chatuserref = new Firebase(firebaseUrl+'/chat/'+chatuser);
+		if(e.keyCode == 13) {
+			var text = $scope.newMessage.text;
+			var message = {
+				name: name,
+				text: $scope.newMessage.text
+			}
+			chatuserref.push(message);
+            $('#messageInput').val('');
+		}
+	}
+
+	$scope.$on('valueupdated', function() {	    
+	   $scope.visible = true;	     
+    });
+}
+
 /**
  *  MainCtrl - controller
  */
@@ -1644,6 +1753,7 @@ angular
     .controller('productdetailCtrl', productdetailCtrl)
     .controller('addproductCtrl', addproductCtrl)
     .controller('uploadproductsCtrl', uploadproductsCtrl)
+    .controller('uploadproductcategoryCtrl', uploadproductcategoryCtrl)
     .controller('timelineCtrl', timelineCtrl)
     .controller('topnavbarCtrl', topnavbarCtrl)
     .controller('navigationCtrl', navigationCtrl)
@@ -1658,4 +1768,5 @@ angular
     .controller('addadminCtrl', addadminCtrl)
     .controller('uploaddispatchCtrl', uploaddispatchCtrl)
     .controller('csvconverterCtrl', csvconverterCtrl)
+    .controller('chatCtrl', chatCtrl)
     

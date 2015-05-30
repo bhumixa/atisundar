@@ -9,7 +9,31 @@
                 <!--<span class="m-r-sm text-muted welcome-message">Welcome to INSPINIA+ Admin Theme.</span>-->
             <!--</li>-->
            
-            
+            <li class="dropdown" dropdown>
+                <a class="dropdown-toggle count-info" href dropdown-toggle>
+                    <i class="fa fa-bell"></i> <span class="label label-primary">{{notiCount}}</span>
+                </a>
+                <ul class="dropdown-menu dropdown-alerts">
+                    <div ng-repeat = "notification in notifications">
+                        <li>
+                            <div class="dropdown-messages-box">
+                                <a ui-sref="profile" class="pull-left">
+                                    <img alt="image" class="img-circle" src="img/profile.jpg">
+                                </a>
+
+                                <div>
+                                    <small class="pull-right">{{notification.when | getTime }} </small>
+                                    <strong> {{notification.text}} </strong>. <br>
+                                    <!-- <small class="text-muted">{{notification.when | getTime }} </small> -->
+                                </div>
+                            </div>
+                        </li>
+                        <li class="divider"></li>
+                    </div>
+                    <!-- <li class="divider"></li> -->
+                    
+                </ul>
+            </li>
             <li>
                 <a href="" ng-click="logout()">
                     <i class="fa fa-sign-out"></i> Log out

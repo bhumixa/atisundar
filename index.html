@@ -35,10 +35,31 @@
 <!-- Main view  -->
 <div ui-view></div>
 
-<!-- <div ng-controller="MessagesCtrl"  id="chat_div">
-    <button ng-click="login()" ng-hide="authData">Log In</button>
-    <input ng-model="newMessage.text" ng-keyup="handleKeyup($event)">
-    <div ng-repeat="message in data.messages"> <b>{{ message.author }}:</b> {{ message.text }} </div>
+<!-- <div ng-show="visible" ng-controller="chatCtrl"> 
+    <div class="title" id="chatboxshow">Chat with us</div>
+
+    <div id="container" >
+      <div class="chat" id="cb">
+        <div class="title" ng-if="newUser">welcome {{newUser}}</div>    
+        <div clss="name" ng-if="!newUser">
+            <div class="title" >Chat with us</div>
+            <input type="text" ng-model="user" placeholder="Enter Your Name"></p>
+            <div class="form-group">
+                <div ng-if="message" style="color:red; margin-left:18px"> {{message}} </div>
+            </div>
+            <button type="button" class="btn btn-primary block full-width m-b" ng-click="login(user)">Login</button>
+        </div>
+        <div ng-if="newUser">
+            <div class="text" >
+              <div ng-repeat="message in messages"> <b>{{ message.name }}:</b> {{ message.text }} </div>
+            </div>
+            <div class="chatbox">
+              <input id="messageInput" ng-model="newMessage.text" ng-keyup="handleKeyup($event)"/>
+              <div id="typing_on"> </div>
+            </div>
+        </div>
+      </div> 
+    </div>
 </div> -->
 
 <!-- jQuery and Bootstrap -->
@@ -78,7 +99,29 @@
 <script src="js/directives.js"></script>
 <script src="js/controllers.js"></script>
 <script src="js/services.js"></script>
+<script type="text/javascript">
+    $("#cb").hide();
+    $("#chatboxshow").click(function(){
+        $("#cb").show();
+        $("#chatboxshow").hide();
+    });
+    var textarea = $('#messageInput');
+    var typingStatus = $('#typing_on');
 
+    textarea.blur(refreshTypingStatus);
+
+    function refreshTypingStatus() {
+        alert('sdf')
+        if (!textarea.is(':focus') || textarea.val() == '' || new Date().getTime() - lastTypedTime.getTime() > typingDelayMillis) {
+            typingStatus.html('No one is typing -blank space.');
+        } else {
+            typingStatus.html('User is typing...');
+        }
+    }
+/*$("#show").click(function(){
+    $("p").show();
+});*/
+</script>
 
 
 <!-- <script src="js/translations.js"></script> -->

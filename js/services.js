@@ -1,6 +1,6 @@
 var firebaseUrl = "https://educe.firebaseio.com/";
 
-function userDataService(){
+function userDataService($http, $rootScope){
 	var brand = '';
 	var mobile = '';
 	var name = '';
@@ -12,18 +12,22 @@ function userDataService(){
 	return {
 		setbrand:function(value) {
 			brand = value;
+          	$rootScope.$broadcast('valueupdated');
 		},
 		getbrand:function() {
 			return brand;
 		},
 		setMobile:function(value) {
 			mobile = value;
+			$rootScope.$broadcast('mobileUpdated');
 		},
 		getMobile:function() {
+
 			return mobile;
 		},
-		setName : function(value){
+		setName : function(value){			
 			name = value
+			$rootScope.$broadcast('nameUpdated');
 		},
 		getName : function(){
 			return name 
@@ -82,5 +86,5 @@ function firebaseServices($q){
 
 angular
     .module('atisundar')
-    .factory('userDataService', userDataService)
+    .service('userDataService', userDataService)
     .factory('firebaseServices', firebaseServices)

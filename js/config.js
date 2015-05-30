@@ -115,6 +115,11 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             templateUrl: "views/uploadproducts.html",
             data: { pageTitle: 'upload Products'}
         })
+        .state('products.category', {
+            url: "/category/:categoryId",
+            templateUrl: "views/category.html",
+            data: { pageTitle: 'Products' }
+        })
         .state('forms', {
             abstract: true,
             url: "/forms",
