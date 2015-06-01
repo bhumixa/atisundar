@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-sm-1">
+    <div class="col-sm-2">
         <div class="cardImage">
             <img src="p3.jpg" class="img-circle"> 
         </div>
@@ -44,23 +44,27 @@
 
     </div>
     <div class="item tabs tabs-secondary tabs-icon-left noselected" id="comArea_{{id}}" >
-        <textarea ng-model="comment" ng-enter="submitComment(id, comment)" id="txt_{{id}}"> </textarea>
+        
     </div>
      <div ng-repeat="c in comments">
+       
 
-        <img src="http://placehold.it/200x200">
-        <h2>{{c.name}} </h2>
-        <span style="font-size:10px; color:#AAAAAA;">{{c.relTime}}</span>
-        <p>{{c.comment}}</p>
-        
-        <span class="list list-inset comment-thread-list">
-            <span class="item" ng-repeat="r in c.replies">
-                <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.relTime}}</span></h4>
+          <img src="./img/profile.jpg" class="img-circle">
+          <h2>{{c.name}} </h2> 
+          <span style="font-size:10px; color:#AAAAAA;">{{c.relTime}}</span>
+          <p>{{c.comment}}</p>
+          
+          <div class="col-sm-2">
+            <span class="list list-inset comment-thread-list">
+                <span class="item" ng-repeat="r in c.replies">
+                    <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.relTime}}</span></h4>
 
-                <p>{{r.comment}}</p>
-            </span> 
-        </span>
-    </div>
+                    <p>{{r.comment}}</p>
+                </span> 
+            </span>
+            <p><textarea ng-model="comment" ng-enter="submitComment(id, comment, c.$id)" id="txt_{{id}}"> </textarea></p>
+          </div>
+      </div>
     </div>
 </div>
 

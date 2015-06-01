@@ -943,11 +943,14 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray, userData
 }
 
 function topnavbarCtrl($scope, $rootScope, $stateParams, $state, userDataService, $timeout, $firebaseArray){
+	var brand = userDataService.getbrand();
+	var mobile = userDataService.getMobile();
+	var name = userDataService.getName();
 
 	$scope.$on('mobileUpdated', function() {
-	    var brand = userDataService.getbrand();
-	    var mobile = userDataService.getMobile();
-	    var name = userDataService.getName();
+	    brand = userDataService.getbrand();
+	    mobile = userDataService.getMobile();
+	    name = userDataService.getName();
 	    
 	    var userRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand);
 	    userRef.child('unreadnotifications').once('value', function(snapshot) {
@@ -959,23 +962,23 @@ function topnavbarCtrl($scope, $rootScope, $stateParams, $state, userDataService
 	    }); 
 
 	    var userRenotificationRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand+"/notifications");
+	    $scope.notifications = $firebaseArray(userRenotificationRef);	       
+    });
+
+	if(mobile && brand){
+		var userRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand);
+	    userRef.child('unreadnotifications').once('value', function(snapshot) {
+	    	$timeout(function(){
+			  	$scope.$apply(function() {
+			  		$scope.notiCount = snapshot.val();
+			  	});
+		  	},0,false);	     
+	    }); 
+
+	    var userRenotificationRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand+"/notifications");
 	    $scope.notifications = $firebaseArray(userRenotificationRef);
-
-	       
-    });
-
-	
-    /*var notification = $firebaseObject(userRef);
-    console.log(notification)*/
-   // var userRef = new Firebase("http://mj6uc.firebaseio.com/users/"+user+"/"+brand+"/unreadnotifications")
-    /*userRef.child('unreadnotifications').once('value', function(snapshot) {
-    	console.log(snapshot.val())
-     
-    });
-
-    */
-
-
+	}
+    
 	$scope.logout = function(){
 		localStorage.clear();
 		$state.go('login')

@@ -515,7 +515,8 @@ function dccard($firebase, $timeout, $firebaseArray){
         view: '@'
     };
 
-    directive.controller = function($scope,$state,$firebase, $firebaseArray){
+    directive.controller = function($scope,$state,$firebase, $firebaseArray, userDataService){
+        var name = userDataService.getName();
         $scope.comments =[];
         $scope.liked = false
         console.log("In dc card controller...."+$scope.id)
@@ -538,23 +539,26 @@ function dccard($firebase, $timeout, $firebaseArray){
             $("#comArea_"+$scope.id).removeClass( "noselected" ).addClass( "selected" );
         }
 
-        $scope.submitComment = function(cardid, comment){
-            var addCommentref = new Firebase(firebaseUrl+"cardComments/"+$scope.id)
+        $scope.submitComment = function(cardid, comment, commentId){
+          // alert(commentId)
+            var addCommentref = new Firebase(firebaseUrl+"cardComments/"+$scope.id+"/"+commentId);
+
             var ctime = new Date().getTime()
             var cardData = {
-                name:'admin',
+                name:name,
                 created: ctime,
                 comment:comment
             }
-            addCommentref.push(cardData);
-            var upvotesRef = new Firebase("http://educe.firebaseio.com/cards/"+$scope.id+"/commentCount");
+            addCommentref.child('replies').push(cardData);
+            $("#txt_"+$scope.id).val('');
+            /*var upvotesRef = new Firebase("http://educe.firebaseio.com/cards/"+$scope.id+"/commentCount");
             upvotesRef.transaction(function (current_value) {
                 console.log(" Card "+$scope.id + " comment count " +current_value)
                 $("#txt_"+$scope.id).val('');
                 $("#comArea_"+$scope.id).removeClass( "selected" ).addClass( "noselected" );
                 return (current_value || 0) + 1;
 
-            });
+            });*/
         }
 
         $scope.showComments = function(){

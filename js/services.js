@@ -22,7 +22,6 @@ function userDataService($http, $rootScope){
 			$rootScope.$broadcast('mobileUpdated');
 		},
 		getMobile:function() {
-
 			return mobile;
 		},
 		setName : function(value){			
@@ -51,14 +50,11 @@ function firebaseServices($q){
 	}
 
 	var fetchContactData = function(contactId, brand) {
-		return $q(function(resolve, reject){
-			
+		return $q(function(resolve, reject){			
 			var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
 			branduserref.once("value",function(snapshot){
-				//console.log(snapshot.val())
 		      var address = snapshot.val().address;
 		      var company = decryptemail(snapshot.val().company);
-		     // console.log(company)
 		      var image = snapshot.val().image;
 		      var name = snapshot.val().name;
 		      var email = snapshot.val().email;
@@ -71,8 +67,6 @@ function firebaseServices($q){
 		      	'email':email
 		      };
 		      resolve(data);
-		      //console.log(email)
-		      //console.log(address)
 		    });					
 		})
 	}
