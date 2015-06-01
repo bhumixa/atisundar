@@ -397,8 +397,6 @@ function getuserData($firebaseObject, $timeout){
                         })  },0,false);
 
                 }
-                 console.log('---')
-             // console.log(data.val())
               /*$timeout(function(){
 
                 $scope.$apply(function() {
@@ -540,7 +538,6 @@ function dccard($firebase, $timeout, $firebaseArray){
         }
 
         $scope.submitComment = function(cardid, comment, commentId){
-          // alert(commentId)
             var addCommentref = new Firebase(firebaseUrl+"cardComments/"+$scope.id+"/"+commentId);
 
             var ctime = new Date().getTime()
