@@ -269,17 +269,7 @@ function dropZone() {
                 });
                 this.on('addedfile', function(file) {
                     scope.$apply(function(){ 
-                    console.log(file.name)                      ;
-                   
-                       // scope.files.push({file: 'added'});
-                        //var tmppath = URL.createObjectURL(event.target.file);
-                       // console.log(tmppath)
-                        /*var mockFile = {
-                          name: file.name,
-                          size: file.size,
-                          type: 'image/jpeg',
-                        };
-                        console.log(mockFile)*/
+                    console.log(file.name);
                     });
                 });
                 this.on('drop', function(file) {

@@ -4,7 +4,7 @@ var firebaseUrl = "https://educe.firebaseio.com/";
  *  loginCtrl - controller
  */
 
- function loginCtrl($scope, $rootScope, $state, userDataService) {
+function loginCtrl($scope, $rootScope, $state, userDataService) {
  	$("#cb").hide();
     $scope.formData = {};
     $scope.error = {};
@@ -668,20 +668,20 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 	        	if(value != ''){
 	        		if(index !=0){
 	        		var csvvalue = value.split(",");
-
 	        		var category = csvvalue[0];
 	        		var cimages = csvvalue[1];
-	        		var circle = csvvalue[2];
-	        		var color = csvvalue[3]; 
-	        		var details = csvvalue[4];
-	        		var fabric = csvvalue[5];
-	        		var handle = csvvalue[6];
-	        		var mrprice = csvvalue[7];
-	        		var name = csvvalue[8];
-	        		var price = csvvalue[9];
-	        		var sku = csvvalue[10];
-	        		var work = csvvalue[11];
+	        		//var circle = csvvalue[2];
+	        		var color = csvvalue[2]; 
+	        		var details = csvvalue[3];
+	        		var fabric = csvvalue[4];
+	        		var handle = csvvalue[5];
+	        		var mrprice = csvvalue[6];
+	        		var name = csvvalue[7];
+	        		var price = csvvalue[8];
+	        		var sku = csvvalue[9];
+	        		var work = csvvalue[10];
 	        		var images = new Array();
+ 					var circle = brand
 
 	        		var status = true;
 				   	var errors = [];
@@ -816,6 +816,10 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 
     		var newProductRef = mainref.push(data);
 			var productIdID = newProductRef.key();
+			console.log(productIdID)
+			var pRef = new Firebase(firebaseUrl+"products/products/"+productIdID)
+			pRef.child('handle').set(productIdID)
+
 			if(productIdID){
 				var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
 				brandref.child(productIdID).set(brandProductData);
@@ -895,7 +899,7 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray, userData
 	        }
 	       
 	        $scope.cards = cards;
-	      })
+	    })
 		/*if($scope.start  == 0){
 			$scope.start = 11;
 		}
