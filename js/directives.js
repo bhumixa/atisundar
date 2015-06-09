@@ -780,6 +780,14 @@ function getTime(){
     };
 }
 
+function dashboardDate(){
+    return function(date){
+        //var chTime = new Date(Date.parse(date)).toUTCString();      
+        var date = moment(date).format('ll')
+        return date;       
+    };  
+}
+
 function convertString(){
     return function(string){
         alert(string)
@@ -818,6 +826,7 @@ angular
     .directive('infiniteScroll', infiniteScroll)
     .directive('ngEnter', ngEnter)
     .filter('getTime', getTime)
+    .filter('dashboardDate', dashboardDate)
     .filter('convertString', convertString)
     .filter('decryptString', decryptString)
     

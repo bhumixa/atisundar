@@ -1,5 +1,8 @@
 var firebaseUrl = "https://educe.firebaseio.com/";
-
+var client = new Keen({
+    projectId: "55430ee796773d5aa89d86a4",
+    readKey: "ca294e81b3964d2eab952d3ba67a1cffba7cc091943e0612df8d102281efcadb1b0b382c4928919b13ed977575ddf91e4bbe4d9eb24961f862b88984729d58c2a16a6daa2d30427d254500689175394e96b6436e09c69b96e0cd3ff909ad39eea097b033319e942ac1ca794726c88894"
+  });
 /**
  *  loginCtrl - controller
  */
@@ -183,6 +186,9 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		    var company = companyref.child(company);
 		    company.child(mobile).set(name);
 
+		    var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
+		    lastupdateref.child('contact').set(mobile);
+
 		    $scope.message = "Data succesfully Inserted";
 		    $scope.formData = '';
     	}        
@@ -327,6 +333,9 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 
 		    var company = companyref.child(company);
 			company.child(mobile).set(name);
+
+			var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
+		    lastupdateref.child('contact').set(mobile);
 			
             if(count == contactData.length){
             	$scope.message = "Data succesfully Inserted";
@@ -527,6 +536,10 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 					if(productIdID){
 						var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
 						brandref.child(productIdID).set(brandProductData);
+
+						var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
+		    			lastupdateref.child('product').set(productIdID);
+
 						$scope.message = "Product succesfully Added";
 						$scope.formData = '';
 					}
@@ -835,6 +848,9 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 			if(productIdID){
 				var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
 				brandref.child(productIdID).set(brandProductData);
+
+				var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
+		    	lastupdateref.child('product').set(productIdID);
 			}			
             if(count == productData.length){
             	$scope.message = "Data succesfully Inserted";
@@ -1208,14 +1224,21 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 		   	var email = encryptemail($scope.formData.email);
 		   	var company = $scope.formData.company;
 		   	var address = $scope.formData.address;
-		   	var image = $scope.formData.image;
+		   	var image = '';
+		   	if($scope.formData.image){
+		   		image = $scope.formData.image;
+		   	}
+		   	var ctime = new Date().getTime();
+		   	var date = moment().format('YYYY-MM-DD')
 
 		   	var userData = {
 		   		'company':company,
 		   		'name':name,
 		   		'email':email,
 		   		'address':address,
-		   		'image':image
+		   		'image':image,
+		   		'created': ctime,
+		   		'date':date
 		   	}
 		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
 		   	userref.child(email).set(mobile);					   	
@@ -1226,6 +1249,10 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 		    var brandref = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
 		    //var adminch = brandref.child('admins');
 		    brandref.child(mobile).set(name);
+
+		    var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
+		    lastupdateref.child('admin').set(mobile);
+
 		    $scope.message = "Admin succesfully added";
 		    $scope.formData = '';
     	}        
@@ -1609,91 +1636,129 @@ function csvconverterCtrl($scope, $rootScope, userDataService) {
 }
 
 function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
-	$scope.lineData = {
-        labels: ["January", "February", "March", "April", "May", "June", "July"],
-        datasets: [
+	var Sales = new Keen.Query("count", {
+        eventCollection: "forms",    
+        interval: "daily",
+        timeframe: "this_21_days",
+        filters: [
             {
-                label: "Example dataset",
-                fillColor: "rgba(220,220,220,0.5)",
-                strokeColor: "rgba(220,220,220,1)",
-                pointColor: "rgba(220,220,220,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(220,220,220,1)",
-                data: [65, 59, 80, 81, 56, 55, 40]
+              "property_name" : "name",
+              "operator" : "eq",
+              "property_value" : "sales-form" // look at one particular domain only
             },
-            {
-                label: "Example dataset",
-                fillColor: "rgba(26,179,148,0.5)",
-                strokeColor: "rgba(26,179,148,0.7)",
-                pointColor: "rgba(26,179,148,1)",
-                pointStrokeColor: "#fff",
-                pointHighlightFill: "#fff",
-                pointHighlightStroke: "rgba(26,179,148,1)",
-                data: [28, 48, 40, 19, 86, 27, 90]
-            }
-        ]
-    };
+        ]    
+    });
 
-    
-    $scope.lineOptions = {
-        scaleShowGridLines : true,
-        scaleGridLineColor : "rgba(0,0,0,.05)",
-        scaleGridLineWidth : 1,
-        bezierCurve : true,
-        bezierCurveTension : 0.4,
-        pointDot : true,
-        pointDotRadius : 4,
-        pointDotStrokeWidth : 1,
-        pointHitDetectionRadius : 20,
-        datasetStroke : true,
-        datasetStrokeWidth : 2,
-        datasetFill : true
-    };
+	client.draw(Sales, document.getElementById("chart-sales"), {
+	    chartType: "columnchart",
+	    title: "Sales",
+	});
+
+	var order = new Keen.Query("count", {
+        eventCollection: "forms",    
+        interval: "daily",
+        timeframe: "this_21_days",
+        filters: [
+            {
+              "property_name" : "name",
+              "operator" : "eq",
+              "property_value" : "sales-form" // look at one particular domain only
+            },
+        ]    
+    });
+
+	client.draw(order, document.getElementById("chart-order"), {
+	    chartType: "columnchart",
+	    title: "Order",
+	});
 }
 
 function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
-	var brand = userDataService.getbrand();
+	var brand =  userDataService.getbrand();
     var mobile = userDataService.getMobile();
+
     $scope.usersCount = 0;
     $scope.productsCount = 0;
+    $scope.adminsCount = '';
+
     $scope.lastaddedcontact = '';
     $scope.lastaddedproduct = '';
+    $scope.lastaddedadmin = '';
+
+    /*var client = new Keen({
+      projectId: "55430ee796773d5aa89d86a4",
+      writeKey: "11ad817b8e08ae848ad5a2c369fdf447db946153bb829e0b1b6c685b076a20519389f5dc36a8978bdc5e5c564cea3e14ef9b4a1ab16fe5d70f354181743881eaf816501f094bd43bee12e7eb63e29fe3183c8446f824a46eb2cb25a236aff85a4cd2213693f4d85d05dc7734e1088e06"
+    });
+
+    var ctime = new Date().getTime();
+	var date = moment().format('YYYY-MM-DD');
+
+    var dailysales ={
+    	type: 'Form',
+        name: 'sales-form',
+        author: 'user',
+        authorName: 'bhumi2',
+        brand: 'atishae',
+        created: ctime,
+        date:date,
+        text: 'asasd asd'
+    }
+    client.addEvent("forms", dailysales, function(err, res){
+      if (err) {
+        console.log(err);
+      }
+      else {
+        alert('submitted');
+      }
+    });*/
 
 
-    
 
+
+    var branddetailref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');	
+    branddetailref.child('contact').on('value', function(snap) {	
+    	var contactId = snap.val();
+    	var userDataRef =  new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+		$scope.lastaddedcontact = $firebaseObject(userDataRef);
+    });
+
+    branddetailref.child('admin').on('value', function(snap) {	
+    	var contactId = snap.val();
+    	var userDataRef =  new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+		$scope.lastaddedadmin = $firebaseObject(userDataRef);
+    });
+
+    branddetailref.child('product').on('value', function(snap) {	
+    	var productId = snap.val();
+    	var userproductRef =  new Firebase(firebaseUrl+"products/products/"+productId);
+		$scope.lastaddedproduct = $firebaseObject(userproductRef);
+    });
 
 	firebaseServices.totalUsersCount(brand).then(function(result){
 		if (result){
 			$scope.usersCount = result;
-			firebaseServices.lastAddedContactDetails(brand, $scope.usersCount).then(function(result){
-		    	if (result){
-		    		$scope.mobile = result
-		    		var userDataRef =  new Firebase(firebaseUrl+"users/"+result+'/'+brand);
-		    		$scope.lastaddedcontact = $firebaseObject(userDataRef);
-				}
-			});
+			
 		}
 	});
 
 	firebaseServices.totalProductsCount(brand).then(function(result){
 		if (result){
 			$scope.productsCount = result;
-			firebaseServices.lastAddedProductDetails(brand, $scope.productsCount).then(function(result){
-		    	if (result){
-		    		var userproductRef =  new Firebase(firebaseUrl+"products/products/"+result);
-		    		$scope.lastaddedproduct = $firebaseObject(userproductRef);
-				}
-			});
+			
 		}
 	});
+
+	firebaseServices.totalAdminsCount(brand).then(function(result){
+		if (result){
+			$scope.adminsCount = result;
+			
+		}
+	})
+
+	
 	/*branduserref.child('users').on('value', function(snap) {	     
 	      console.log( snap.numChildren())
 	});*/
-
-	
-
 }
 
 
