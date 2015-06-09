@@ -29,7 +29,7 @@ function loginCtrl($scope, $rootScope, $state, userDataService) {
 				localStorage.setItem("brand", $scope.formData.brand);
 
 				userDataService.setbrand($scope.formData.brand)
-			   	$state.go('dashboards')
+			   	$state.go('dashboards.main')
 			  }
 			});    		
     	}        
@@ -76,7 +76,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 					    localStorage.setItem("email", email) 
 					    localStorage.setItem("brand", brand)
 					    userDataService.setbrand(brand)
-					    $state.go('dashboards')
+					    $state.go('dashboards.main')
 					  }
 					});
 				}else{
@@ -116,8 +116,6 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 		  	},0,false);
 		});
 	});
-
-	
 
 	/*var userbrands = new Firebase("https://educe.firebaseio.com/users/"+mobile);
 	$scope.userbrands = $firebaseArray(userbrands);*/
@@ -161,13 +159,16 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   	var company = encryptemail($scope.formData.company);
 		   	var address = $scope.formData.address;
 		   	var image = $scope.formData.image;
-
+		   	var ctime = new Date().getTime();
+		   	var date = moment().format('YYYY-MM-DD')
 		   	var userData = {
 		   		'company':company,
 		   		'name':name,
 		   		'email':email,
 		   		'address':address,
-		   		'image':image
+		   		'image':image,
+		   		'created': ctime,
+		   		'date':date
 		   	}
 		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
 		   	userref.child(email).set(mobile);					   	
@@ -218,6 +219,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 					   	var mobile = '91'+csvvalue[1];
 					   	var company = csvvalue[2];
 					   	var email = '';
+					   	
 					   	if(csvvalue[3]){
 					   		if(!isValidEmailAddress(csvvalue[3])){
 					   			status = false;
@@ -303,13 +305,17 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 		 	var email = items.email;
 		 	var address = items.address;		 	
 		 	var image = items.image; 	
-			
+			var ctime = new Date().getTime();
+		   	var date = moment().format('YYYY-MM-DD')
+
 			var userData = {
 		   		'company':company,
 		   		'name':name,
 		   		'email':email,
 		   		'address':address,
-		   		'image':image
+		   		'image':image,
+		   		'created': ctime,
+		   		'date':date
 		   	}	        			
 
 		   	userref.child(email).set(mobile);					   	
@@ -492,6 +498,8 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 						name:$scope.formData.name,
 						price: $scope.formData.price
 					}
+					var ctime = new Date().getTime();
+		   			var date = moment().format('YYYY-MM-DD')
 
 					var images = [];
 					images = $scope.formData.cimages.split(',');
@@ -508,6 +516,8 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 		    			'price':$scope.formData.price,
 		    			'sku':$scope.formData.sku,
 		    			'work':$scope.formData.work,
+		    			'created': ctime,
+		   				'date':date
 		    		}
 
 					var newProductRef = mainref.push(data);
@@ -644,8 +654,8 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 		$scope.category = "Salwar Suits"
 	}else if(categoryId == "gowns"){
 		$scope.category = "Gowns"
-	}else if(categoryId == "lehnga"){
-		$scope.category = "Lehnga"
+	}else if(categoryId == "lehenga"){
+		$scope.category = "Lehenga"
 	}else if(categoryId == "kurti"){
 		$scope.category = "Kurti"
 	}
@@ -661,8 +671,7 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 		$scope.productList = '';
 	    var reader = new FileReader();
 	    reader.onload=function(e){
-	        var string = e.target.result.split("\n");	        
-	       	
+	        var string = e.target.result.split("\n");    
 
 	        $(string).each(function( index, value ) {
 	        	if(value != ''){
@@ -674,12 +683,12 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 	        		var color = csvvalue[2]; 
 	        		var details = csvvalue[3];
 	        		var fabric = csvvalue[4];
-	        		var handle = csvvalue[5];
-	        		var mrprice = csvvalue[6];
-	        		var name = csvvalue[7];
-	        		var price = csvvalue[8];
-	        		var sku = csvvalue[9];
-	        		var work = csvvalue[10];
+	        		//var handle = csvvalue[5];
+	        		var mrprice = csvvalue[5];
+	        		var name = csvvalue[6];
+	        		var price = csvvalue[7];
+	        		var sku = csvvalue[8];
+	        		var work = csvvalue[9];
 	        		var images = new Array();
  					var circle = brand
 
@@ -697,44 +706,44 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 	        		if(!csvvalue[1]){
 	        			status = false;
 	        			errors.push({"error":"Image not found"})
-	        		}
+	        		}/*
 	        		if(!csvvalue[2]){
 	        			status = false;
 	        			errors.push({"error":"Circle not found"})
-	        		}
-	        		if(!csvvalue[3]){
+	        		}*/
+	        		if(!csvvalue[2]){
 	        			status = false;
 	        			errors.push({"error":"Color not found"})
 	        		}
-	        		if(!csvvalue[4]){
+	        		if(!csvvalue[3]){
 	        			status = false;
 	        			errors.push({"error":"Details not found"})
 	        		}
-	        		if(!csvvalue[5]){
+	        		if(!csvvalue[4]){
 	        			status = false;
 	        			errors.push({"error":"Fabric not found"})
 	        		}
-	        		if(!csvvalue[6]){
+	        		/*if(!csvvalue[6]){
 	        			status = false;
 	        			errors.push({"error":"Handle not found"})
-	        		}
-	        		if(!csvvalue[7]){
+	        		}*/
+	        		if(!csvvalue[5]){
 	        			status = false;
 	        			errors.push({"error":"Mrprice not found"})
 	        		}
-	        		if(!csvvalue[8]){
+	        		if(!csvvalue[6]){
 	        			status = false;
 	        			errors.push({"error":"Name not found"})
 	        		}
-	        		if(!csvvalue[9]){
+	        		if(!csvvalue[7]){
 	        			status = false;
 	        			errors.push({"error":"Price not found"})
 	        		}
-	        		if(!csvvalue[10]){
+	        		if(!csvvalue[8]){
 	        			status = false;
 	        			errors.push({"error":"SKU not found"})
 	        		}
-	        		if(!csvvalue[11]){
+	        		if(!csvvalue[9]){
 	        			status = false;
 	        			errors.push({"error":"Work not found"})
 	        		}
@@ -747,7 +756,7 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 	        			'color':color,
 	        			'details':details,
 	        			'fabric':fabric,
-	        			'handle':handle,
+	        			//'handle':handle,
 	        			'mrprice':mrprice,
 	        			'name':name,
 	        			'price':price,
@@ -784,15 +793,16 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 		 	var circle = items.circle;
 		 	var color = items.color;
 		 	var details = items.details;		 	
-		 	var fabric = items.fabric; 	
-
-		 	var handle = items.handle;
+		 	var fabric = items.fabric;  
+		 	//var handle = items.handle;
 		 	var mrprice = items.mrprice;
 		 	var name = items.name;
 		 	var price = items.price;
 		 	var sku = items.sku;		 	
 		 	var work = items.work; 	
-			
+			var ctime = new Date().getTime();
+		   	var date = moment().format('YYYY-MM-DD')
+
 			var data = {
     			'category':category,
     			'cimages':cimages,
@@ -800,12 +810,14 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
     			'color':color,
     			'details':details,
     			'fabric':fabric,
-    			'handle':handle,
+    			//'handle':handle,
     			'mrprice':mrprice,
     			'name':name,
     			'price':price,
     			'sku':sku,
     			'work':work,
+    			'created': ctime,
+		   		'date':date
     		}
 
     		
@@ -1410,7 +1422,6 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
 	}
 
 	$scope.Save = function (){
-		alert('save')
 		var invoiceArray = [];
 	    var keyArray = [];
 
@@ -1509,7 +1520,10 @@ function csvconverterCtrl($scope, $rootScope, userDataService) {
 		        			if(string != 'NO. - WISE-SUBTOTAL' && string != 'PARTY-SUBTOTAL' && string != ' GRAND TOTAL'){
 		        				item = string;
 		        				var pieces = parseInt(csvvalue[1]);
-		        				var date = moment(csvvalue[3]).format('YYYY-MM-DD');
+		        				/*var d =  new Date(csvvalue[3])
+		        				console.log(d)*/
+		        				//var date = moment(d).format('YYYY-MM-DD');
+		        				var date = csvvalue[3]
 		        				var rate = csvvalue[4];
 		        				var transport = csvvalue[5];
 		        				var LRno = csvvalue[6];
@@ -1594,6 +1608,93 @@ function csvconverterCtrl($scope, $rootScope, userDataService) {
 	}
 }
 
+function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
+	$scope.lineData = {
+        labels: ["January", "February", "March", "April", "May", "June", "July"],
+        datasets: [
+            {
+                label: "Example dataset",
+                fillColor: "rgba(220,220,220,0.5)",
+                strokeColor: "rgba(220,220,220,1)",
+                pointColor: "rgba(220,220,220,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(220,220,220,1)",
+                data: [65, 59, 80, 81, 56, 55, 40]
+            },
+            {
+                label: "Example dataset",
+                fillColor: "rgba(26,179,148,0.5)",
+                strokeColor: "rgba(26,179,148,0.7)",
+                pointColor: "rgba(26,179,148,1)",
+                pointStrokeColor: "#fff",
+                pointHighlightFill: "#fff",
+                pointHighlightStroke: "rgba(26,179,148,1)",
+                data: [28, 48, 40, 19, 86, 27, 90]
+            }
+        ]
+    };
+
+    
+    $scope.lineOptions = {
+        scaleShowGridLines : true,
+        scaleGridLineColor : "rgba(0,0,0,.05)",
+        scaleGridLineWidth : 1,
+        bezierCurve : true,
+        bezierCurveTension : 0.4,
+        pointDot : true,
+        pointDotRadius : 4,
+        pointDotStrokeWidth : 1,
+        pointHitDetectionRadius : 20,
+        datasetStroke : true,
+        datasetStrokeWidth : 2,
+        datasetFill : true
+    };
+}
+
+function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
+	var brand = userDataService.getbrand();
+    var mobile = userDataService.getMobile();
+    $scope.usersCount = 0;
+    $scope.productsCount = 0;
+    $scope.lastaddedcontact = '';
+    $scope.lastaddedproduct = '';
+
+
+    
+
+
+	firebaseServices.totalUsersCount(brand).then(function(result){
+		if (result){
+			$scope.usersCount = result;
+			firebaseServices.lastAddedContactDetails(brand, $scope.usersCount).then(function(result){
+		    	if (result){
+		    		$scope.mobile = result
+		    		var userDataRef =  new Firebase(firebaseUrl+"users/"+result+'/'+brand);
+		    		$scope.lastaddedcontact = $firebaseObject(userDataRef);
+				}
+			});
+		}
+	});
+
+	firebaseServices.totalProductsCount(brand).then(function(result){
+		if (result){
+			$scope.productsCount = result;
+			firebaseServices.lastAddedProductDetails(brand, $scope.productsCount).then(function(result){
+		    	if (result){
+		    		var userproductRef =  new Firebase(firebaseUrl+"products/products/"+result);
+		    		$scope.lastaddedproduct = $firebaseObject(userproductRef);
+				}
+			});
+		}
+	});
+	/*branduserref.child('users').on('value', function(snap) {	     
+	      console.log( snap.numChildren())
+	});*/
+
+	
+
+}
 
 
 /*function messagesCtrl($scope, $rootScope, $state,$location ,userDataService){
@@ -1665,7 +1766,7 @@ function chatCtrl($scope, $rootScope, $stateParams, $firebaseArray, userDataServ
 function MainCtrl($location ,userDataService) {
 	if(localStorage.getItem("email") && localStorage.getItem("brand")){
 		userDataService.setbrand(localStorage.getItem("brand"))
-		$location.url('#/dashboards')
+		$location.url('#/dashboards/main')
 	}else{
 		$location.url('#/login')
 	}
@@ -1776,4 +1877,6 @@ angular
     .controller('uploaddispatchCtrl', uploaddispatchCtrl)
     .controller('csvconverterCtrl', csvconverterCtrl)
     .controller('chatCtrl', chatCtrl)
+    .controller('dashboardCtrl', dashboardCtrl)
+    .controller('chartJsCtrl', chartJsCtrl)
     

@@ -1,1 +1,83 @@
-dashboard
+<div  ng-controller="dashboardCtrl">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-9">
+		        <h2>Dashboard</h2>
+		        <!-- <ol class="breadcrumb">
+		            <li>
+		                <a href="#/dashboards">Home</a>
+		            </li>
+		        </ol>	 -->       
+		</div>
+	</div> 
+	<!-- infinite-scroll="cardPagination()" -->
+	<div class="wrapper wrapper-content">
+		<div class="loadDiv" ng-show="loader.loading"> <img id="load" src="./img/loading.gif"> </img></div>
+
+	    <div class="row animated fadeInRight">
+	        <div class="col-lg-12">
+		        	<div class="row"> 
+		        		<div class="col-lg-10">
+				        	<div class="ibox-content" ng-controller="chartJsCtrl">	                
+				                <canvas linechart options="lineOptions" data="lineData" height="70" responsive=true ></canvas>  
+				            </div>
+				        </div>
+				    </div>
+					<div class="row">
+					    <div class="col-lg-6">
+					        <div class="ibox float-e-margins">
+					            <div class="ibox-title">
+					                <h5>Contacts</h5>
+					                <!-- <div ibox-tools></div> -->
+					            </div> 
+					            <div class="ibox-content">
+					                <div class="row">
+					                    <div class="col-xs-4">
+					                        <small class="stats-label">Total Active Contacts</small>
+					                        <h4>{{usersCount}}</h4>
+					                    </div>
+
+					                    <div class="col-xs-4">
+					                        <small class="stats-label">Last Contact Added</small>
+					                        <h4> {{mobile}} {{lastaddedcontact.name}}</h4>
+					                    </div>
+					                    <div class="col-xs-4">
+					                        <small class="stats-label">Last Added Date</small>
+					                        <h4> {{lastaddedcontact.date}} </h4>
+					                    </div>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					    <div class="col-lg-6">
+					        <div class="ibox float-e-margins">
+					            <div class="ibox-title">
+					                <h5>Products</h5>
+					                <!-- <div ibox-tools></div> -->
+					            </div>
+					            <div class="ibox-content">
+					                <div class="row">
+					                    <div class="col-xs-4">
+					                        <small class="stats-label">Total Active Products</small>
+					                        <h4> {{productsCount}} </h4>
+					                    </div>
+
+					                    <div class="col-xs-4">
+					                        <small class="stats-label">Last Product Added</small>
+					                        <h4> {{lastaddedproduct.name}} </h4>
+					                        <!-- <a href="#/products/productdetail/{{lastaddedproduct.$id}}"> 
+					                        	<h4> {{lastaddedproduct.name}} </h4>
+					                       	</a> -->
+					                    </div>
+					                    <div class="col-xs-4">
+					                        <small class="stats-label">Last Product Added Date</small>
+					                        <h4> {{lastaddedproduct.date }} </h4>
+					                    </div>
+					                </div>
+					            </div>
+					        </div>
+					    </div>
+					</div>
+	        </div>
+	    </div>
+	</div>
+</div>
