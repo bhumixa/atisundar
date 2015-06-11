@@ -1,4 +1,4 @@
-var firebaseUrl = "https://educe.firebaseio.com/";
+var firebaseUrl = "https://ccbeta.firebaseio.com/";
 
 /**
  * pageTitle - Directive for set Page title - mata title
@@ -402,7 +402,7 @@ function getuserData($firebaseObject, $timeout){
                var n = userDataRef.child(list);
             });*/
         },
-        template :'<div ><h3><strong>{{userData.name}}</strong></h3> <p>{{email}}<p> <address> <i class="fa fa-map-marker"></i> {{userData.address}}<address> <p>M: {{user.$id}} </p></div>'
+        template :'<div><h3><strong>{{userData.name}}</strong></h3> <p> <small> {{userData.company | decryptString}}  </small> </p> <p> <small> {{email}} </small> </p> <p>  <small>  <address> <i class="fa fa-map-marker"></i> {{userData.address}}</address>  M: {{user.$id}}  </small>  </p></div>'
     };
 }
 
@@ -766,9 +766,11 @@ report.directive('resetLink', function($parse, $log ) {
 
 function decryptString(){
     return function(string){
-        var newchar = '.'
-        string = string.split('__dot__').join(newchar);
-        return string;
+        if(string){
+           var newchar = '.'
+            string = string.split('__dot__').join(newchar);
+            return string; 
+        }        
     } 
 }
 
@@ -782,9 +784,12 @@ function getTime(){
 
 function dashboardDate(){
     return function(date){
+        if(date){
+           var date = moment(date).format('ll')
+           return date;  
+        }
         //var chTime = new Date(Date.parse(date)).toUTCString();      
-        var date = moment(date).format('ll')
-        return date;       
+              
     };  
 }
 

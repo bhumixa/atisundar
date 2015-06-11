@@ -1,8 +1,13 @@
-var firebaseUrl = "https://educe.firebaseio.com/";
+var firebaseUrl = "https://ccbeta.firebaseio.com/";
 var client = new Keen({
     projectId: "55430ee796773d5aa89d86a4",
     readKey: "ca294e81b3964d2eab952d3ba67a1cffba7cc091943e0612df8d102281efcadb1b0b382c4928919b13ed977575ddf91e4bbe4d9eb24961f862b88984729d58c2a16a6daa2d30427d254500689175394e96b6436e09c69b96e0cd3ff909ad39eea097b033319e942ac1ca794726c88894"
-  });
+});
+
+var clientWrite = new Keen({
+  projectId: "55430ee796773d5aa89d86a4",
+  writeKey: "11ad817b8e08ae848ad5a2c369fdf447db946153bb829e0b1b6c685b076a20519389f5dc36a8978bdc5e5c564cea3e14ef9b4a1ab16fe5d70f354181743881eaf816501f094bd43bee12e7eb63e29fe3183c8446f824a46eb2cb25a236aff85a4cd2213693f4d85d05dc7734e1088e06"
+});
 /**
  *  loginCtrl - controller
  */
@@ -65,14 +70,20 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 					   	var name = $scope.formData.name;
 					   	var email = encryptemail($scope.formData.email);
 
+					   	var ctime = new Date().getTime();
+		   				var date = moment().format('YYYY-MM-DD')
 					   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
 					   	userref.child(email).set(mobile);					   	
 
 					    var n  = userref.child(mobile);
-					    n.child(brand).set({'email':email, 'name':name})
+					    n.child(brand).set({'email':email, 'name':name, 'created': ctime, 'date':date})
 
 					    var brandref = new Firebase(firebaseUrl+"brands");
-					   
+					   	
+
+					   	var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
+		    			lastupdateref.child('admin').set(mobile);
+
 					    var brandchild  = brandref.child(brand);
 					    var adminch = brandchild.child('admins');
 					    adminch.child(mobile).set(name)
@@ -100,6 +111,10 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 	var brand = localStorage.getItem("brand");
 	var name = '';
 	var mobile = '';
+
+	$scope.$on('nameUpdated', function() {	    
+	   $scope.name = userDataService.getName();     
+    });
 
 	$scope.brand = userDataService.getbrand(brand);
 	var userbrandref = new Firebase(firebaseUrl+"brands/"+brand+"/admins");
@@ -222,7 +237,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 				   		var status = true;
 				   		var errors = [];
 					   	var name = csvvalue[0];
-					   	var mobile = '91'+csvvalue[1];
+					   	var mobile = csvvalue[1];
 					   	var company = csvvalue[2];
 					   	var email = '';
 					   	
@@ -233,10 +248,17 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 					   		}else{
 					   			email = encryptemail(csvvalue[3]);
 					   		}					   		
+					   	}else{
+					   		email = mobile+"@gmail.com"
+					   		email = encryptemail(email);
 					   	}
 					   				   	
 					   	var address = csvvalue[4];
-					   	var image = csvvalue[5];
+					   	var image = "no image";
+
+					   	if(csvvalue[5]){
+					   		image = csvvalue[5];
+					   	}
 
 					   	if(!csvvalue[0]){
 		        			status = false;
@@ -306,7 +328,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 		contactData.forEach(function(items){ 
 			count++;
 		 	var company = encryptemail(items.company);
-		 	var mobile = items.mobile;
+		 	var mobile = "";
 		 	var name = items.name;
 		 	var email = items.email;
 		 	var address = items.address;		 	
@@ -314,32 +336,43 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 			var ctime = new Date().getTime();
 		   	var date = moment().format('YYYY-MM-DD')
 
-			var userData = {
-		   		'company':company,
-		   		'name':name,
-		   		'email':email,
-		   		'address':address,
-		   		'image':image,
-		   		'created': ctime,
-		   		'date':date
-		   	}	        			
+		   	/*if(!items.mobile){
+		   		'91'+
+		   	}else{
+		   		mobile = '91'+items.mobile
+		   	}*/
+		   	if(items.mobile){
+		   		mobile = '91'+items.mobile
+		   		var userData = {
+			   		'company':company,
+			   		'name':name,
+			   		'email':email,
+			   		'address':address,
+			   		'image':image,
+			   		'created': ctime,
+			   		'date':date
+			   	}	        			
 
-		   	userref.child(email).set(mobile);					   	
+			   	userref.child(email).set(mobile);					   	
 
-		    var n  = userref.child(mobile);
-		    n.child(brand).set(userData)
+			    var n  = userref.child(mobile);
+			    n.child(brand).set(userData)
 
-		    brandref.child(mobile).set(name);
+			    brandref.child(mobile).set(name);
 
-		    var company = companyref.child(company);
-			company.child(mobile).set(name);
+			    var company = companyref.child(company);
+				company.child(mobile).set(name);
 
-			var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
-		    lastupdateref.child('contact').set(mobile);
-			
-            if(count == contactData.length){
-            	$scope.message = "Data succesfully Inserted";
-            }
+				var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
+			    lastupdateref.child('contact').set(mobile);
+				
+	            if(count == contactData.length){
+	            	$scope.message = "Data succesfully Inserted";
+	            }
+		   	}else{
+		   		console.log('not')
+		   	}
+			/**/
 		 })
 	}
 
@@ -1154,15 +1187,16 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 	/*$scope.userlist = {};*/
 	var brand = userDataService.getbrand();
 	var contactId = $stateParams.contactId;
-
+	var loggedinmobile = userDataService.getMobile();
 	//var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
 
-
+	console.log(loggedinmobile)
 	firebaseServices.fetchContactData(contactId, brand).then(function(result){
 		if (result){
 			$timeout(function(){
 			  	$scope.$apply(function() {
 			  		$scope.formData = result;
+			  		$scope.formData.key = $scope.formData.company; 
 			  	});
 		  	},0,false);
 		}
@@ -1173,6 +1207,11 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 
 	$scope.submitForm = function() {
     	if($scope.formData.name){
+    		console.log($scope.formData.key)
+    		if($scope.formData.key != $scope.formData.company){
+    			var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+encryptemail($scope.formData.key));
+				companyref.remove()
+    		}
 		   	var name = $scope.formData.name;
 		   	var email = $scope.formData.email;
 		   	var company = encryptemail($scope.formData.company);
@@ -1186,6 +1225,9 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 			var mainuseref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
 			mainuseref.child(contactId).set(name);
 
+			if(!image){
+				image ="no image";
+			}
 		   	var userData = {
 		   		'company':company,
 		   		'name':name,
@@ -1195,8 +1237,20 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		   	}			   	
 
 		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId);		   	
-		   	userRef.child(brand).set(userData)
-		    
+		   	userRef.child(brand).set(userData);
+
+		   	var adminRef = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
+		   	adminRef.once('value', function(snapshot) {
+			 	if (snapshot.hasChild(contactId)) {
+			    	adminRef.child(contactId).set(name);
+			    	console.log(loggedinmobile +'loggedinmobile')
+			    	if(loggedinmobile == contactId){
+			    		userDataService.setName(name);
+			    	}			    	
+			  	}
+			});
+
+		    $scope.formData.key = $scope.formData.company;
 		    $scope.message = "Data succesfully Updated";
     	}        
     };
@@ -1260,7 +1314,7 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 }
 
 
-function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, firebaseServices) {
+function uploaddispatchCtrl($scope, $rootScope, userDataService, keenServices, $timeout, $q, firebaseServices) {
     // All data will be store in this object
     $scope.MyFiles=[];
     //$scope.message = "Data succesfully Inserted";
@@ -1289,14 +1343,15 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
 	        		var csvvalue = value.split(",");
 	        		var status = true;
 	        		var errors = [];
-	        		var date = csvvalue[0]; 
+	        		var date = moment.utc(csvvalue[0]).format('YYYY-MM-DD') ; 
+
 	        		if(csvvalue[0]){
-	        			if(csvvalue[0] == moment(csvvalue[0]).format('YYYY-MM-DD')){
+	        			/*if(csvvalue[0] == moment(csvvalue[0]).format('YYYY-MM-DD')){
 		        			status = true
 		        		}else{
 		        			status = false;
 		        			errors.push({"error":"Date format is Wrong"})
-		        		}	        		
+		        		}	 */       		
 	        		}else{
 	        			status = false;
 	        			errors.push({"error":"Date not found"})
@@ -1323,8 +1378,9 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
 	        			errors.push({"error":"Company Name not found"})
 	        		}else{
 						var companyref = new Firebase(firebaseUrl+"brands/"+brand+'/companyusers');
-						
-						firebaseServices.checkIfcompanyExists(csvvalue[5], brand).then(function(d){
+						var cmp = csvvalue[5].trim()
+						//console.log(cmp)
+						firebaseServices.checkIfcompanyExists(cmp, brand).then(function(d){
 							if (d == false){
 								status = false;
 	        			  		errors.push({"error":"Company data not found in current Brand"});	        			  		
@@ -1451,6 +1507,7 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
 	$scope.Save = function (){
 		var invoiceArray = [];
 	    var keyArray = [];
+	    var keendata = [];
 
 		var dispatchData = $scope.dispatchList
 		var n = 0;
@@ -1492,6 +1549,16 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
         			'company':company,
         			'type':'Invoice'
         		}
+        		
+			   /* clientWrite.addEvent("dispatch", data, function(err, res){
+			      if (err) {
+			        console.log(err);
+			      }
+			      else {
+			        console.log('submitted');
+			      }
+			    });*/
+
               	invoiceArray.push(invoiceno);
               	var nweData = mainref.push(data);
               	var cardkey = nweData.key();
@@ -1500,17 +1567,22 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, $timeout, $q, f
               	cardref.child('items').push(itemdata);
 
               	keyArray.push(invoiceno, cardkey);
+              	keendata.push(data)
 
               	addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
-              	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)              	
+              	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)   
+              	//           	
             }else{
             	var index = keyArray.indexOf(invoiceno); 
             	var key = keyArray[index+1];
 
             	var cardref = new Firebase(firebaseUrl+"cards/"+key+"/items")
               	cardref.push(itemdata);
+              
             }
             if(n == dispatchData.length){
+            	//console.log(keendata.length)
+            	keenServices.uploadDispatchdataToKeen(keendata)
             	$scope.message = "Data succesfully Inserted";
             }
 		 })
@@ -1577,10 +1649,8 @@ function csvconverterCtrl($scope, $rootScope, userDataService) {
 	        					row.slice(0, row.length - 1);
 	        					CSV += row + '\r\n';
 	        					console.log(company +'company' + invoice +'invoice'+item +'item' +pieces+' '+date+' '+rate+' '+transport+' '+LRno)
-	        				}
-	        				
-		        		}else{
-		        			
+	        				}	        				
+		        		}else{		        			
 		        			/*var i = isNaN(ind);
 		        			console.log(i)*/
 		        			/*if(ind){
@@ -1636,6 +1706,10 @@ function csvconverterCtrl($scope, $rootScope, userDataService) {
 }
 
 function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
+	var brand =  userDataService.getbrand();
+    var mobile = userDataService.getMobile();
+
+	/*sales chart*/
 	var Sales = new Keen.Query("count", {
         eventCollection: "forms",    
         interval: "daily",
@@ -1644,8 +1718,13 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
             {
               "property_name" : "name",
               "operator" : "eq",
-              "property_value" : "sales-form" // look at one particular domain only
+              "property_value" : "sales-form" 
             },
+            {
+		        "property_name": "brand",
+		        "operator": "eq",
+		        "property_value": brand
+		    }
         ]    
     });
 
@@ -1654,6 +1733,7 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
 	    title: "Sales",
 	});
 
+	/*order chart*/
 	var order = new Keen.Query("count", {
         eventCollection: "forms",    
         interval: "daily",
@@ -1662,14 +1742,62 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
             {
               "property_name" : "name",
               "operator" : "eq",
-              "property_value" : "sales-form" // look at one particular domain only
+              "property_value" : "order-form" 
             },
+            {
+		        "property_name": "brand",
+		        "operator": "eq",
+		        "property_value": brand
+		    }
         ]    
     });
 
 	client.draw(order, document.getElementById("chart-order"), {
 	    chartType: "columnchart",
 	    title: "Order",
+	});
+
+	/*feedback chart*/
+	var feedback = new Keen.Query("count", {
+        eventCollection: "forms",    
+        interval: "daily",
+        timeframe: "this_21_days",
+        filters: [
+            {
+              "property_name" : "name",
+              "operator" : "eq",
+              "property_value" : "feedback-form" 
+            },
+            {
+		        "property_name": "brand",
+		        "operator": "eq",
+		        "property_value": brand
+		    }
+        ]    
+    });
+
+	client.draw(feedback, document.getElementById("chart-feedback"), {
+	    chartType: "columnchart",
+	    title: "Feedback",
+	});
+
+	/*dispatch chart*/
+	var dispatch = new Keen.Query("count", {
+        eventCollection: "dispatch",    
+        interval: "daily",
+        timeframe: "this_21_days",
+        filters: [
+            {
+		        "property_name": "brand",
+		        "operator": "eq",
+		        "property_value": brand
+		    }
+        ]    
+    });
+
+	client.draw(dispatch, document.getElementById("chart-dispatch"), {
+	    chartType: "columnchart",
+	    title: "Dispatch",
 	});
 }
 
@@ -1695,13 +1823,13 @@ function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $fireba
 
     var dailysales ={
     	type: 'Form',
-        name: 'sales-form',
+        name: 'feedback-form',
         author: 'user',
-        authorName: 'bhumi2',
+        authorName: 'DK',
         brand: 'atishae',
         created: ctime,
         date:date,
-        text: 'asasd asd'
+        text: 'nice collections u have'
     }
     client.addEvent("forms", dailysales, function(err, res){
       if (err) {
@@ -1712,19 +1840,18 @@ function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $fireba
       }
     });*/
 
-
-
-
     var branddetailref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');	
     branddetailref.child('contact').on('value', function(snap) {	
     	var contactId = snap.val();
     	var userDataRef =  new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+    	$scope.mobile = contactId
 		$scope.lastaddedcontact = $firebaseObject(userDataRef);
     });
 
     branddetailref.child('admin').on('value', function(snap) {	
-    	var contactId = snap.val();
-    	var userDataRef =  new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+    	var mobile = snap.val();
+    	var userDataRef =  new Firebase(firebaseUrl+"users/"+mobile+'/'+brand);
+    	$scope.adminmobile = mobile
 		$scope.lastaddedadmin = $firebaseObject(userDataRef);
     });
 
@@ -1754,7 +1881,6 @@ function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $fireba
 			
 		}
 	})
-
 	
 	/*branduserref.child('users').on('value', function(snap) {	     
 	      console.log( snap.numChildren())
@@ -1790,7 +1916,7 @@ function chatCtrl($scope, $rootScope, $stateParams, $firebaseArray, userDataServ
 	
 	
 	var chatuser = '';
-	$scope.login = function(user)	{
+	$scope.login = function(user){
 		if(user){
 			var message = {
 				name: $scope.username,
@@ -1845,18 +1971,22 @@ function MainCtrl($location ,userDataService) {
 function encryptemail(email){
 	/*var emailFn = email.replace(".", "{"); 
 	return emailFn*/
-
-	var newchar = '__dot__'
-	email = email.split('.').join(newchar);
-	return email;
+	if(email){
+		var newchar = '__dot__'
+		email = email.split('.').join(newchar);
+		return email;
+	}
 }
 
 function decryptemail(email){
 	/*var emailFn = email.replace("{", "."); 
 	return emailFn*/
-	var newchar = '.'
-	email = email.split('__dot__').join(newchar);
-	return email;
+	if(email){
+		var newchar = '.'
+		email = email.split('__dot__').join(newchar);
+		return email;
+	}
+	
 }
 
 function addCardsToAdmins(cardkey, brand, mobile, firebaseUrl){
@@ -1876,10 +2006,12 @@ function addCardsToAdmins(cardkey, brand, mobile, firebaseUrl){
 }
 
 function addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company){
-	var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+company);
+	console.log(company)
+	var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+encryptemail(company));
 	var status = '';
 	companyref.on("child_added", function(snapshot) {
-	  	console.log(snapshot.key());
+	  	//console.log(snapshot.key());
+	  	//console.log(mobile)
 	  	var userMobile = snapshot.key();
 
 	  	if(userMobile == mobile){

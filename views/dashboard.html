@@ -43,96 +43,86 @@
 					        <div class="col-lg-6">	                
 					                <!-- <canvas linechart options="lineOptions" data="lineData" height="70" responsive=true ></canvas> -->  
 
-					                <div id="chart-invoice">
+					                <div id="chart-dispatch">
 
 									</div>
 					        </div>
 					    </div>
 				   	</div>
 					<div class="row">
-					    <div class="col-lg-6">
+						<div class="col-lg-4">
 					        <div class="ibox float-e-margins">
 					            <div class="ibox-title">
-					                <h5>Contacts Activity</h5>
-					                <!-- <div ibox-tools></div> -->
-					            </div> 
+					               <!--  <span class="label label-info pull-right">Annual</span> -->
+					                <h5><span class="label label-primary">Contacts </span></h5>
+					            </div>
 					            <div class="ibox-content">
-					                <div class="row">
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Total Active Contacts</small>
-					                        <h4><span class="label label-primary">{{usersCount}}</span></h4>
-					                    </div>
+					                <h1 class="no-margins">{{usersCount}}</h1>
 
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Last Contact Added</small>
-					                        <h4> {{mobile}} {{lastaddedcontact.name}}</h4>
-					                    </div>
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Last Added Date</small>
-					                        <h4> {{lastaddedcontact.date | dashboardDate }} </h4>
-					                    </div>
-					                </div>
+					                <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div> -->
+					                <strong>Total Active Contacts</strong>
+					            </div>
+					            <div class="ibox-content">
+					                <p class="no-margins">{{lastaddedcontact.name}}</p>
+					                <p class="no-margins">M: {{mobile}}</p>
+					                <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div> -->
+					                <strong>Last Contact Added</strong>
+					            </div>
+					             <div class="ibox-content">
+					                <p class="no-margins">{{lastaddedcontact.date | dashboardDate}}</p>
+					                <strong>Added Date</strong>
 					            </div>
 					        </div>
 					    </div>
-					    <div class="col-lg-6">
+
+					    <div class="col-lg-4">
 					        <div class="ibox float-e-margins">
 					            <div class="ibox-title">
-					                <h5>Products Activity</h5>
-					                <!-- <div ibox-tools></div> -->
+					               <!--  <span class="label label-info pull-right">Annual</span> -->
+					                <h5><span class="label label-primary">Products</span></h5>
 					            </div>
 					            <div class="ibox-content">
-					                <div class="row">
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Total Active Products</small>
-					                        <h4> <span class="label label-primary"> {{productsCount}}</span> </h4>
-					                    </div>
+					                <h1 class="no-margins">{{productsCount}}</h1>
 
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Last Product Added</small>
-					                        <h4> {{lastaddedproduct.name}} </h4>
-					                        <!-- <a href="#/products/productdetail/{{lastaddedproduct.$id}}"> 
-					                        	<h4> {{lastaddedproduct.name}} </h4>
-					                       	</a> -->
-					                    </div>
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Last Product Added Date</small>
-					                        <h4> {{lastaddedproduct.date | dashboardDate }} </h4>
-					                    </div>
-					                </div>
+					                <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div> -->
+					                <strong>Total Active Products</strong>
+					            </div>
+					            <div class="ibox-content">
+					                <p class="no-margins">{{lastaddedproduct.name}}</p>
+					                <strong>Last Product Added</strong>
+					            </div>
+					            <div class="ibox-content">
+					                <p class="no-margins">{{lastaddedproduct.date | dashboardDate}}</p>
+					                <strong>Added Date</strong>
 					            </div>
 					        </div>
 					    </div>
-					</div>
-					<div class="row"> 
-						<div class="col-lg-6">
+
+					    <div class="col-lg-4">
 					        <div class="ibox float-e-margins">
 					            <div class="ibox-title">
-					                <h5>Admins Activity</h5>
-					                <!-- <div ibox-tools></div> -->
-					            </div> 
+					               <!--  <span class="label label-info pull-right">Annual</span> -->
+					                <h5><span class="label label-primary">Admins</span></h5>
+					            </div>
 					            <div class="ibox-content">
-					                <div class="row">
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Total Active Admins</small>
-					                        <h4><span class="label label-primary">{{adminsCount}}</span> </h4>
-					                    </div>
+					                <h1 class="no-margins">{{adminsCount}}</h1>
 
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Last Admin Added</small>
-					                        <h4> {{mobileAdmin}} {{lastaddedadmin.name}} </h4>
-					                    </div>
-					                    <div class="col-xs-4">
-					                        <small class="stats-label">Last Added Date</small>
-					                        <h4> {{lastaddedadmin.date | dashboardDate }} </h4>
-					                    </div>
-					                </div>
+					                <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div> -->
+					                <strong>Total Active Admins</strong>
+					            </div>
+					            <div class="ibox-content">
+					                <p class="no-margins">{{lastaddedadmin.name}}</p>
+					                <p class="no-margins">M: {{adminmobile}}</p>
+					                <!-- <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div> -->
+					                <strong>Last Admin Added</strong>
+					            </div>
+					            <div class="ibox-content">
+					                <p class="no-margins">{{lastaddedadmin.date | dashboardDate}}</p>
+					                <strong>Added Date</strong>
 					            </div>
 					        </div>
-					    </div>	
-
-					    		
-					</div>
+					    </div>
+					
 	        </div>
 	    </div>
 	</div>

@@ -1,4 +1,9 @@
-var firebaseUrl = "https://educe.firebaseio.com/";
+var firebaseUrl = "https://ccbeta.firebaseio.com/";
+
+var clientWrite = new Keen({
+  projectId: "55430ee796773d5aa89d86a4",
+  writeKey: "11ad817b8e08ae848ad5a2c369fdf447db946153bb829e0b1b6c685b076a20519389f5dc36a8978bdc5e5c564cea3e14ef9b4a1ab16fe5d70f354181743881eaf816501f094bd43bee12e7eb63e29fe3183c8446f824a46eb2cb25a236aff85a4cd2213693f4d85d05dc7734e1088e06"
+});
 
 function userDataService($http, $rootScope){
 	var brand = '';
@@ -34,11 +39,38 @@ function userDataService($http, $rootScope){
 	}
 }
 
+function keenServices(){
+	var uploadDispatchdataToKeen = function(data){
+		/*clientWrite.addEvent("dispatch", data, function(err, res){
+	      if (err) {
+	        console.log(err);
+	      }
+	      else {
+	        console.log('submitted');
+	      }
+	    });*/
+		data.forEach(function(items){ 			
+			clientWrite.addEvent("dispatch", items, function(err, res){
+		      if (err) {
+		        console.log(err);
+		      }
+		      else {
+		        console.log('submitted');
+		      }
+		    });
+		});
+		
+	}
+
+	return {
+		uploadDispatchdataToKeen:uploadDispatchdataToKeen
+	}
+}
+
 function firebaseServices($q, $firebaseArray){
 	var checkIfcompanyExists = function(comp, brand) {
 		return $q(function(resolve, reject){
 			var company = encryptemail(comp);
-			console.log(company)
 			var brandref = new Firebase(firebaseUrl+"brands/"+brand+'/companyusers');
 
 			brandref.child(company).once('value', function(snapshot) {
@@ -50,7 +82,7 @@ function firebaseServices($q, $firebaseArray){
 	}
 
 	var fetchContactData = function(contactId, brand) {
-		return $q(function(resolve, reject){			
+		return $q(function(resolve, reject){
 			var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
 			branduserref.once("value",function(snapshot){
 		      var address = snapshot.val().address;
@@ -66,6 +98,7 @@ function firebaseServices($q, $firebaseArray){
 		      	'name':name,
 		      	'email':email
 		      };
+		      console.log(data)
 		      resolve(data);
 		    });					
 		})
@@ -138,3 +171,4 @@ angular
     .module('atisundar')
     .service('userDataService', userDataService)
     .factory('firebaseServices', firebaseServices)
+    .factory('keenServices', keenServices)
