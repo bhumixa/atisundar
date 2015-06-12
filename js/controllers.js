@@ -927,6 +927,7 @@ function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray, userData
 	/*var cardsQuery = cardref.orderByValue().limitToFirst(2)
 	$scope.cards = $firebaseArray(cardsQuery);*/
 	$scope.cards = $firebaseArray(cardref);
+	console.log()
 
 
 	
@@ -1236,8 +1237,9 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		   		'image':image
 		   	}			   	
 
-		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId);		   	
-		   	userRef.child(brand).set(userData);
+		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);		   	
+		   	//userRef.child(brand).set(userData);
+		   	userRef.update(userData)
 
 		   	var adminRef = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
 		   	adminRef.once('value', function(snapshot) {
@@ -1343,15 +1345,19 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, keenServices, $
 	        		var csvvalue = value.split(",");
 	        		var status = true;
 	        		var errors = [];
-	        		var date = moment.utc(csvvalue[0]).format('YYYY-MM-DD') ; 
+	        		var date = csvvalue[0]
 
+	        		var u = moment(date).toDate();
+	        		//var f = moment(u).format('YYYY-MM-DD');
+	        		//var y =  date.getFullYear();
+	        		console.log(u +'year----')
 	        		if(csvvalue[0]){
-	        			/*if(csvvalue[0] == moment(csvvalue[0]).format('YYYY-MM-DD')){
+	        			if(csvvalue[0] == moment(csvvalue[0]).format('YYYY-MM-DD')){
 		        			status = true
 		        		}else{
 		        			status = false;
-		        			errors.push({"error":"Date format is Wrong"})
-		        		}	 */       		
+		        			errors.push({"error":"Date format is Wrong, Plese insert in YYYY-MM-DD format"})
+		        		}	        		
 	        		}else{
 	        			status = false;
 	        			errors.push({"error":"Date not found"})
