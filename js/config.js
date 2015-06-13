@@ -190,6 +190,11 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             url: "/settings",
             templateUrl:  "views/common/content.html",
         })
+        .state('settings.paymentmethods', {
+            url:"/paymentmethods",
+            templateUrl: "views/paymentmethods.html",
+            data: { pageTitle: 'Payment Methods'}
+        })        
         .state('settings.homepage', {
             url:"/homepage",
             templateUrl: "views/homepage.html",

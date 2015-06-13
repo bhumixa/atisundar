@@ -127,6 +127,7 @@
             <li ng-class="{active: $state.includes('settings')}">                
                 <a href=""><i class="fa fa-gears"></i> <span class="nav-label">Settings</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level" ng-class="{in: $state.includes('settings')}">
+                    <li ui-sref-active="active"><a ui-sref="settings.paymentmethods">Payment Methods</a></li>
                     <li ui-sref-active="active"><a ui-sref="settings.homepage">Home Page</a></li>
                     <li ui-sref-active="active"><a ui-sref="settings.backgroundimage">Background Image</a></li>
                     <li ui-sref-active="active"><a ui-sref="settings.adminlist">Admin Users List</a></li>

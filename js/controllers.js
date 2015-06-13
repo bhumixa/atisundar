@@ -1090,6 +1090,17 @@ function topnavbarCtrl($scope, $rootScope, $stateParams, $state, userDataService
 	}
 }
 
+function paymentMethodCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject){
+	$scope.formData = {};
+
+	var brand = userDataService.getbrand();
+	var homeref = new Firebase(firebaseUrl+"brands/"+brand);
+	
+	$scope.submitForm = function(){
+		homeref.child('paymentMethod').set($scope.checkboxModel);
+	}
+}
+
 function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject){
 	$scope.formData = {};
 
@@ -1126,7 +1137,7 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 
 		if(imgName && text && query && logo){
 			homeref.child('home').set(data);
-			homeref.child('paymentMethod').set($scope.checkboxModel);
+			/*homeref.child('paymentMethod').set($scope.checkboxModel);*/
 			$scope.message = "Data succesfully Updated";
 		}
 	}
@@ -1180,7 +1191,7 @@ function addformCtrl ($scope, $rootScope, $stateParams, $state, userDataService,
 			brandformref.push(data);
 			//brandformref.set(data);
 			$scope.message = "Form succesfully Created";
-			$scope.formData = {};
+			/*$scope.formData = {};*/
 		}		
 	}
 
@@ -2149,4 +2160,5 @@ angular
     .controller('chatCtrl', chatCtrl)
     .controller('dashboardCtrl', dashboardCtrl)
     .controller('chartJsCtrl', chartJsCtrl)
+    .controller('paymentMethodCtrl', paymentMethodCtrl)
     
