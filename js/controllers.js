@@ -183,9 +183,10 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
     var brand = userDataService.getbrand();
     $scope.formData = {};
     var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
+    var supportRef = new Firebase(firebaseUrl+"brands/support/users");
 
     $scope.submitForm = function() {
-    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email && $scope.formData.company){
+    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email && $scope.formData.company && $scope.formData.image){
     		var userref = new Firebase(firebaseUrl+"users");
 		   	var mobile = '91'+$scope.formData.mobile;
 		   	var name = $scope.formData.name;
@@ -222,6 +223,8 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		    var adminch = brandref.child('users');
 		    adminch.child(mobile).set(name);
 
+		    supportRef.child(mobile).set(name);
+
 		    var company = companyref.child(company);
 		    company.child(mobile).set(name);
 
@@ -246,6 +249,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
     var userref = new Firebase(firebaseUrl+"users");
     var brand = userDataService.getbrand();
     var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
+    var supportRef = new Firebase(firebaseUrl+"brands/support/users");
     var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
 		   
     var contactList = [];
@@ -393,6 +397,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 			   	ref.child('support').set('user')
 
 			    brandref.child(mobile).set(name);
+			    supportRef.child(mobile).set(name);
 
 			    var company = companyref.child(company);
 				company.child(mobile).set(name);
