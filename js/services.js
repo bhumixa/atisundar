@@ -83,7 +83,7 @@ function firebaseServices($q, $firebaseArray){
 
 	var fetchContactData = function(contactId, brand) {
 		return $q(function(resolve, reject){
-			var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+			var branduserref = new Firebase(firebaseUrl+"users/"+contactId+'/profile');
 			branduserref.once("value",function(snapshot){
 		      var address = snapshot.val().address;
 		      var company = decryptemail(snapshot.val().company);

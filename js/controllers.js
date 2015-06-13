@@ -72,11 +72,27 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 
 					   	var ctime = new Date().getTime();
 		   				var date = moment().format('YYYY-MM-DD')
-					   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
-					   	userref.child(email).set(mobile);					   	
+					   
+					   	//userref.child(email).set(mobile);	
+
+					   	var emailref = new Firebase(firebaseUrl+"userEmailMap");
+					   	emailref.child(email).set(mobile);				   	
 
 					    var n  = userref.child(mobile);
-					    n.child(brand).set({'email':email, 'name':name, 'created': ctime, 'date':date})
+					    n.child('profile').set({'email':email, 'name':name, 'created': ctime, 'date':date})
+
+					    var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
+			   			ref.child(brand).set('admin')
+			   			ref.child('support').set('admin')
+
+
+					   /* var n  = userref.child(mobile);
+			    //n.child(brand).set(userData)
+			    n.child('profile').set(userData)
+
+			   	//var i = userref.child(mobile);
+			   	var ref = new Firebase("https://educe.firebaseio.com/users/"+mobile+'/brands')
+			   	ref.child(brand).set('user')*/
 
 					    var brandref = new Firebase(firebaseUrl+"brands");
 					   	
@@ -118,7 +134,7 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 
 	$scope.brand = userDataService.getbrand(brand);
 	var userbrandref = new Firebase(firebaseUrl+"brands/"+brand+"/admins");
-	var userref = new Firebase(firebaseUrl+"users");
+	var userref = new Firebase(firebaseUrl+"userEmailMap");
 
 	userref.orderByKey().equalTo(email).on("child_added", function(snapshot) {
 		mobile =  snapshot.val();
@@ -169,7 +185,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
     var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
 
     $scope.submitForm = function() {
-    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email){
+    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email && $scope.formData.company){
     		var userref = new Firebase(firebaseUrl+"users");
 		   	var mobile = '91'+$scope.formData.mobile;
 		   	var name = $scope.formData.name;
@@ -189,10 +205,18 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   		'date':date
 		   	}
 		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
-		   	userref.child(email).set(mobile);					   	
+		   	//userref.child(email).set(mobile);	
+		   	var emailref = new Firebase(firebaseUrl+"userEmailMap");
+			emailref.child(email).set(mobile);				   	
 
 		    var n  = userref.child(mobile);
-		    n.child(brand).set(userData)
+		   // n.child(brand).set(userData)
+		   	n.child('profile').set(userData)
+
+		   	//var i = userref.child(mobile);
+		   	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
+		   	ref.child(brand).set('user')
+		   	ref.child('support').set('user')
 
 		    var brandref = new Firebase(firebaseUrl+"brands/"+brand);
 		    var adminch = brandref.child('users');
@@ -205,8 +229,10 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		    lastupdateref.child('contact').set(mobile);
 
 		    $scope.message = "Data succesfully Inserted";
-		    $scope.formData = '';
-    	}        
+		    /*$scope.formData = '';*/
+    	}else{
+    		$scope.error = "Please insert all fields";
+    	}       
     };
 
 }
@@ -353,10 +379,18 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 			   		'date':date
 			   	}	        			
 
-			   	userref.child(email).set(mobile);					   	
+			   	//userref.child(email).set(mobile);		
+			   	var emailref = new Firebase(firebaseUrl+"userEmailMap");
+				emailref.child(email).set(mobile);			   	
 
 			    var n  = userref.child(mobile);
-			    n.child(brand).set(userData)
+			    //n.child(brand).set(userData)
+			    n.child('profile').set(userData)
+
+			   	//var i = userref.child(mobile);
+			   	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
+			   	ref.child(brand).set('user')
+			   	ref.child('support').set('user')
 
 			    brandref.child(mobile).set(name);
 
@@ -574,7 +608,7 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 		    			lastupdateref.child('product').set(productIdID);
 
 						$scope.message = "Product succesfully Added";
-						$scope.formData = '';
+						/*$scope.formData = '';*/
 					}
 	    		}else{    			
 	    			$scope.errors.price = "please enter Product Price"
@@ -1061,6 +1095,7 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 	$scope.formData = $firebaseObject(homeData);
 
 	$scope.submitForm = function(){
+		//console.log($scope.checkboxModel)
 		var imgName = $scope.formData.image; 
 		var text = $scope.formData.text;
 		var query = $scope.formData.query;
@@ -1086,6 +1121,7 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 
 		if(imgName && text && query && logo){
 			homeref.child('home').set(data);
+			homeref.child('paymentMethod').set($scope.checkboxModel);
 			$scope.message = "Data succesfully Updated";
 		}
 	}
@@ -1207,7 +1243,7 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 	//$scope.formData = $firebaseObject(branduserref);
 
 	$scope.submitForm = function() {
-    	if($scope.formData.name){
+    	if($scope.formData.name && $scope.formData.company){
     		console.log($scope.formData.key)
     		if($scope.formData.key != $scope.formData.company){
     			var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+encryptemail($scope.formData.key));
@@ -1237,7 +1273,7 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		   		'image':image
 		   	}			   	
 
-		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);		   	
+		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId+'/profile');		   	
 		   	//userRef.child(brand).set(userData);
 		   	userRef.update(userData)
 
@@ -1254,7 +1290,9 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 
 		    $scope.formData.key = $scope.formData.company;
 		    $scope.message = "Data succesfully Updated";
-    	}        
+    	}else{
+    		$scope.error = "Please insert all fields";
+    	}      
     };
 }
 
@@ -1273,7 +1311,7 @@ function addadminCtrl($scope, $rootScope, userDataService) {
     // After login submit
     
     $scope.submitForm = function() {
-    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email){
+    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email && $scope.formData.company ){
     		var userref = new Firebase(firebaseUrl+"users");
 		   	var mobile = '91'+$scope.formData.mobile;
 		   	var name = $scope.formData.name;
@@ -1297,10 +1335,18 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 		   		'date':date
 		   	}
 		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
-		   	userref.child(email).set(mobile);					   	
+		   	//userref.child(email).set(mobile);		
+		   	var emailref = new Firebase(firebaseUrl+"userEmailMap");
+			emailref.child(email).set(mobile);			   	
 
 		    var n  = userref.child(mobile);
-		    n.child(brand).set(userData)
+		   // n.child(brand).set(userData)
+		   	n.child('profile').set(userData)
+
+		   	//var i = userref.child(mobile);
+		   	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
+		   	ref.child(brand).set('admin')
+		   	ref.child('support').set('admin')
 
 		    var brandref = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
 		    //var adminch = brandref.child('admins');
@@ -1310,7 +1356,9 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 		    lastupdateref.child('admin').set(mobile);
 
 		    $scope.message = "Admin succesfully added";
-		    $scope.formData = '';
+		   /* $scope.formData = '';*/
+    	}else{
+    		$scope.errors = "Please insert all fields"
     	}        
     };
 }
@@ -1819,6 +1867,20 @@ function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $fireba
     $scope.lastaddedproduct = '';
     $scope.lastaddedadmin = '';
 
+    /*var userRenotificationRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand+"/notifications");
+    var ctime = new Date().getTime();
+    var dataU ={
+    	"actor" : "919925037648",
+        "pImage" : "img_1",
+        "read" : false,
+        "text" : "bhumi wrote a comment (Write what I want to say here...)",
+        "type" : "card-comment",
+        "typeid" : "card-comment_-Jp_qMLKXYxAHFjooa1W",
+        "when" : ctime
+    }
+
+    userRenotificationRef.child('notifications').push(dataU);*/
+
     /*var client = new Keen({
       projectId: "55430ee796773d5aa89d86a4",
       writeKey: "11ad817b8e08ae848ad5a2c369fdf447db946153bb829e0b1b6c685b076a20519389f5dc36a8978bdc5e5c564cea3e14ef9b4a1ab16fe5d70f354181743881eaf816501f094bd43bee12e7eb63e29fe3183c8446f824a46eb2cb25a236aff85a4cd2213693f4d85d05dc7734e1088e06"
@@ -1849,14 +1911,14 @@ function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $fireba
     var branddetailref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');	
     branddetailref.child('contact').on('value', function(snap) {	
     	var contactId = snap.val();
-    	var userDataRef =  new Firebase(firebaseUrl+"users/"+contactId+'/'+brand);
+    	var userDataRef =  new Firebase(firebaseUrl+"users/"+contactId+'/profile');
     	$scope.mobile = contactId
 		$scope.lastaddedcontact = $firebaseObject(userDataRef);
     });
 
     branddetailref.child('admin').on('value', function(snap) {	
     	var mobile = snap.val();
-    	var userDataRef =  new Firebase(firebaseUrl+"users/"+mobile+'/'+brand);
+    	var userDataRef =  new Firebase(firebaseUrl+"users/"+mobile+'/profile');
     	$scope.adminmobile = mobile
 		$scope.lastaddedadmin = $firebaseObject(userDataRef);
     });
