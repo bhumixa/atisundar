@@ -548,7 +548,7 @@ function dccard($firebase, $timeout, $firebaseArray){
         }
 
         $scope.showComments = function(){
-            var userComments = new Firebase("https://educe.firebaseio.com/cardComments/"+$scope.id)
+            var userComments = new Firebase(firebaseUrl+"/cardComments/"+$scope.id)
              $scope.comments = $firebaseArray(userComments);
            /* userComments.on("child_added",function(data){
                 //console.log(data.val())
