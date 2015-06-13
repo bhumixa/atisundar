@@ -100,6 +100,9 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 					   	var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
 		    			lastupdateref.child('admin').set(mobile);
 
+		    			var supportRef = new Firebase(firebaseUrl+"brands/support/users");
+    					supportRef.child(mobile).set(name);
+
 					    var brandchild  = brandref.child(brand);
 					    var adminch = brandchild.child('admins');
 					    adminch.child(mobile).set(name)
@@ -1370,6 +1373,9 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 
 		    var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
 		    lastupdateref.child('admin').set(mobile);
+
+		    var supportRef = new Firebase(firebaseUrl+"brands/support/users");
+    		supportRef.child(mobile).set(name);
 
 		    $scope.message = "Admin succesfully added";
 		   /* $scope.formData = '';*/
