@@ -357,19 +357,42 @@ function fullScroll($timeout){
     };
 }
 
+function getuserImage($firebaseObject, $timeout){
+    return {
+        link: function($scope, element, attrs){ 
+            var id  =  attrs.myAttr  
+            var atrStr = '';
+            var userDataRef =  new Firebase(firebaseUrl+"users/"+id+'/profile');
+            userDataRef.once('value', function(Snapshot) {
+                var dataUser = Snapshot.val();
+                for (n in dataUser) {
+                    var image = dataUser.pImage;
+                    if(image){
+                        element.removeAttr('my-attr');   //http://res.cloudinary.com/atisundar/image/upload/w_200/atisundar_logo.jpg               
+                        element.attr('src', 'http://res.cloudinary.com/atisundar/image/upload/w_200/'+image);  
+                    }                    
+                    //element.attr('class',"img-responsive")
+                }
+            });
+        }
+    }
+}
+
 function getuserData($firebaseObject, $timeout){
     return {
         link: function($scope, element, attrs){ 
         var id  =  attrs.myAttr  
         var atrStr = '';
-        var userDataRef =  new Firebase(firebaseUrl+"users/"+id);
+        var userDataRef =  new Firebase(firebaseUrl+"users/"+id+'/profile');
        /* var data = $firebaseObject(userDataRef);
         var n = userDataRef.child(data.$id).val(); 
         console.log(n)*/
             userDataRef.once('value', function(Snapshot) {
-              var data = Snapshot.val();
-                for (n in data) {
-                    var dataUser = data[n];
+              var dataUser = Snapshot.val();
+                for (n in dataUser) {
+                    //var dataUser = data[n];
+                    //console.log(data.name)
+                    //console.log(dataUser.name)
                     //console.log(dataUser.address)
                     var email
                     if(dataUser.email){
@@ -439,6 +462,62 @@ function getimageUrl($firebaseArray){
     };
 }
 
+function getCard($firebase, $timeout, $firebaseArray, userDataService){
+    return {
+        link: function(scope, element, attrs){ 
+        var brand = userDataService.getbrand();
+        var mobile = userDataService.getMobile();
+       // console.log(brand+'---'+mobile)
+        var id  =  attrs.myAttr  
+        var atrStr = '';
+
+        var notificationRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand+"/notifications/"+id);
+        //console.log(id)
+        notificationRef.once('value', function(Snapshot) {
+            console.log(Snapshot.val());
+            var result = Snapshot.val()
+            var typeid = result.typeid;
+            var state = "timeline.view"
+           // console.log(typeid +'--------------->>>>>>>>>>>>')
+            var ptype = typeid.split("_").length
+            var idx =1;
+            /*var brand = ptype[idx];
+            console.log(brand)*/
+            var sp = {}
+                if (ptype > 2) {
+                    console.log(">>>>>this is a product card ")
+                    idx = 2
+                   // state = "products.productdetail"
+                  //  sp.tab = 'products'
+                    c = ""
+                    var _c = typeid.split("_")
+                    console.log(_c)
+                    var brand = _c[1];
+                     console.log(brand)
+                    for (var x = 2; x < ptype; x++) {
+                        c = c + _c[x]
+                        if (x != ptype - 1) {
+                            c = c + "_"
+                        }
+                    }
+                    sp.product = c
+                   
+                    var key = brand+'_'+c;
+                    console.log(key)
+                    state = "#/timeline/view/#"+key
+                }else{
+                    var c = typeid.split("_")[idx]
+                    sp.card = c
+                    state = "#/timeline/view"+c
+                }
+                var url = state;
+                //element.attr('href',url)
+            })
+        }    
+
+    }    
+}
+
 function username($firebase, $timeout, $firebaseArray){
 
 }
@@ -502,8 +581,26 @@ function dccard($firebase, $timeout, $firebaseArray){
         view: '@'
     };
 
-    directive.controller = function($scope,$state,$firebase, $firebaseArray, userDataService){
+    directive.controller = function($scope,$state,$firebase, $firebaseArray, userDataService, firebaseServices){
         var name = userDataService.getName();
+        var brand = userDataService.getbrand();
+        var mobile = userDataService.getMobile();
+
+        firebaseServices.fetchContactData(mobile, brand).then(function(result){
+            if (result){
+                $timeout(function(){
+                    $scope.$apply(function() {
+                        console.log(result)
+                        var img = "person_avatar_h9fddj"
+                        if(result.pImage){
+                            img = result.pImage
+                        }
+                        $scope.contactImage = img;
+                    });
+                },0,false);
+            }
+        });
+
         $scope.comments =[];
         $scope.liked = false
         console.log("In dc card controller...."+$scope.id)
@@ -533,18 +630,19 @@ function dccard($firebase, $timeout, $firebaseArray){
             var cardData = {
                 name:name,
                 created: ctime,
-                comment:comment
+                comment:comment,
+                pImage:$scope.contactImage
             }
             addCommentref.child('replies').push(cardData);
             $("#txt_"+$scope.id).val('');
-            /*var upvotesRef = new Firebase("http://educe.firebaseio.com/cards/"+$scope.id+"/commentCount");
+            var upvotesRef = new Firebase(firebaseUrl+"/cards/"+$scope.id+"/commentCount");
             upvotesRef.transaction(function (current_value) {
                 console.log(" Card "+$scope.id + " comment count " +current_value)
-                $("#txt_"+$scope.id).val('');
-                $("#comArea_"+$scope.id).removeClass( "selected" ).addClass( "noselected" );
+               /* $("#txt_"+$scope.id).val('');
+                $("#comArea_"+$scope.id).removeClass( "selected" ).addClass( "noselected" );*/
                 return (current_value || 0) + 1;
 
-            });*/
+            });
         }
 
         $scope.showComments = function(){
@@ -555,9 +653,7 @@ function dccard($firebase, $timeout, $firebaseArray){
                 removeCommentFromScope(data.key(), $scope)
                 addCommentToScope(data.key(), data.val(), $scope)
 
-            })*/
-            
-            
+            })*/   
         }
 
         $scope.showCommentsIcon = function(){
@@ -824,6 +920,8 @@ angular
     .directive('fileChange', fileChange)
     .directive('getimageUrl', getimageUrl)
     .directive('getuserData', getuserData)
+    .directive('getuserImage', getuserImage)
+    .directive('getCard', getCard)
     .directive('dccard',dccard)    
     .directive('getpiecesTotal', getpiecesTotal)
     .directive('getamountTotal', getamountTotal)
@@ -834,4 +932,5 @@ angular
     .filter('dashboardDate', dashboardDate)
     .filter('convertString', convertString)
     .filter('decryptString', decryptString)
+
     

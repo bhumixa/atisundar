@@ -23,7 +23,9 @@
                     <div id="vertical-timeline" class="vertical-container dark-timeline center-orientation">
                     	
                         <div class="vertical-timeline-block cardbox" ng-repeat="card in cards" on-finish-render="ngRepeatFinished" > 
-                        	 <dccard id="{{card.$id}}"></dccard>
+                        	<div id="{{card.$id}}">
+                        	 <dccard id="{{card.$id}}" id=""></dccard>
+                        	</div>
                        	</div>
                     </div>
                 </div>

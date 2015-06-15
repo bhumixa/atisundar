@@ -1,7 +1,8 @@
 <div class="row">
     <div class="col-sm-2">
         <div class="cardImage">
-            <img src="p3.jpg" class="img-circle"> 
+            <img src="http://res.cloudinary.com/atisundar/image/upload/w_100/{{card.pImage}}" class="img-circle"> 
+            <!-- {{card.pImage}} -->
         </div>
     </div>
     <div class="col-sm-10">
@@ -36,34 +37,48 @@
                     <span class="positive"> {{'Like'}} </span>
                 </a> -->
 
-                <a class="tab-item" ng-show='showCommentsIcon()' ng-click="addComments()">
+                <!-- <a class="tab-item" ng-show='showCommentsIcon()' ng-click="addComments()">
                     <i class="icon ion-chatbox"></i>
                     Comment
-                </a>
+                </a> -->
             </div>           
         </div>
     </div> 
     <div class="item tabs tabs-secondary tabs-icon-left noselected" id="comArea_{{id}}" >
         
     </div>
-     <div ng-repeat="c in comments">      
-
-          <img src="./img/profile.jpg" class="img-circle">
-          <h2>{{c.name}} </h2> 
-          <span style="font-size:10px; color:#AAAAAA;">{{c.relTime}}</span>
-          <p>{{c.comment}}</p>
-          
-          <div class="col-sm-2">
+    <div ng-repeat="c in comments">     <!-- comment start   -->
+        <div class="col-sm-12">
+            <div class="col-sm-1"> 
+                <img src="http://res.cloudinary.com/atisundar/image/upload/w_50/{{c.pImage}}" class="img-circle">  
+            </div>
+            <div class="col-sm-11">
+              <h4>{{c.name}} </h4> 
+              <span style="font-size:10px; color:#AAAAAA;">{{c.relTime}}</span>
+              <p>{{c.comment}}</p>
+            </div>
+        </div>
+        <div class="col-sm-12">
             <span class="list list-inset comment-thread-list">
                 <span class="item" ng-repeat="r in c.replies">
-                    <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.relTime}}</span></h4>
+                    <div class="col-sm-1">                       
+                        <img src="http://res.cloudinary.com/atisundar/image/upload/w_50/{{r.pImage}}" class="img-circle"> 
+                    </div>
+                    <div class="col-sm-11">
+                            <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.relTime}}</span></h4>
 
-                    <p>{{r.comment}}</p>
+                            <p>{{r.comment}}</p>
+                    </div>
+                    
                 </span> 
             </span>
-            <p><textarea ng-model="comment" ng-enter="submitComment(id, comment, c.$id)" id="txt_{{id}}"> </textarea></p>
-          </div>
-      </div>
+            <span class="list list-inset comment-thread-list"> 
+                 <div class="col-sm-6"> 
+                    <textarea ng-model="comment"  id="txt_{{id}}"> </textarea> <button class="btn btn-primary btn-xs" type="button" ng-click="submitComment(id, comment, c.$id)"><i class="fa fa-arrow-circle-left"> Add </i></button> 
+                </div>
+            </span>
+        </div>
+    </div> <!-- comment end -->
 
     </div>
 </div>

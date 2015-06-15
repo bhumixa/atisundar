@@ -125,7 +125,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 }
 
 /*navigationCtrl*/
-function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeout, userDataService){
+function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeout, userDataService, firebaseServices){
 	var email = localStorage.getItem("email");
 	var brand = localStorage.getItem("brand");
 	var name = '';
@@ -141,6 +141,19 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 
 	userref.orderByKey().equalTo(email).on("child_added", function(snapshot) {
 		mobile =  snapshot.val();
+		firebaseServices.fetchContactData(mobile, brand).then(function(result){
+		if (result){
+			$timeout(function(){
+			  	$scope.$apply(function() {
+			  		var image = "person_avatar_h9fddj"
+			  		if(result.pImage){
+			  			image = result.pImage
+			  		}
+			  		$scope.pImage = image;
+			  	});
+		  	},0,false);
+		}
+	});
 		userDataService.setMobile(mobile);
 		userbrandref.orderByKey().equalTo(mobile).on("child_added", function(snapshot) {
 		  	name = snapshot.val();
@@ -185,18 +198,19 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 function addcontactCtrl($scope, $rootScope, userDataService) {
     var brand = userDataService.getbrand();
     $scope.formData = {};
+    $scope.formData.pImage = "person_avatar_h9fddj"
     var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
     var supportRef = new Firebase(firebaseUrl+"brands/support/users");
 
     $scope.submitForm = function() {
-    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email && $scope.formData.company && $scope.formData.image){
+    	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email && $scope.formData.company && $scope.formData.pImage){
     		var userref = new Firebase(firebaseUrl+"users");
 		   	var mobile = '91'+$scope.formData.mobile;
 		   	var name = $scope.formData.name;
 		   	var email = encryptemail($scope.formData.email);
 		   	var company = encryptemail($scope.formData.company);
 		   	var address = $scope.formData.address;
-		   	var image = $scope.formData.image;
+		   	var image = $scope.formData.pImage;
 		   	var ctime = new Date().getTime();
 		   	var date = moment().format('YYYY-MM-DD')
 		   	var userData = {
@@ -204,7 +218,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   		'name':name,
 		   		'email':email,
 		   		'address':address,
-		   		'image':image,
+		   		'pImage':pImage,
 		   		'created': ctime,
 		   		'date':date
 		   	}
@@ -287,10 +301,10 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 					   	}
 					   				   	
 					   	var address = csvvalue[4];
-					   	var image = "no image";
+					   	var pImage = "person_avatar_h9fddj";
 
 					   	if(csvvalue[5]){
-					   		image = csvvalue[5];
+					   		pImage = csvvalue[5];
 					   	}
 
 					   	if(!csvvalue[0]){
@@ -335,7 +349,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 					   		'mobile':mobile,
 					   		'email':email,
 					   		'address':address,
-					   		'image':image,
+					   		'pImage':pImage,
 					   		'status':status,
 					   		'errors':errors
 					   	}
@@ -365,7 +379,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 		 	var name = items.name;
 		 	var email = items.email;
 		 	var address = items.address;		 	
-		 	var image = items.image; 	
+		 	var pImage = items.pImage; 	
 			var ctime = new Date().getTime();
 		   	var date = moment().format('YYYY-MM-DD')
 
@@ -381,7 +395,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 			   		'name':name,
 			   		'email':email,
 			   		'address':address,
-			   		'image':image,
+			   		'pImage':pImage,
 			   		'created': ctime,
 			   		'date':date
 			   	}	        			
@@ -1097,10 +1111,33 @@ function paymentMethodCtrl($scope, $rootScope, $stateParams, $state, userDataSer
 	$scope.formData = {};
 
 	var brand = userDataService.getbrand();
+	var paymentRef =  new Firebase(firebaseUrl+"brands/"+brand+'/paymentMethod');
 	var homeref = new Firebase(firebaseUrl+"brands/"+brand);
+	$scope.checkboxModel = $firebaseObject(paymentRef);
 	
 	$scope.submitForm = function(){
-		homeref.child('paymentMethod').set($scope.checkboxModel);
+		var online = 0;
+		var onaccount = 0;
+		var COD = 0;
+
+		if($scope.checkboxModel.online){
+			online = 1;
+		}
+		if($scope.checkboxModel.onaccount){
+			onaccount = 1;
+		}
+		if($scope.checkboxModel.COD){
+			COD = 1;
+		}
+
+		var data = {
+			'onaccount':onaccount,
+			'online':online,
+			'COD':COD
+		}
+		
+		homeref.child('paymentMethod').set(data);
+		$scope.message = "Data succesfully Updated";
 	}
 }
 
@@ -1226,7 +1263,7 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 			brandformref.set(data);
 			//brandformref.set(data);
 			$scope.message = "Data succesfully Updated";
-			$scope.formData = {};
+			//$scope.formData = {};
 		}		
 	}
 
@@ -1251,6 +1288,7 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		if (result){
 			$timeout(function(){
 			  	$scope.$apply(function() {
+			  		console.log(result)
 			  		$scope.formData = result;
 			  		$scope.formData.key = $scope.formData.company; 
 			  	});
@@ -1272,7 +1310,7 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		   	var email = $scope.formData.email;
 		   	var company = encryptemail($scope.formData.company);
 		   	var address = $scope.formData.address;
-		   	var image = $scope.formData.image;
+		   	var pImage = $scope.formData.pImage;
 		   	var mobile = $scope.formData.mobile;
 
 		   	var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+company);
@@ -1281,15 +1319,15 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 			var mainuseref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
 			mainuseref.child(contactId).set(name);
 
-			if(!image){
-				image ="no image";
+			if(!pImage){
+				pImage ="no image";
 			}
 		   	var userData = {
 		   		'company':company,
 		   		'name':name,
 		   		'email':email,
 		   		'address':address,
-		   		'image':image
+		   		'pImage':pImage
 		   	}			   	
 
 		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId+'/profile');		   	
@@ -1327,6 +1365,7 @@ function addadminCtrl($scope, $rootScope, userDataService) {
     // All data will be store in this object
     var brand = userDataService.getbrand();
     $scope.formData = {};
+    $scope.formData.pImage = "person_avatar_h9fddj";
     // After login submit
     
     $scope.submitForm = function() {
@@ -1337,9 +1376,9 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 		   	var email = encryptemail($scope.formData.email);
 		   	var company = $scope.formData.company;
 		   	var address = $scope.formData.address;
-		   	var image = '';
-		   	if($scope.formData.image){
-		   		image = $scope.formData.image;
+		   	var pImage = '';
+		   	if($scope.formData.pImage){
+		   		pImage = $scope.formData.pImage;
 		   	}
 		   	var ctime = new Date().getTime();
 		   	var date = moment().format('YYYY-MM-DD')
@@ -1349,7 +1388,7 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 		   		'name':name,
 		   		'email':email,
 		   		'address':address,
-		   		'image':image,
+		   		'pImage':pImage,
 		   		'created': ctime,
 		   		'date':date
 		   	}
@@ -1792,9 +1831,9 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
         timeframe: "this_21_days",
         filters: [
             {
-              "property_name" : "name",
+              "property_name" : "formhname", //displayName
               "operator" : "eq",
-              "property_value" : "sales-form" 
+              "property_value" : "Daily Sales Form" 
             },
             {
 		        "property_name": "brand",
@@ -1816,7 +1855,7 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
         timeframe: "this_21_days",
         filters: [
             {
-              "property_name" : "name",
+              "property_name" : "formhname", //displayName
               "operator" : "eq",
               "property_value" : "order-form" 
             },
@@ -1840,7 +1879,7 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
         timeframe: "this_21_days",
         filters: [
             {
-              "property_name" : "name",
+              "property_name" : "formhname", //displayName
               "operator" : "eq",
               "property_value" : "feedback-form" 
             },

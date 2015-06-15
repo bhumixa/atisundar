@@ -15,18 +15,21 @@
                 </a>
                 <ul class="dropdown-menu dropdown-alerts">
                     <div ng-repeat = "notification in notifications">
-                        <li>
+                        <li>                            
                             <div class="dropdown-messages-box">
-                                <a ui-sref="profile" class="pull-left">
-                                    <img alt="image" class="img-circle" src="img/profile.jpg">
-                                </a>
+                                <a href="" get-card my-attr="{{notification.$id}}"> 
+                                    <span ui-sref="profile" class="pull-left">
+                                        <img alt="image" class="img-circle" src="img/profile.jpg">
+                                    </span>
 
-                                <div>
-                                    <small class="pull-right">{{notification.when | getTime }} </small>
-                                    <strong> {{notification.text}} </strong>. <br>
-                                    <!-- <small class="text-muted">{{notification.when | getTime }} </small> -->
-                                </div>
-                            </div>
+                                    <span>
+                                        
+                                        <strong> {{notification.text}} </strong>.
+                                        <small class="pull-right">{{notification.when | getTime }} </small>
+                                        <!-- <small class="text-muted">{{notification.when | getTime }} </small> -->
+                                    </span>
+                                </a>
+                            </div>                           
                         </li>
                         <li class="divider"></li>
                     </div>
