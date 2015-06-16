@@ -210,7 +210,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   	var email = encryptemail($scope.formData.email);
 		   	var company = encryptemail($scope.formData.company);
 		   	var address = $scope.formData.address;
-		   	var image = $scope.formData.pImage;
+		   	var pImage = $scope.formData.pImage;
 		   	var ctime = new Date().getTime();
 		   	var date = moment().format('YYYY-MM-DD')
 		   	var userData = {
@@ -1210,7 +1210,7 @@ function formlistCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 	$scope.formslist = $firebaseArray(brandformref);
 }
 
-function addformCtrl ($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	$scope.formData = {};
 	var brand = userDataService.getbrand();
 	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
@@ -1235,7 +1235,46 @@ function addformCtrl ($scope, $rootScope, $stateParams, $state, userDataService,
 		}		
 	}
 
+	$scope.openMedal = function(){
+		var modalInstance = $modal.open({
+            templateUrl: 'views/importform.html',
+            controller: importFormCtrl
+        });
+	}
+
 }
+
+
+function importFormCtrl ($scope, $modalInstance, $timeout) {
+	var systemformref = new Firebase(firebaseUrl+"brands/system/forms");
+	var forms = [];
+	systemformref.on("child_added",function(data){
+		var dataList = data.val();
+		if(dataList){
+			console.log();
+			var dataObj = {
+				/*'key':dataList.name;*/
+				'name':dataList.name
+			}
+			forms.push(dataObj)
+
+			$timeout(function(){
+			  	$scope.$apply(function() {
+			  		$scope.forms = forms;			  		
+			  	});
+		  	},0,false);
+		}
+	});
+
+	$scope.ok = function () {
+        $modalInstance.close();
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+}
+
 
 function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	$scope.formData = {};
@@ -1643,6 +1682,27 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, keenServices, $
     		var rate = items.rate;
     		var pieces = items.pieces;
 
+    		var keenRate = parseInt(rate)
+    		var keenPieces = parseInt(pieces)
+
+    		var keenObj = {
+    			'author':author,
+    			'authorName':authorName,
+    			'brand':brand,
+    			'created':new Date().getTime(),
+    			'date':date,
+    			'transport':transport,
+    			'LRno':LRno,
+    			'invoiceno':invoiceno,
+    			'parcelno':parcelno,
+    			'company':company,
+    			'type':'Invoice',
+    			'item':item,
+    			'rate':keenRate,
+    			'pieces':keenPieces
+    		}
+
+    		keendata.push(keenObj)
     		var itemdata ={
 				'item':item,
 				'rate':rate,
@@ -1682,7 +1742,7 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, keenServices, $
               	cardref.child('items').push(itemdata);
 
               	keyArray.push(invoiceno, cardkey);
-              	keendata.push(data)
+              	/*keendata.push(data)*/
 
               	addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
               	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)   
@@ -1820,13 +1880,44 @@ function csvconverterCtrl($scope, $rootScope, userDataService) {
 	}
 }
 
-function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
+function chartJsCtrl($scope, $timeout, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
 	var brand =  userDataService.getbrand();
     var mobile = userDataService.getMobile();
 
-	/*sales chart*/
-	var Sales = new Keen.Query("count", {
-        eventCollection: "forms",    
+    var formRef = new Firebase(firebaseUrl+"brands/"+brand+"/forms");
+
+    //$scope.formData = $firebaseObject(formRef);
+    formRef.on("child_added", function(snapshot) {
+  		var data = snapshot.val();
+  		var sales = '';
+  		var feedback = '';
+  		var order = '';
+
+  		if(data.name == "Daily Sales Form"){
+  			sales = true;
+  		}
+
+  		if(data.name == "Feedback Form"){
+  			feedback = true;
+  		}
+
+  		if(data.name == "Order Form"){
+  			order = true;
+  		}
+
+  		$timeout(function(){
+		  	$scope.$apply(function() {
+		  		$scope.sales = sales
+		  		$scope.feedback = feedback 
+		  		$scope.order = order	  		
+		  	});
+	  	},0,false);
+    });
+	
+
+	/*sales chart------------------------------------------------------------------*/
+	var salesCount = new Keen.Query("count", {
+        eventCollection: "forms",
         interval: "daily",
         timeframe: "this_21_days",
         filters: [
@@ -1843,10 +1934,65 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
         ]    
     });
 
-	client.draw(Sales, document.getElementById("chart-sales"), {
-	    chartType: "columnchart",
-	    title: "Sales",
+    var salesSum = new Keen.Query("sum", {
+        eventCollection: "forms",
+        targetProperty: "f1",    
+        interval: "daily",
+        timeframe: "this_21_days",
+        filters: [
+            {
+              "property_name" : "formhname", //displayName
+              "operator" : "eq",
+              "property_value" : "Daily Sales Form" 
+            },
+            {
+		        "property_name": "brand",
+		        "operator": "eq",
+		        "property_value": brand
+		    }
+        ]    
+    });
+
+   	var salesChart = new Keen.Dataviz()
+	  .el(document.getElementById("chart-sales"))
+	  .chartType("linechart")
+	  .title("Sales")	  
+	  .height(300)
+	  .chartOptions({
+	    hAxis: {
+	      format:'MMM d',
+	      gridlines:  {count: 12}
+	    },
+	    chartArea: { height: "65%", bottom:"25%" },
+	    legend: { position: "bottom" }
+	  })
+	.prepare();
+	client.run([salesCount, salesSum], function(err, res){ // run the queries
+
+	    var result1 = res[0].result  // data from first query
+	    var result2 = res[1].result  // data from second query
+	    var data = []  // place for combined results
+	    var i=0
+
+	    while (i < result1.length) {
+
+	        data[i]={ // format the data so it can be charted
+	            timeframe: result1[i]["timeframe"],
+	            value: [
+	                { category: "Form Submitted", result: result1[i]["value"] },
+	                { category: "Total Sales", result: result2[i]["value"] }
+	            ]
+	        }
+	        if (i == result1.length-1) { // chart the data
+	      salesChart
+	        .parseRawData({ result: data })
+	        .render();
+	        }
+	        i++;
+	    }
 	});
+	/*end sales chart------------------------------------------------------------------*/
+
 
 	/*order chart*/
 	var order = new Keen.Query("count", {
@@ -1872,7 +2018,7 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
 	    title: "Order",
 	});
 
-	/*feedback chart*/
+	/*feedback chart ------------------------------------------------*/
 	var feedback = new Keen.Query("count", {
         eventCollection: "forms",    
         interval: "daily",
@@ -1895,10 +2041,28 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
 	    chartType: "columnchart",
 	    title: "Feedback",
 	});
+	/*end feedback chart -----------------------------------------------*/
 
-	/*dispatch chart*/
-	var dispatch = new Keen.Query("count", {
-        eventCollection: "dispatch",    
+
+	/*dispatch chart ----------------------------------------------------------*/
+	var despatchChart = new Keen.Dataviz()
+	  .el(document.getElementById("chart-dispatch"))
+	  .chartType("columnchart")
+	  .title("Despatch")
+	  .height(300)
+	  .chartOptions({
+	    hAxis: {
+	      format:'MMM d',
+	      gridlines:  {count: 12}
+	    },
+	    chartArea: { height: "65%", bottom:"25%" },
+	    legend: { position: "bottom" }
+	  })
+	.prepare();
+
+	var dispatchAmount = new Keen.Query("sum", {
+        eventCollection: "dispatch", 
+        targetProperty: "rate",   
         interval: "daily",
         timeframe: "this_21_days",
         filters: [
@@ -1910,10 +2074,46 @@ function chartJsCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebase
         ]    
     });
 
-	client.draw(dispatch, document.getElementById("chart-dispatch"), {
-	    chartType: "columnchart",
-	    title: "Dispatch",
+    var dispatchPcs = new Keen.Query("sum", {
+        eventCollection: "dispatch", 
+        targetProperty: "pieces",   
+        interval: "daily",
+        timeframe: "this_21_days",
+        filters: [
+            {
+		        "property_name": "brand",
+		        "operator": "eq",
+		        "property_value": brand
+		    }
+        ]    
+    });
+
+    client.run([dispatchAmount, dispatchPcs], function(err, res){ // run the queries
+
+	    var result1 = res[0].result  // data from first query
+	    var result2 = res[1].result  // data from second query
+	    var data = []  // place for combined results
+	    var i=0
+
+	    while (i < result1.length) {
+
+	        data[i]={ // format the data so it can be charted
+	            timeframe: result1[i]["timeframe"],
+	            value: [
+	                { category: "Total Amount", result: result1[i]["value"] },
+	                { category: "Total Pieces", result: result2[i]["value"] }
+	            ]
+	        }
+	        if (i == result1.length-1) { // chart the data
+	      despatchChart
+	        .parseRawData({ result: data })
+	        .render();
+	        }
+	        i++;
+	    }
 	});
+
+	/*end dispatch chart ----------------------------------------------------------*/
 }
 
 function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $firebaseObject, userDataService,  $q, firebaseServices) {
@@ -1927,6 +2127,30 @@ function dashboardCtrl($scope, $rootScope, $stateParams, $firebaseArray, $fireba
     $scope.lastaddedcontact = '';
     $scope.lastaddedproduct = '';
     $scope.lastaddedadmin = '';
+     /*"property_name" : "formhname", //displayName
+              "operator" : "eq",
+              "property_value" : "Daily Sales Form" */
+    /*var dailysales ={
+	    "f1": 10,
+	    "f2": "500",
+	    "f3": "Agg",
+	    "f4": "Shjj",
+	    "name": "-JrgQQZdef7KDK3FHDYv",
+	    "created": 1434435849535,
+	    "mobile": "919586484242",
+	    "text": "bhumi submitted a new shalini -JrgQQZdef7KDK3FHDYv",
+	    "brand": "shalini",
+	    "author": "919586484242",
+	    "formhname":"Daily Sales Form"
+	}
+    clientWrite.addEvent("forms", dailysales, function(err, res){
+      if (err) {
+        console.log(err);
+      }
+      else {
+        alert('submitted');
+      }
+    });*/
 
     /*var userRenotificationRef = new Firebase(firebaseUrl+"users/"+mobile+"/"+brand+"/notifications");
     var ctime = new Date().getTime();

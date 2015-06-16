@@ -118,16 +118,15 @@
                         <img src="http://res.cloudinary.com/atisundar/image/upload/w_50/{{r.pImage}}" class="img-circle"> 
                     </div>
                     <div class="col-sm-11">
-                            <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.relTime}}</span></h4>
+                            <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.created | getTime }}</span></h4>
 
                             <p>{{r.comment}}</p>
-                    </div>
-                    
+                    </div>                    
                 </span> 
             </span>
             <span class="list list-inset comment-thread-list"> 
                  <div class="col-sm-6"> 
-                    <textarea ng-model="comment"  id="txt_{{id}}"> </textarea> <button class="btn btn-primary btn-xs" type="button" ng-click="submitComment(id, comment, c.$id)"><i class="fa fa-arrow-circle-left"> Add </i></button> 
+                    <textarea ng-model="comment"  id="txt_{{id}}"> </textarea> <button class="btn btn-primary btn-xs" type="button" ng-click="submitComment(id, comment, c.$id)"><i class="fa fa-arrow-circle-left"> Submit </i></button> 
                 </div>
             </span>
         </div>

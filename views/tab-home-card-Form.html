@@ -1,14 +1,14 @@
 <div class="card warning" ng-click="showCard()">
+    <div class="wrapper wrapper-content animated fadeInRight">
     <div class="item item-divider">
-        {{card.name}} by {{card.authorName}}, {{duration}} {{relTime}}
+        {{card.formhname}} by {{card.authorName}}, {{duration}} {{relTime}}
     </div>
     <div class="item item-text-wrap">
         <p>
            {{card.text}}
-            {{id}}//{{card.f1}}//{{card.f2}}
         </p>
         <p>
-            <a ng-show="showCommentCount()" href="" class="subdued" ng-click="showComments()">{{card.commentCount}} Comments</a>
+            <a ng-show="showCommentCount()" href="" class="subdued" ng-click="showComments()">{{card.commentCount}} Comments </a>
         </p>
     </div>
     <div class="item tabs tabs-secondary tabs-icon-left noselected" id="comArea_{{id}}" >
@@ -32,7 +32,7 @@
                         <img src="http://res.cloudinary.com/atisundar/image/upload/w_50/{{r.pImage}}" class="img-circle"> 
                     </div>
                     <div class="col-sm-11">
-                            <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.relTime}}</span></h4>
+                            <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.created | getTime }}</span></h4>
 
                             <p>{{r.comment}}</p>
                     </div>
@@ -46,4 +46,5 @@
             </span>
         </div>
     </div> <!-- comment end -->
+</div> 
 </div>

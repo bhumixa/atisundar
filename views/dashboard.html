@@ -16,44 +16,38 @@
 	    <div class="row animated fadeInRight">
 	        <div class="col-lg-12">
 	        		<div class="charts" ng-controller="chartJsCtrl">
-			        	<div class="row"> 
-			        		<div class="col-lg-6">              
-					                <!-- <canvas linechart options="lineOptions" data="lineData" height="70" responsive=true ></canvas> -->  
-
+			        	<div class="row" > <!--  {{sales}} sds {{feedback}} {{order}} -->
+			        		<div class="col-lg-12" ng-show="sales">  
 					                <div id="chart-sales">
 
 									</div>
 					        </div>
-
-					        <div class="col-lg-6">	                
+					        <div class="span4"> </div>
+					        <div class="col-lg-12">	                
 					                <!-- <canvas linechart options="lineOptions" data="lineData" height="70" responsive=true ></canvas> -->  
-
-					                <div id="chart-order">
+					                <div id="chart-dispatch">
 
 									</div>
 					        </div>
 					    </div>
+
 					    <div class="span4"> </div>
 					    <div class="row"> 
-			        		<div class="col-lg-6">              
-					                <!-- <canvas linechart options="lineOptions" data="lineData" height="70" responsive=true ></canvas> -->  
-
-					                <div id="chart-feedback">
+					    	<div class="col-lg-12" ng-show="order">	
+					                <div id="chart-order">
 
 									</div>
 					        </div>
-
-					        <div class="col-lg-6">	                
-					                <!-- <canvas linechart options="lineOptions" data="lineData" height="70" responsive=true ></canvas> -->  
-
-					                <div id="chart-dispatch">
+					        <div class="span4"> </div>
+			        		<div class="col-lg-12" ng-show="feedback"> 
+					                <div id="chart-feedback">
 
 									</div>
 					        </div>
 					    </div>
 				   	</div>
 				   	<div class="span4"> </div>
-					<div class="row">
+					<div class="row" >
 						<div class="col-lg-4">
 					        <div class="ibox float-e-margins">
 					            <div class="ibox-title">
