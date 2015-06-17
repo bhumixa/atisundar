@@ -67,6 +67,24 @@ function keenServices(){
 	}
 }
 
+function dataService($rootScope){
+	var formData = '';
+
+	var setformData = function(data){
+		formData = data;
+		$rootScope.$broadcast('formImported');
+	}
+
+	var getformData = function(data){
+		return formData;
+	}
+
+	return{
+		setformData:setformData,
+		getformData:getformData
+	}
+}
+
 function firebaseServices($q, $firebaseArray){
 	var checkIfcompanyExists = function(comp, brand) {
 		return $q(function(resolve, reject){
@@ -172,3 +190,4 @@ angular
     .service('userDataService', userDataService)
     .factory('firebaseServices', firebaseServices)
     .factory('keenServices', keenServices)
+    .factory('dataService', dataService)

@@ -1,15 +1,26 @@
 <div class="inmodal">
     <div class="modal-header">
-        <i class="fa fa-laptop modal-icon"></i>
-        <h4 class="modal-title">Modal title</h4>
-        <small class="font-bold">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</small>
+        <h5 class="modal-title"> Import Form </h5>
+        <p>Select any one Form from here you wants to Import.</p>
     </div>
     <div class="modal-body">
-       {{forms}}
+        <div class="row">
+            <div class="form-group">
+                <div ng-if="error" class="alert alert-danger"> {{error}} </div>           
+              
+                <div class="col-sm-10">
+                    <div class="radio" ng-repeat=" f in forms">
+                        <label> 
+                            <input icheck type="radio" id="{{f.name}}" name="formCheck" ng-model="checkModel" value="{{f.key}}"> {{f.name}}
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-white" ng-click="cancel()">Close</button>
-        <button type="button" class="btn btn-primary" ng-click="ok()">Save changes</button>
+        <button type="button" class="btn btn-primary" ng-click="ok()">Save</button>
     </div>
 </div>
 

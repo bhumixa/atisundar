@@ -158,7 +158,16 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
         .state('forms.addform', {
             url:"/addform",
             templateUrl: "views/addform.html",
-            data: { pageTitle: 'Add Form'}
+            data: { pageTitle: 'Add Form'},
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['css/plugins/iCheck/custom.css','js/plugins/iCheck/icheck.min.js']
+                        }
+                    ]);
+                }
+            }
         }) //
         .state('forms.editform', {
             url:"/editform/:formId",
@@ -193,7 +202,16 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
         .state('settings.paymentmethods', {
             url:"/paymentmethods",
             templateUrl: "views/paymentmethods.html",
-            data: { pageTitle: 'Payment Methods'}
+            data: { pageTitle: 'Payment Methods'},
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['css/plugins/iCheck/custom.css','js/plugins/iCheck/icheck.min.js']
+                        }
+                    ]);
+                }
+            }
         })        
         .state('settings.homepage', {
             url:"/homepage",

@@ -955,7 +955,7 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 }
 
 function timelineCtrl($scope, $rootScope, $stateParams, $firebaseArray, userDataService) {
-	var paginator=undefined;
+	var paginator= undefined;
 	var itemsPerPage = 10;
 	var itemsAvailable=true;
 	var cards=[]
@@ -1210,7 +1210,7 @@ function formlistCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 	$scope.formslist = $firebaseArray(brandformref);
 }
 
-function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userDataService, dataService, $firebaseObject, $firebaseArray){
 	$scope.formData = {};
 	var brand = userDataService.getbrand();
 	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
@@ -1242,32 +1242,50 @@ function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userData
         });
 	}
 
+	$scope.$on('formImported', function() {
+		$scope.formData = dataService.getformData()
+		$("#name").attr('disabled','disabled');
+		$("#html").attr('disabled','disabled');
+		console.log($scope.formData)
+
+	});
+
 }
 
 
-function importFormCtrl ($scope, $modalInstance, $timeout) {
+function importFormCtrl ($scope, $modalInstance, $timeout, dataService, $firebaseObject) {
 	var systemformref = new Firebase(firebaseUrl+"brands/system/forms");
 	var forms = [];
 	systemformref.on("child_added",function(data){
+		var key = data.key();
 		var dataList = data.val();
 		if(dataList){
-			console.log();
 			var dataObj = {
-				/*'key':dataList.name;*/
+				'key':key,
 				'name':dataList.name
 			}
 			forms.push(dataObj)
 
 			$timeout(function(){
 			  	$scope.$apply(function() {
-			  		$scope.forms = forms;			  		
+			  		$scope.forms = forms;
+			  		$('#Daily Sales Form').attr('checked', true);			  		
 			  	});
 		  	},0,false);
 		}
 	});
 
 	$scope.ok = function () {
-        $modalInstance.close();
+		var key = $('input[type="radio"]:checked').val();
+		if(key){
+			var formDataRef = new Firebase(firebaseUrl+"brands/system/forms/"+key);
+			var formData = $firebaseObject(formDataRef);
+			dataService.setformData(formData);
+			$modalInstance.close();
+		}else{
+			$scope.error = "Please Select any one form";
+		}
+		
     };
 
     $scope.cancel = function () {
@@ -1743,10 +1761,16 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, keenServices, $
 
               	keyArray.push(invoiceno, cardkey);
               	/*keendata.push(data)*/
-
-              	addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
-              	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)   
-              	//           	
+              	/*var queueData = {
+              		'brand':brand,
+              		'company':company,
+              		'mobile':mobile
+              	}*/
+              	var queueRef = new Firebase(firebaseUrl+"/queue/cards");
+              	queueRef.child(cardkey).set('send2admins');
+              	/*addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
+              	*/   
+              	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)
             }else{
             	var index = keyArray.indexOf(invoiceno); 
             	var key = keyArray[index+1];
