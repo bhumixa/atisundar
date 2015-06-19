@@ -1761,13 +1761,12 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, keenServices, $
 
               	keyArray.push(invoiceno, cardkey);
               	/*keendata.push(data)*/
-              	/*var queueData = {
-              		'brand':brand,
-              		'company':company,
-              		'mobile':mobile
-              	}*/
-              	var queueRef = new Firebase(firebaseUrl+"/queue/cards");
-              	queueRef.child(cardkey).set('send2admins');
+              	var queueData = {
+              		'cardId':cardkey,
+  					"_state": "card_created"
+              	}
+              	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+              	queueRef.push(queueData);
               	/*addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
               	*/   
               	addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company)
