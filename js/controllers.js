@@ -83,7 +83,7 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 
 					    var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
 			   			ref.child(brand).set('admin')
-			   			ref.child('support').set('admin')
+			   			ref.child('support').set('user')
 
 
 					   /* var n  = userref.child(mobile);
@@ -145,10 +145,13 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 		if (result){
 			$timeout(function(){
 			  	$scope.$apply(function() {
+			  		console.log(result)
 			  		var image = "person_avatar_h9fddj"
 			  		if(result.pImage){
 			  			image = result.pImage
 			  		}
+
+			  		console.log(result.pImage)
 			  		$scope.pImage = image;
 			  	});
 		  	},0,false);
@@ -199,8 +202,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
     var brand = userDataService.getbrand();
     $scope.formData = {};
     $scope.formData.pImage = "person_avatar_h9fddj"
-    var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers");
-    var supportRef = new Firebase(firebaseUrl+"brands/support/users");
+    
 
     $scope.submitForm = function() {
     	if($scope.formData.name && $scope.formData.mobile &&  $scope.formData.email && $scope.formData.company && $scope.formData.pImage){
@@ -224,15 +226,24 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   	}
 		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
 		   	//userref.child(email).set(mobile);	
-		   	var emailref = new Firebase(firebaseUrl+"userEmailMap");
+		   	/*var emailref = new Firebase(firebaseUrl+"userEmailMap");
 			emailref.child(email).set(mobile);				   	
 
 		    var n  = userref.child(mobile);
 		   // n.child(brand).set(userData)
-		   	n.child('profile').set(userData)
+		   	n.child('profile').set(userData)*/
 
-		   	//var i = userref.child(mobile);
-		   	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
+		   	var queueData = {
+          		'data': userData,
+          		'user':mobile,
+          		'brand':brand,
+				"_state": "add_user_to_circle",
+          	}
+
+          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+          	queueRef.push(queueData);
+		   
+		   /*	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
 		   	ref.child(brand).set('user')
 		   	ref.child('support').set('user')
 
@@ -246,7 +257,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		    company.child(mobile).set(name);
 
 		    var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
-		    lastupdateref.child('contact').set(mobile);
+		    lastupdateref.child('contact').set(mobile);*/
 
 		    $scope.message = "Data succesfully Inserted";
 		    /*$scope.formData = '';*/
@@ -401,7 +412,7 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 			   	}	        			
 
 			   	//userref.child(email).set(mobile);		
-			   	var emailref = new Firebase(firebaseUrl+"userEmailMap");
+			   	/*var emailref = new Firebase(firebaseUrl+"userEmailMap");
 				emailref.child(email).set(mobile);			   	
 
 			    var n  = userref.child(mobile);
@@ -420,7 +431,17 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 				company.child(mobile).set(name);
 
 				var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
-			    lastupdateref.child('contact').set(mobile);
+			    lastupdateref.child('contact').set(mobile);*/
+
+			    var queueData = {
+	          		'data': userData,
+	          		'user':mobile,
+	          		'brand':brand,
+					"_state": "add_user_to_circle",
+	          	}
+
+	          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+	          	queueRef.push(queueData);
 				
 	            if(count == contactData.length){
 	            	$scope.message = "Data succesfully Inserted";
@@ -626,8 +647,14 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 						var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
 						brandref.child(productIdID).set(brandProductData);
 
-						var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
-		    			lastupdateref.child('product').set(productIdID);
+		    			var queueData = {
+		              		'productId':productIdID,
+		              		'brand':brand,
+		  					"_state": "product_added"
+		              	}
+
+		              	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+		              	queueRef.push(queueData);
 
 						$scope.message = "Product succesfully Added";
 						/*$scope.formData = '';*/
@@ -931,6 +958,9 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
     		var newProductRef = mainref.push(data);
 			var productIdID = newProductRef.key();
 			console.log(productIdID)
+
+			
+
 			var pRef = new Firebase(firebaseUrl+"products/products/"+productIdID)
 			pRef.child('handle').set(productIdID)
 
@@ -938,8 +968,15 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 				var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products");			
 				brandref.child(productIdID).set(brandProductData);
 
-				var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
-		    	lastupdateref.child('product').set(productIdID);
+				var queueData = {
+	          		'productId':productIdID,
+	          		'brand':brand,
+					"_state": "product_added"
+	          	}
+
+	          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+	          	queueRef.push(queueData);          	
+				
 			}			
             if(count == productData.length){
             	$scope.message = "Data succesfully Inserted";
@@ -1147,6 +1184,14 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 	var brand = userDataService.getbrand();
 	var homeref = new Firebase(firebaseUrl+"brands/"+brand);
 
+	var menuRef = new Firebase(firebaseUrl+"brands/"+brand+'/menuButtons');
+	//$scope.menuData = $firebaseObject(menuRef);
+	menuRef.once('value', function(snapshot) {
+		if(snapshot){
+			$scope.menuButtons = snapshot.val()
+		}
+	});
+
 	var homeData  = new Firebase(firebaseUrl+"brands/"+brand+'/home');
 	$scope.formData = $firebaseObject(homeData);
 
@@ -1162,6 +1207,9 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 		var scrolly = $scope.formData.scrolly;
 		var zoom = $scope.formData.zoom;
 		var top = $scope.formData.top;
+
+		var menuButtons = $scope.menuButtons;
+		
 		
 		var data = {
 			"image" : imgName,
@@ -1174,9 +1222,13 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 	        "zoom":zoom,
 	        "top":top
 		}
+		if(menuButtons){
+			console.log(menuButtons)
+			homeref.child('menuButtons').set(menuButtons);
+		}
 
 		if(imgName && text && query && logo){
-			homeref.child('home').set(data);
+			homeref.child('home').set(data);			
 			/*homeref.child('paymentMethod').set($scope.checkboxModel);*/
 			$scope.message = "Data succesfully Updated";
 		}
@@ -1324,6 +1376,11 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 		}		
 	}
 
+	$scope.deleteForm = function(){
+		brandformref.remove();
+		$state.go('forms.formlist')
+	}
+
 }
 
 function contactlistCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
@@ -1348,16 +1405,36 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 			  		console.log(result)
 			  		$scope.formData = result;
 			  		$scope.formData.key = $scope.formData.company; 
+			  		if(!$scope.formData.pImage){
+			  			$scope.formData.pImage = 'person_avatar_h9fddj'
+			  		}
 			  	});
 		  	},0,false);
 		}
 	});
 
+	$scope.deleteUser = function(){
+		/*var branduserref = new Firebase(firebaseUrl+"brands/"+brand+'/users/'+contactId);
+		branduserref.remove()
+		/*var userref = new Firebase(firebaseUrl+'/users/'+contactId);
+		userref.remove()*/
+		var queueData = {
+			'user':contactId,
+      		'brand':brand,
+			"_state": "delete_user"
+      	}
+
+      	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+      	queueRef.push(queueData);
+
+		$state.go('contacts.List')
+	}
+
 
 	//$scope.formData = $firebaseObject(branduserref);
 
 	$scope.submitForm = function() {
-    	if($scope.formData.name && $scope.formData.company){
+    	if($scope.formData.name && $scope.formData.company && $scope.formData.pImage){
     		console.log($scope.formData.key)
     		if($scope.formData.key != $scope.formData.company){
     			var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+encryptemail($scope.formData.key));
@@ -1376,9 +1453,7 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 			var mainuseref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
 			mainuseref.child(contactId).set(name);
 
-			if(!pImage){
-				pImage ="no image";
-			}
+			
 		   	var userData = {
 		   		'company':company,
 		   		'name':name,
@@ -1461,7 +1536,7 @@ function addadminCtrl($scope, $rootScope, userDataService) {
 		   	//var i = userref.child(mobile);
 		   	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
 		   	ref.child(brand).set('admin')
-		   	ref.child('support').set('admin')
+		   	ref.child('support').set('user')
 
 		    var brandref = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
 		    //var adminch = brandref.child('admins');
@@ -1765,6 +1840,7 @@ function uploaddispatchCtrl($scope, $rootScope, userDataService, keenServices, $
               		'cardId':cardkey,
   					"_state": "card_created"
               	}
+
               	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
               	queueRef.push(queueData);
               	/*addCardsToAdmins(cardkey, brand, mobile, firebaseUrl)
@@ -2385,6 +2461,7 @@ function addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company){
 	console.log(company)
 	var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+encryptemail(company));
 	var status = '';
+	var prio = 0-Date.now()
 	companyref.on("child_added", function(snapshot) {
 	  	//console.log(snapshot.key());
 	  	//console.log(mobile)
@@ -2397,7 +2474,7 @@ function addCardsTocompanyUsers(cardkey, brand, mobile, firebaseUrl, company){
 	  	}
 	  	console.log(status)
 	  	var userRef = new Firebase(firebaseUrl+"users/"+userMobile+"/"+brand+"/cards");	
-  		userRef.child(cardkey).set(status);
+  		userRef.child(cardkey).setWithPriority(status, prio);  		
 	});
 }
 

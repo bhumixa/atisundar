@@ -105,14 +105,14 @@ function firebaseServices($q, $firebaseArray){
 			branduserref.once("value",function(snapshot){
 		      var address = snapshot.val().address;
 		      var company = decryptemail(snapshot.val().company);
-		      var pimage = snapshot.val().pimage;
+		      var pImage = snapshot.val().pImage;
 		      var name = snapshot.val().name;
 		      var email = snapshot.val().email;
 
 		      var data = {
 		      	'address':address,
 		      	'company':company,
-		      	'pimage':pimage,
+		      	'pImage':pImage,
 		      	'name':name,
 		      	'email':email
 		      };
