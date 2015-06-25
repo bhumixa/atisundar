@@ -1,0 +1,90 @@
+<div ng-controller="autoforwardCtrl">
+	<div class="row wrapper border-bottom white-bg page-heading" >
+	    <div class="col-lg-9">
+	        <h2>Contacts</h2>
+	        <ol class="breadcrumb">
+	            <li>
+	                <a href="/dashboards">Home</a>
+	            </li>	            
+	            <li class="active">
+	                <strong>Auto Forward Settings</strong>
+	            </li>
+	        </ol>
+	        <br>
+	    </div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+	    <fieldset>
+	    	<div class="col-lg-12">
+		    	<div class="form-group">
+                    <div ng-if="message" class="alert alert-success"> {{message}} </div>
+                </div>
+                <div class="form-group">
+                    <div ng-if="error.Inc" class="alert alert-danger"> {{error.Inc}} </div>
+                    <div ng-if="error.RoundUp" class="alert alert-danger"> {{error.RoundUp}} </div>
+                </div>
+            </div>
+           
+            <table class="table table-striped">	
+            	<thead>
+            		<tr>	 
+            			<th> </th>           		
+	            		<th>Circle</th>
+	            		<th>Price Change</th>
+	            		<th> </th>
+	            	</tr>
+            	</thead>
+            	<tbody ng-repeat="brand in brandsList"> 
+            		<tr> 
+	            		<td> 
+	            			<!-- <div class="checkbox" >    
+	            				<input icheck type="checkbox" id="{{brand}}" name="{{brand}}" ng-model="brand" value="{{brand}}" >	
+	            			</div> -->
+	            			<input icheck type="checkbox" ng-model="main" value="{{brand}}" name="myCheckbox" ng-change="selectBrand(brand, $index)">
+	            		</td>
+	            		<td>
+	            			<!-- <label> 
+			                     {{brand}}
+			                </label>  -->
+			                 {{brand}}
+                                
+				        </td>
+	            		<td>
+	            			<div class="inline" >Price Markeup <input type="text" id="{{brand}}_INC" ng-model="increaseby" placeholder="%" style="width:50px" ng-change="selectBrand(brand, $index)"/> % </div>
+	            			<span> </span>
+	            			&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+	            			<div class="inline" >Rounded to Nearest Rs.
+
+	            			<select data-ng-model="RoundUp" id="{{brand}}_RoundUp" ng-change="selectBrand(brand, $index)">
+								<option value='0' ng-selected="0">0</option>				
+								<option value='1'>1</option>
+								<option value='2'>2</option>
+								<option value='5'>5</option>
+								<option value='50'>50</option>
+								<option value='100'>100</option>
+							</select>
+							</div>
+	            		</td>
+	            		<td>
+	            			<!-- <div ng-if="brand">
+	            				<div ng-if="error.Inc" class="alert alert-danger"> {{error.Inc}} </div>
+	            			</div> -->
+	            			
+	            		</td>
+            		</tr>       
+            	<!-- <div class="radio" ng-repeat="brand in brandsList">            		
+	                <label> 
+	                    <input icheck type="radio" id="{{brand}}" name="formCheck" ng-model="checkModel" value="{{brand}}"> {{brand}}
+	                </label> 
+               	</div>   
+           		<div class="col-lg-3">	
+                    <label> Price Increase By </label> 
+
+                   
+           		</div> -->
+                </tbody>               
+	        </table>	
+	        <button type="submit" class="btn btn-primary" ng-click="save()">Save</button>
+	    </fieldset>
+	</div>
+</div>

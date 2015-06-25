@@ -212,7 +212,21 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
                     ]);
                 }
             }
-        })        
+        })  //  
+        .state('settings.autoforward', {
+            url:"/autoforward",
+            templateUrl: "views/autoforward.html",
+            data: { pageTitle: 'Auto forward'},
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            files: ['css/plugins/iCheck/custom.css','js/plugins/iCheck/icheck.min.js']
+                        }
+                    ]);
+                }
+            }
+        })     
         .state('settings.homepage', {
             url:"/homepage",
             templateUrl: "views/homepage.html",

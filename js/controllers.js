@@ -656,6 +656,13 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 		              	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
 		              	queueRef.push(queueData);
 
+		              	var autoqueueData = {
+                            'productId':productIdID,
+                            'brand': brand,
+                            "_state": "auto_forward"
+                        }
+                        queueRef.push(autoqueueData);
+
 						$scope.message = "Product succesfully Added";
 						/*$scope.formData = '';*/
 					}
@@ -975,7 +982,14 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 	          	}
 
 	          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
-	          	queueRef.push(queueData);          	
+	          	queueRef.push(queueData);     
+
+	          	var autoqueueData = {
+                    'productId':productIdID,
+                    'brand': brand,
+                    "_state": "auto_forward"
+                }
+                queueRef.push(autoqueueData);     	
 				
 			}			
             if(count == productData.length){
@@ -2403,6 +2417,105 @@ function chatCtrl($scope, $rootScope, $stateParams, $firebaseArray, userDataServ
     });
 }
 
+function autoforwardCtrl($scope, $rootScope, $stateParams, $timeout, $firebaseArray, userDataService) {
+	var brand = userDataService.getbrand();
+    var mobile = userDataService.getMobile();
+    if(mobile){
+    	var userDataRef =  new Firebase(firebaseUrl+"users/"+mobile+'/brands');
+    	/*$scope.brandsList = $firebaseArray(userDataRef);*/
+    	var brandsList = [];
+    	userDataRef.on("child_added", function(snapshot) {
+    		if(snapshot.val() == 'user'){
+    			var brand = snapshot.key()
+    			brandsList.push(brand)
+    			$timeout(function(){
+				  	$scope.$apply(function() {
+				  		$scope.brandsList = brandsList;
+				  	});
+			  	},0,false);
+    		}
+    	});
+    
+    }
+    $scope.selectedBrandData = [];
+    $scope.main ={};
+    $scope.error = {};
+
+
+    $scope.selectBrand = function(brand, ind){
+    	var inc = $('#'+brand+'_INC').val();
+    	//var RoundUp = $('#'+brand+'_RoundUp').val();
+    	var RoundUp =  $('#'+brand+'_RoundUp').find('option:selected').text();
+    	/*if(!RoundUp){
+    		$scope.error.Inc ='';
+    		$scope.error.RoundUp = "Please select RoundUp by for "+brand;
+    	}else{
+    		$scope.error = '';
+    	}*/
+    	if(!inc){
+    		$scope.error.Inc = "Please select Increase by for "+brand;
+    	}else{
+    		if(!RoundUp){
+    			$scope.error.Inc ='';
+	    		$scope.error.RoundUp = "Please select RoundUp by for "+brand;
+	    	}
+    	}
+    	/*var brandL = {
+    		'brand':brand,
+    		'increase':inc,
+    		'roundUp':RoundUp
+    	}
+    	//console.log(brandL)
+    	if(brand && inc && RoundUp){
+    		$scope.selectedBrandData.push(brandL);
+    	}*/
+    }
+
+    $scope.save = function(){
+    	var n = $( "input:checked" ).length;
+    	console.log(n)
+    	var i = 0;
+    	$scope.selectedBrandData.length = 0;
+    	$('input:checkbox[name=myCheckbox]:checked').each(function() 
+		{
+			i++;
+		  	var brandSelect = $(this).val();
+		  	if(brandSelect){
+		  		var inc = $('#'+brandSelect+'_INC').val();
+		    	var RoundUp =  $('#'+brandSelect+'_RoundUp').find('option:selected').text();
+		    	
+		    	if(!inc){
+		    		$scope.error.Inc = "Please select Increase by for "+brandSelect;
+		    	}else{
+		    		if(!RoundUp){
+		    			$scope.error.Inc ='';
+			    		$scope.error.RoundUp = "Please select RoundUp by for "+brandSelect;
+			    	}
+		    	}
+		    	
+		    	if(brandSelect && inc && RoundUp){
+		    		var brandL = {
+			    		'brand':brandSelect,
+			    		'increase':inc,
+			    		'roundUp':RoundUp
+			    	}
+		    		$scope.selectedBrandData.push(brandL);
+		    	}
+		    	if(n == i){
+		    		var autoforwardref = new Firebase(firebaseUrl+"brands/"+brand+'/autoForward');
+		    		$scope.selectedBrandData.forEach(function(data){ 
+		    			console.log(data)
+		    			var brandObj = data.brand;
+		    			var inc = data.increase;
+		    			var roundup = data.roundUp;
+		    			autoforwardref.child(brandObj).set({'price':inc, 'rounded':roundup})
+		    		});
+		    	}
+		  	}		 	
+		});    	
+    }   
+}
+
 /**
  *  MainCtrl - controller
  */
@@ -2530,4 +2643,5 @@ angular
     .controller('dashboardCtrl', dashboardCtrl)
     .controller('chartJsCtrl', chartJsCtrl)
     .controller('paymentMethodCtrl', paymentMethodCtrl)
+    .controller('autoforwardCtrl', autoforwardCtrl)
     
