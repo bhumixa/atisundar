@@ -604,6 +604,9 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
     	if($scope.formData.name){
     		if($scope.formData.category){
     			if($scope.formData.price){
+    				if($scope.formData.cimages){
+
+
     				var mainref = new Firebase(firebaseUrl+"products/products")    	
 			    	/*$scope.products = $firebaseArray(brandref);
 			    	var i = $scope.products.push($scope.formData);*/
@@ -655,17 +658,20 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 
 		              	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
 		              	queueRef.push(queueData);
-
+/*
 		              	var autoqueueData = {
                             'productId':productIdID,
                             'brand': brand,
                             "_state": "auto_forward"
                         }
-                        queueRef.push(autoqueueData);
+                        queueRef.push(autoqueueData);*/
 
 						$scope.message = "Product succesfully Added";
 						/*$scope.formData = '';*/
 					}
+					}else{    			
+	    				$scope.errors.price = "please enter Product Image"
+	    			}
 	    		}else{    			
 	    			$scope.errors.price = "please enter Product Price"
 	    		}
@@ -984,12 +990,12 @@ function uploadproductcategoryCtrl($scope, $stateParams, $rootScope, userDataSer
 	          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
 	          	queueRef.push(queueData);     
 
-	          	var autoqueueData = {
+	          	/*var autoqueueData = {
                     'productId':productIdID,
                     'brand': brand,
                     "_state": "auto_forward"
                 }
-                queueRef.push(autoqueueData);     	
+                queueRef.push(autoqueueData);     	*/
 				
 			}			
             if(count == productData.length){

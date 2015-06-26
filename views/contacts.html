@@ -16,11 +16,14 @@
 <div class="wrapper wrapper-content animated fadeInRight">
 <div class="row">
 <div class="col-lg-12">
-    <!-- <div class="row">
-        <div class="col-sm-3">
-            <input type="text" ng-model="txtSearch">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="span4"> </div>
+           
+               <a ui-sref="contacts.addcontact"> <button  class="btn btn-primary pull-right" > <i class="fa fa-plus-square-o "> Add Contact </i> </button> </a>
+           
         </div>
-    </div> -->
+    </div>
     <div class="file-box" ng-repeat = "user in userlist" >
         <a href="#/contacts/editcontact/{{user.$id}}">
             <div class="col-sm-4">
