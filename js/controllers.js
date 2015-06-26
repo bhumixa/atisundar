@@ -670,7 +670,7 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 						/*$scope.formData = '';*/
 					}
 					}else{    			
-	    				$scope.errors.price = "please enter Product Image"
+	    				$scope.errors.price = "please enter Product Im"
 	    			}
 	    		}else{    			
 	    			$scope.errors.price = "please enter Product Price"
@@ -2508,14 +2508,17 @@ function autoforwardCtrl($scope, $rootScope, $stateParams, $timeout, $firebaseAr
 		    		$scope.selectedBrandData.push(brandL);
 		    	}
 		    	if(n == i){
-		    		var autoforwardref = new Firebase(firebaseUrl+"brands/"+brand+'/autoForward');
+		    		var autoforwardref = new Firebase(firebaseUrl+"brands/"+brand+'/autoForward/In/');
 		    		$scope.selectedBrandData.forEach(function(data){ 
 		    			console.log(data)
 		    			var brandObj = data.brand;
 		    			var inc = data.increase;
 		    			var roundup = data.roundUp;
 		    			autoforwardref.child(brandObj).set({'price':inc, 'rounded':roundup})
+		    			var Loggedinautoforwardref = new Firebase(firebaseUrl+"brands/"+brandObj+'/autoForward/Out/');
+		    			Loggedinautoforwardref.push(brand)
 		    		});
+
 		    	}
 		  	}		 	
 		});    	
