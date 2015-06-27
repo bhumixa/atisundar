@@ -573,6 +573,38 @@ function getamountTotal($timeout){
       };
 }
 
+function checkBrand($firebase, $timeout, $firebaseArray, userDataService){
+    return {
+        link: function($scope, element, attrs){            
+            var brand = attrs.myAttr;
+            var loggedIn = userDataService.getbrand();
+            console.log(loggedIn + '----***************'+brand)
+            var autoforwardRef = new Firebase(firebaseUrl+"brands/"+loggedIn+'/autoForward/In/'+brand);
+            autoforwardRef.once("value", function(snapshot) {
+                if(snapshot.val()){
+                     var brandL = snapshot.key();
+                    console.log(brandL)
+                    var dataSet = snapshot.val();
+                    var price = dataSet.price;
+                    var rounded = dataSet.rounded;
+                    console.log(dataSet);
+                    console.log('-----------');
+                    //$('#'+brandL+"_check").removeClass('icheckbox_square-green').addClass('icheckbox_square-green checked');
+                    $('#'+brandL+"_check").prop('checked', true);
+                    //$('#myCheckbox').prop('checked', true);
+                    $('#'+brandL+'_INC').val(price);
+                    $('#'+brandL+'_RoundUp').val(rounded);
+                }
+               
+                //
+                //alert(price);*/
+            });
+              
+        },
+        
+      };
+}
+
 function dccard($firebase, $timeout, $firebaseArray){
     var directive = {};
     directive.restrict='E';
@@ -928,6 +960,7 @@ angular
     .directive('onFinishRender', onFinishRender)
     .directive('infiniteScroll', infiniteScroll)
     .directive('ngEnter', ngEnter)
+    .directive('checkBrand',checkBrand)
     .filter('getTime', getTime)
     .filter('dashboardDate', dashboardDate)
     .filter('convertString', convertString)

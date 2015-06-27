@@ -41,7 +41,10 @@
 	            			<!-- <div class="checkbox" >    
 	            				<input icheck type="checkbox" id="{{brand}}" name="{{brand}}" ng-model="brand" value="{{brand}}" >	
 	            			</div> -->
-	            			<input icheck type="checkbox" ng-model="main" value="{{brand}}" name="myCheckbox" ng-change="selectBrand(brand, $index)">
+	            			<input type="checkbox" ng-model="main" value="{{brand}}" name="myCheckbox" id="{{brand}}_check" ng-change="selectBrand(brand, $index)">
+
+	            			 <div check-brand my-attr="{{brand}}"> </div>
+
 	            		</td>
 	            		<td>
 	            			<!-- <label> 
@@ -84,7 +87,9 @@
                    
            		</div> -->
                 </tbody>               
-	        </table>	
+	        </table>
+
+	       
 	        <button type="submit" class="btn btn-primary" ng-click="save()">Save</button>
 	    </fieldset>
 	</div>

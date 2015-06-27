@@ -11,6 +11,21 @@ var clientWrite = new Keen({
 /**
  *  loginCtrl - controller
  */
+/*function FormController($scope, $rootScope, $state, userDataService) {
+		$scope.step = 1;
+
+        $scope.nextStep = function() {
+            $scope.step++;
+        }
+
+        $scope.prevStep = function() {
+            $scope.step--;
+        }
+
+        $scope.submitForm = function() {
+            // submit code goes here
+        }
+}*/
 
 function loginCtrl($scope, $rootScope, $state, userDataService) {
  	$("#cb").hide();
@@ -2426,6 +2441,10 @@ function chatCtrl($scope, $rootScope, $stateParams, $firebaseArray, userDataServ
 function autoforwardCtrl($scope, $rootScope, $stateParams, $timeout, $firebaseArray, userDataService) {
 	var brand = userDataService.getbrand();
     var mobile = userDataService.getMobile();
+   
+   	$scope.loggedinBrand = brand;
+   
+
     if(mobile){
     	var userDataRef =  new Firebase(firebaseUrl+"users/"+mobile+'/brands');
     	/*$scope.brandsList = $firebaseArray(userDataRef);*/
@@ -2436,7 +2455,7 @@ function autoforwardCtrl($scope, $rootScope, $stateParams, $timeout, $firebaseAr
     			brandsList.push(brand)
     			$timeout(function(){
 				  	$scope.$apply(function() {
-				  		$scope.brandsList = brandsList;
+				  		$scope.brandsList = brandsList;				  		 	
 				  	});
 			  	},0,false);
     		}
@@ -2517,6 +2536,7 @@ function autoforwardCtrl($scope, $rootScope, $stateParams, $timeout, $firebaseAr
 		    			autoforwardref.child(brandObj).set({'price':inc, 'rounded':roundup})
 		    			var Loggedinautoforwardref = new Firebase(firebaseUrl+"brands/"+brandObj+'/autoForward/Out/');
 		    			Loggedinautoforwardref.push(brand)
+		    			$scope.message = "Auto Forward Settings succesfully added";
 		    		});
 
 		    	}
@@ -2653,4 +2673,5 @@ angular
     .controller('chartJsCtrl', chartJsCtrl)
     .controller('paymentMethodCtrl', paymentMethodCtrl)
     .controller('autoforwardCtrl', autoforwardCtrl)
+   // .controller('FormController', FormController)
     
