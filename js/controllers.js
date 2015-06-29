@@ -11,8 +11,8 @@ var clientWrite = new Keen({
 /**
  *  loginCtrl - controller
  */
-/*function FormController($scope, $rootScope, $state, userDataService) {
-		$scope.step = 1;
+function FormController($scope, $rootScope, $state, userDataService) {
+		$scope.step = 0;
 
         $scope.nextStep = function() {
             $scope.step++;
@@ -25,7 +25,7 @@ var clientWrite = new Keen({
         $scope.submitForm = function() {
             // submit code goes here
         }
-}*/
+}
 
 function loginCtrl($scope, $rootScope, $state, userDataService) {
  	$("#cb").hide();
@@ -2678,5 +2678,5 @@ angular
     .controller('chartJsCtrl', chartJsCtrl)
     .controller('paymentMethodCtrl', paymentMethodCtrl)
     .controller('autoforwardCtrl', autoforwardCtrl)
-   // .controller('FormController', FormController)
+    .controller('FormController', FormController)
     
