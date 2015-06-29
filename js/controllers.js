@@ -257,6 +257,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 
           	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
           	queueRef.push(queueData);
+          	
 		   
 		   /*	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
 		   	ref.child(brand).set('user')
@@ -457,6 +458,8 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 
 	          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
 	          	queueRef.push(queueData);
+
+	          	
 				
 	            if(count == contactData.length){
 	            	$scope.message = "Data succesfully Inserted";
@@ -1461,6 +1464,8 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 
       	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
       	queueRef.push(queueData);
+
+      	
 
 		$state.go('contacts.List')
 	}
