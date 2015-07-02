@@ -108,13 +108,14 @@ function firebaseServices($q, $firebaseArray){
 		      var pImage = snapshot.val().pImage;
 		      var name = snapshot.val().name;
 		      var email = snapshot.val().email;
-
+		      var handle = snapshot.val().uhandle;
 		      var data = {
 		      	'address':address,
 		      	'company':company,
 		      	'pImage':pImage,
 		      	'name':name,
-		      	'email':email
+		      	'email':email,
+		      	'handle':handle,
 		      };
 		      console.log(data)
 		      resolve(data);

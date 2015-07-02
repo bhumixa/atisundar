@@ -35,6 +35,12 @@
                     <input type="text" class="form-control" placeholder="Name" ng-model="formData.name" required="" >
                 </div>
 
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="User Name" ng-model="formData.handle" required="" >
+                </div>
+                 <div class="form-group">
+                    <div ng-if="error.handle" class="alert alert-danger"> {{error.handle}} </div>
+                </div>
                 
               
 

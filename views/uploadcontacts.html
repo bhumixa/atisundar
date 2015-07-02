@@ -66,7 +66,8 @@
 						            <th>Mobile</th>
 						            <th>Email</th>
 						            <th>Address</th>
-						            <th>Image</th>	
+						            <th>Image</th>
+						            <th>User Name</th>	
 						            <th>Status</th>
 					            	<th>Errors</th>					           				            
 						        </tr>
@@ -79,6 +80,7 @@
 					            <td>{{contact.email}}</td>
 					            <td>{{contact.address}}</td>
 					            <td>{{contact.image}}</td>
+					            <th>{{contact.handle}}</th>
 					            <td> 
 					            	<i class="fa fa-check" ng-show="{{contact.status}}"></i>
 					            	<i class="fa fa-times" ng-show="!{{contact.status}}"></i>
