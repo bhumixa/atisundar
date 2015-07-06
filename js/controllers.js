@@ -1364,7 +1364,8 @@ function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userData
 				'name':$scope.formData.name,
 				'description':$scope.formData.description,
 				'added-on': ctime,
-				'created-by':name
+				'created-by':name,
+				'handle':$scope.formData.handle,
 			}
 			brandformref.push(data);
 			//brandformref.set(data);
@@ -1453,7 +1454,8 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 				'name':$scope.formData.name,
 				'description':$scope.formData.description,
 				'added-on': ctime,
-				'created-by':name
+				'created-by':name,
+				'handle':$scope.formData.handle,
 			}
 			brandformref.set(data);
 			//brandformref.set(data);

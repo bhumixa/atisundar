@@ -41,7 +41,8 @@
                             <textarea rows="4" cols="150" id="desc" name="desc" ng-model="formData.description" type="text" class="form-control required" >
 
                             </textarea>
-                        </div>                                          
+                        </div>      
+
                     </div>
 
                     <div class="col-lg-6">
@@ -51,7 +52,11 @@
                             <textarea rows="4" cols="150" id="html" name="html" ng-model="formData.html" type="text" class="form-control required" >
 
                             </textarea>
-                        </div>                                   
+                        </div>   
+                        <div class="form-group">
+                            <label>Handle * </label>                            
+                            <input id="name" name="name" ng-model="formData.handle" type="text" class="form-control required" ng-required="true">
+                        </div>                          
                     </div>                    
                 </div>
                 <button type="submit" class="btn btn-primary" ng-click="submitForm()">Submit</button>   
