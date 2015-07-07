@@ -124,8 +124,9 @@ function registerCtrl($scope, $rootScope, $state, userDataService){
 			    			var supportRef = new Firebase(firebaseUrl+"brands/support/users");
 	    					supportRef.child(mobile).set(name);
 
-	    					
-
+	    					/*var feedRef = new Firebase(firebaseUrl+"/feeds/FH");
+	    					feedRef.child(brand).set({'authorName':name,'pImage':'person_avatar_h9fddj','author':mobile});
+	    					*/
 						    var brandchild  = brandref.child(brand);
 						    var adminch = brandchild.child('admins');
 						    adminch.child(mobile).set(name)
@@ -1341,11 +1342,99 @@ function backgroundCtrl($scope, $rootScope, $stateParams, $state, userDataServic
 	}
 }
 
+function feedlistCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+	$scope.feedData = {};
+	var brand = userDataService.getbrand();
+	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/feeds");
+	$scope.feedlist = $firebaseArray(brandformref);
+}
+
 function formlistCtrl ($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	$scope.formData = {};
 	var brand = userDataService.getbrand();
 	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/forms");
 	$scope.formslist = $firebaseArray(brandformref);
+}
+
+function addfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, firebaseServices, userDataService, dataService, $firebaseObject, $firebaseArray){
+	$scope.feedData = {};
+	var brand = userDataService.getbrand();
+	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
+	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/feeds");
+	var mainFeedref = new Firebase(firebaseUrl+"/feeds");
+	var name = userDataService.getName();
+	var mobile = userDataService.getMobile();
+	$scope.submitForm = function(){
+		var ctime = new Date().getTime();
+		if($scope.feedData.url){
+			//var id = $scope.formData.id;
+			var last_updated = 0;
+			if($scope.feedData.last_updated){
+				last_updated = $scope.feedData.last_updated;
+			}
+			firebaseServices.fetchContactData(mobile, brand).then(function(result){
+				if (result){
+					var image = "person_avatar_h9fddj"
+			  		if(result.pImage){
+			  			image = result.pImage;
+			  			var data = {
+							'url':$scope.feedData.url,
+							'last_updated':last_updated,
+							'brand':brand,
+							'authorName':name,
+							'author':mobile,
+							'pImage':image
+						}
+						var feed = mainFeedref.push(data);
+						var key = feed.key();
+						brandformref.child(key).set(ctime);
+			  		}
+				}
+			});			
+			$scope.message = "Feed succesfully Created";
+		}else{
+			$scope.error = "Plese enter feed URL";
+		}		
+	}
+}
+
+function editfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, userDataService, dataService, $firebaseObject, $firebaseArray){
+	$scope.feedData = {};
+
+	var brand = userDataService.getbrand();
+	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
+
+	var feedId = $stateParams.feedId;
+	var mainFeedref = new Firebase(firebaseUrl+"feeds/"+feedId);
+
+	$scope.feedData = $firebaseObject(mainFeedref);
+
+	var name = userDataService.getName();
+
+	$scope.submitForm = function(){
+		var ctime = new Date().getTime();
+		if($scope.feedData.url){
+			//var id = $scope.formData.id;
+			var last_updated = 0;
+			if($scope.feedData.last_updated){
+				last_updated = $scope.feedData.last_updated;
+			}
+			var data = {
+				'url':$scope.feedData.url,
+				'last_updated':last_updated
+			}
+
+			mainFeedref.update(data);
+			$scope.message = "Feed succesfully Updated";
+		}	
+	}
+
+	$scope.deleteFeed = function(){
+    	mainFeedref.remove();
+    	var brandfeedref = new Firebase(firebaseUrl+"brands/"+brand+'/feeds/'+feedId);
+    	brandfeedref.remove();
+    	$state.go('feeds.feedslist')
+	}
 }
 
 function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userDataService, dataService, $firebaseObject, $firebaseArray){
@@ -1388,7 +1477,6 @@ function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userData
 		console.log($scope.formData)
 
 	});
-
 }
 
 
@@ -2757,4 +2845,7 @@ angular
     .controller('paymentMethodCtrl', paymentMethodCtrl)
     .controller('autoforwardCtrl', autoforwardCtrl)
     .controller('FormController', FormController)
+    .controller('feedlistCtrl', feedlistCtrl)
+    .controller('addfeedCtrl', addfeedCtrl)
+    .controller('editfeedCtrl', editfeedCtrl)
     

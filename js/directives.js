@@ -378,6 +378,37 @@ function getuserImage($firebaseObject, $timeout){
     }
 }
 
+function getfeedData($firebaseObject, $timeout){
+    return {
+        link: function($scope, element, attrs){ 
+            var id  =  attrs.id
+            console.log(id)
+            var mainFeedref = new Firebase(firebaseUrl+"/feeds/"+id);
+            mainFeedref.once('value', function(Snapshot) {
+                var feed = Snapshot.val();
+                for (f in feed) {
+                    $timeout(function(){
+                        $scope.$apply(function() {                        
+                        $scope.feedData = feed
+                        //console.log(card)
+                            //element.html("<pre>"+card.author+"</pre>")
+                    })},0,false);
+                }
+              /*$timeout(function(){
+
+                $scope.$apply(function() {
+                    $scope.userData = data
+
+                    //console.log(card)
+                        //element.html("<pre>"+card.author+"</pre>")
+                    })  },0,false);*/
+              // val now contains the object { first: 'Fred', last: 'Flintstone' }.
+            });
+        },
+        template :'<div class="contact-box"><h3><strong>{{feedData.url}}</strong></h3><p> {{feedData.last_updated}} </p></div>'
+    };
+}
+
 function getuserData($firebaseObject, $timeout){
     return {
         link: function($scope, element, attrs){ 
@@ -953,6 +984,7 @@ angular
     .directive('getimageUrl', getimageUrl)
     .directive('getuserData', getuserData)
     .directive('getuserImage', getuserImage)
+    .directive('getfeedData', getfeedData)
     .directive('getCard', getCard)
     .directive('dccard',dccard)    
     .directive('getpiecesTotal', getpiecesTotal)

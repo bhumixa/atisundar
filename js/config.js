@@ -145,6 +145,26 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             templateUrl: "views/category.html",
             data: { pageTitle: 'Products' }
         })
+        .state('feeds', {
+            abstract: true,
+            url: "/feeds",
+            templateUrl:  "views/common/content.html",
+        })
+        .state('feeds.feedslist', {
+            url:"/feedslist",
+            templateUrl: "views/feedslist.html",
+            data: { pageTitle: 'Feed List'}
+        })
+        .state('feeds.addfeed', {
+            url:"/addfeed",
+            templateUrl: "views/addfeed.html",
+            data: { pageTitle: 'Add Feed'}
+        })
+        .state('feeds.editfeed', {
+            url:"/editfeed/:feedId",
+            templateUrl: "views/editfeed.html",
+            data: { pageTitle: 'Edit Feed'}
+        })
         .state('forms', {
             abstract: true,
             url: "/forms",

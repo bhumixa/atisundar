@@ -101,6 +101,14 @@
                 </ul>
             </li>
 
+            <li ng-class="{active: $state.includes('feeds')}">                
+                <a href=""><i class="fa fa-file-text"></i> <span class="nav-label">Feeds</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" ng-class="{in: $state.includes('forms')}">
+                    <li ui-sref-active="active"><a ui-sref="feeds.feedslist">Feed List</a></li>
+                    <li ui-sref-active="active"><a ui-sref="feeds.addfeed">Add Feed</a></li>
+                </ul>
+            </li>
+
             <li ng-class="{active: $state.includes('forms')}">                
                 <a href=""><i class="fa fa-file-text"></i> <span class="nav-label">Forms</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level" ng-class="{in: $state.includes('forms')}">
