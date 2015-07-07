@@ -1,4 +1,4 @@
-var firebaseUrl = "https://ccbeta.firebaseio.com/";
+var firebaseUrl = Circle.getFBURL();
 
 var clientWrite = new Keen({
   projectId: "55430ee796773d5aa89d86a4",

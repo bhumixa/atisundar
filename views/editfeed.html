@@ -1,0 +1,49 @@
+<div  ng-controller="editfeedCtrl">
+    <div class="row wrapper border-bottom white-bg page-heading" >
+        <div class="col-lg-9">
+            <h2>Feeds</h2>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="/dashboards">Home</a>
+                </li>
+                
+                <li class="active">
+                    <strong>Add Feed</strong>
+                </li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="wrapper wrapper-content animated fadeInRight">
+       <fieldset>
+       	<form class="m-t" role="form">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <div ng-if="message" class="alert alert-success"> {{message}} </div>
+                             <div class="alert alert-danger alert-dismissable" ng-if="error"> {{error}} </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Feed Url *</label>
+                            <input id="url" name="url" ng-model="feedData.url" type="text" class="form-control required" ng-required="true">
+                        </div> 
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="form-group">
+                            <label>Feed Last Updated *</label>
+                            <input id="last_updated" name="last_updated" ng-model="feedData.last_updated" type="text" class="form-control">
+                        </div>                      
+                    </div>                    
+                </div>
+                <button type="submit" class="btn btn-primary" ng-click="submitForm()">Submit</button>  
+                <button class="btn btn-danger pull-right" type="button" ng-click="deleteFeed()">
+                    <i class="fa fa-trash-o"> Delete Feed </i>
+                </button>
+            </form> 
+       </fieldset>
+    </div>
+</div>

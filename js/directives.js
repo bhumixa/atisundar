@@ -1,4 +1,4 @@
-var firebaseUrl = "https://ccbeta.firebaseio.com/";
+var firebaseUrl = Circle.getFBURL();
 
 /**
  * pageTitle - Directive for set Page title - mata title

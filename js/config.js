@@ -7,6 +7,40 @@
  * Initial there are written state for all view in theme.
  *
  */
+ //global Config variables for the project
+var _Circle = function(){
+    version = "1.0.0.20150707"
+    mode = 'dev'
+    fbDevURL="https://ccbeta.firebaseio.com"
+    fbProdURL="https://mobicircles.firebaseio.com"
+}
+
+_Circle.prototype  = {
+    getVersion: function(){
+        return this.version
+    },
+
+    getFBURL: function(){
+        console.log("Mode = "+this.mode)
+        if (mode == "production"){
+            console.log("Returning fbProdURL!")
+            return fbProdURL
+        }
+        console.log("Returning Dev URL...")
+        return fbDevURL
+    },
+
+    setProdMode: function(){
+        this.mode = "production"
+    },
+
+    setDevMode: function(){
+        this.mode = "dev"
+    }
+}
+
+var Circle = new _Circle()
+
 function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
     $urlRouterProvider.otherwise("dashboards");
 
