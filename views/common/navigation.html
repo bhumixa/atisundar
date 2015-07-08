@@ -102,7 +102,7 @@
             </li>
 
             <li ng-class="{active: $state.includes('feeds')}">                
-                <a href=""><i class="fa fa-file-text"></i> <span class="nav-label">Feeds</span><span class="fa arrow"></span></a>
+                <a href=""><i class="fa fa-bars"></i> <span class="nav-label">Feeds</span><span class="fa arrow"></span></a>
                 <ul class="nav nav-second-level" ng-class="{in: $state.includes('forms')}">
                     <li ui-sref-active="active"><a ui-sref="feeds.feedslist">Feed List</a></li>
                     <li ui-sref-active="active"><a ui-sref="feeds.addfeed">Add Feed</a></li>
@@ -130,6 +130,13 @@
                     <li ui-sref-active="active"><a ui-sref="converter.csv">CSV Converter</a></li>
                 </ul>
             </li>
+
+            <!-- <li ng-class="{active: $state.includes('schedule')}">                
+                <a href=""><i class="fa fa-clock-o"></i> <span class="nav-label">Schedule</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" ng-class="{in: $state.includes('schedule')}">
+                    <li ui-sref-active="active"><a ui-sref="schedule.message">Add Scheduled Messages</a></li>
+                </ul>
+            </li> -->
 
 
             <li ng-class="{active: $state.includes('settings')}">                

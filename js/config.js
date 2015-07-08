@@ -11,8 +11,8 @@
 var _Circle = function(){
     version = "1.0.0.20150707"
     mode = 'dev'
-    fbDevURL="https://ccbeta.firebaseio.com"
-    fbProdURL="https://mobicircles.firebaseio.com"
+    fbDevURL="https://ccbeta.firebaseio.com/"
+    fbProdURL="https://mobicircles.firebaseio.com/"
 }
 
 _Circle.prototype  = {
@@ -105,7 +105,26 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
             templateUrl: "views/timelinepost.html",
             data: { pageTitle: 'Timeline' }
         })
-
+        /*.state('schedule', {
+            abstract: true,
+            url: "/schedule",
+            templateUrl: "views/common/content.html",
+        }) //schedule.message
+        .state('schedule.message', {
+            url: "/message",
+            templateUrl: "views/schedulemessage.html",
+            data: { pageTitle: 'Schedule Message' },
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([                       
+                        {
+                            name: 'datePicker',
+                            files: ['css/plugins/datapicker/angular-datapicker.css','js/plugins/datapicker/datePicker.js']
+                        }
+                    ]);
+                }
+            }
+        })*/
         .state('contacts', {
             abstract: true,
             url: "/contacts",
@@ -218,6 +237,10 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
                     return $ocLazyLoad.load([
                         {
                             files: ['css/plugins/iCheck/custom.css','js/plugins/iCheck/icheck.min.js']
+                        },
+                        {     
+                            name: 'datePicker',                       
+                            files: ['css/plugins/datapicker/angular-datapicker.css','js/plugins/datapicker/datePicker.js']
                         }
                     ]);
                 }
@@ -226,7 +249,17 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider) {
         .state('forms.editform', {
             url:"/editform/:formId",
             templateUrl: "views/editform.html",
-            data: { pageTitle: 'Edit Form'}
+            data: { pageTitle: 'Edit Form'},
+            resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([                        
+                        {     
+                            name: 'datePicker',                       
+                            files: ['css/plugins/datapicker/angular-datapicker.css','js/plugins/datapicker/datePicker.js']
+                        }
+                    ]);
+                }
+            }
         })
         .state('uploads', {
             abstract: true,

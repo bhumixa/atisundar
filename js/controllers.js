@@ -1445,23 +1445,68 @@ function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userData
 	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/forms");
 	var name = userDataService.getName();
 
+	$scope.formatTime = function(id) { 
+	  var val =  $('#'+id).val();
+	  val = val.replace(/[^0-9]/g,'');
+	  if(val.length >= 2)
+	      val = val.substring(0,2) + ':' + val.substring(2); 
+	  if(val.length >= 5)
+	      val = val.substring(0,5); 
+	  /*if(val.length > 10)
+	      val = val.substring(0,10); */
+	 $('#'+id).val(val);
+	};
+
 	$scope.submitForm = function(){
-		var ctime = new Date().getTime();
-		if($scope.formData.name){
-			//var id = $scope.formData.id;
-			var data = {
-				'html':$scope.formData.html,
-				'name':$scope.formData.name,
-				'description':$scope.formData.description,
-				'added-on': ctime,
-				'created-by':name,
-				'handle':$scope.formData.handle,
+		var ctime = new Date().getTime();	
+		if($scope.formData.active){
+			if($scope.formData.startdate  && $scope.formData.enddate  && $scope.formData.usergrouptag && $scope.formData.period && $scope.formData.time){
+				console.log($scope.formData.usergrouptag);
+				console.log($scope.formData.period);
+				console.log($scope.formData.startdate);
+				console.log($scope.formData.enddate);
+				console.log($scope.formData.time);
+				var startdate = $scope.formData.startdate
+				var enddate = $scope.formData.enddate
+				var time = moment($scope.formData.time).format('HH:mm:ss');
+				console.log(startdate + '----'+enddate +'>>>'+time)
+				var data = {
+					'html':$scope.formData.html,
+					'name':$scope.formData.name,
+					'description':$scope.formData.description,
+					'added-on': ctime,
+					'created-by':name,
+					'handle':$scope.formData.handle,
+					'usergrouptag':$scope.formData.usergrouptag,
+					'period':$scope.formData.period,
+					'startdate':startdate,
+					'enddate':enddate,
+					'time':time,
+					'active':$scope.formData.active
+				}
+				$scope.message = "Form succesfully Created";
+				brandformref.push(data);
+			}else{
+				$scope.error = "Please fill all fields";
+			}			
+		}else{
+			if($scope.formData.name){
+				
+				var data = {
+					'html':$scope.formData.html,
+					'name':$scope.formData.name,
+					'description':$scope.formData.description,
+					'added-on': ctime,
+					'created-by':name,
+					'handle':$scope.formData.handle,
+					'active':false
+				}
+				brandformref.push(data);
+				//brandformref.set(data);
+				$scope.message = "Form succesfully Created";
+				/*$scope.formData = {};*/
 			}
-			brandformref.push(data);
-			//brandformref.set(data);
-			$scope.message = "Form succesfully Created";
-			/*$scope.formData = {};*/
-		}		
+		}
 	}
 
 	$scope.openMedal = function(){
@@ -1535,22 +1580,67 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 
 	var name = userDataService.getName();
 
+	$scope.formatTime = function(id) { 
+	  var val =  $('#'+id).val();
+	  val = val.replace(/[^0-9]/g,'');
+	  if(val.length >= 2)
+	      val = val.substring(0,2) + ':' + val.substring(2); 
+	  if(val.length >= 5)
+	      val = val.substring(0,5); 
+	  /*if(val.length > 10)
+	      val = val.substring(0,10); */
+	  $('#'+id).val(val);
+	};
+
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();
-		if($scope.formData.name){
-			var data = {
-				'html':$scope.formData.html,
-				'name':$scope.formData.name,
-				'description':$scope.formData.description,
-				'added-on': ctime,
-				'created-by':name,
-				'handle':$scope.formData.handle,
+		if($scope.formData.active){
+			if($scope.formData.startdate && $scope.formData.enddate  && $scope.formData.usergrouptag  && $scope.formData.period  && $scope.formData.time){
+				/*console.log($scope.formData.usergrouptag);
+				console.log($scope.formData.period);
+				console.log($scope.formData.startdate);
+				console.log($scope.formData.enddate);*/
+				//console.log($scope.formData.time);
+				var startdate = $scope.formData.startdate
+				var enddate = $scope.formData.enddate
+				var time = $scope.formData.time
+				console.log(startdate + '----'+enddate +'>>>'+time)
+				var data = {
+					'html':$scope.formData.html,
+					'name':$scope.formData.name,
+					'description':$scope.formData.description,
+					'added-on': ctime,
+					'created-by':name,
+					'handle':$scope.formData.handle,
+					'usergrouptag':$scope.formData.usergrouptag,
+					'period':$scope.formData.period,
+					'startdate':startdate,
+					'enddate':enddate,
+					'time':time,
+					'active':$scope.formData.active
+				}
+				brandformref.update(data);
+				$scope.message = "Form succesfully Updated";
+			}else{
+				$scope.error = "Please fill all fields";
+			}			
+		}else{
+			if($scope.formData.name){				
+				var data = {
+					'html':$scope.formData.html,
+					'name':$scope.formData.name,
+					'description':$scope.formData.description,
+					'added-on': ctime,
+					'created-by':name,
+					'handle':$scope.formData.handle,
+					'active':false
+				}
+				brandformref.update(data);
+				//brandformref.set(data);
+				$scope.message = "Form succesfully Updated";
+				/*$scope.formData = {};*/
 			}
-			brandformref.set(data);
-			//brandformref.set(data);
-			$scope.message = "Data succesfully Updated";
-			//$scope.formData = {};
-		}		
+		}
 	}
 
 	$scope.deleteForm = function(){
@@ -2705,6 +2795,11 @@ function autoforwardCtrl($scope, $rootScope, $stateParams, $timeout, $firebaseAr
     }   
 }
 
+function schedulemessageCtrl($scope, $rootScope, $stateParams, $timeout, $firebaseArray, userDataService) {
+	$scope.formData = {};
+
+}
+
 /**
  *  MainCtrl - controller
  */
@@ -2797,6 +2892,8 @@ function isValid(str) {
     return true;
 }
 
+
+
 /*function checkIfcompanyExists(comp, brand) {
 	return $q(function(resolve, reject){
 		var company = comp;
@@ -2849,4 +2946,5 @@ angular
     .controller('feedlistCtrl', feedlistCtrl)
     .controller('addfeedCtrl', addfeedCtrl)
     .controller('editfeedCtrl', editfeedCtrl)
+    .controller('schedulemessageCtrl', schedulemessageCtrl)
     
