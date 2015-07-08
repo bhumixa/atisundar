@@ -19,23 +19,37 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="span4"> </div>
-           
-               <a ui-sref="contacts.addcontact"> <button  class="btn btn-primary pull-right" > <i class="fa fa-plus-square-o "> Add Contact </i> </button> </a>
-           
+            <div class="col-lg-8">
+                <input ng-model="textSearch" id="top-search" class="form-control pull-left" type="text" placeholder="Filter by" autofocus>
+            </div>
+            <div class="col-lg-2">
+                <button  class="btn btn-primary pull-right" ng-click="createUserGroup()"> <i class="fa fa-group"> Create Group </i> </button> 
+            </div>
+            <div class="col-lg-2">
+                <a ui-sref="contacts.addcontact"> <button  class="btn btn-primary pull-right" > <i class="fa fa-plus-square-o "> Add Contact </i> </button> </a>  
+            </div>  
         </div>
     </div>
-    <div class="file-box" ng-repeat = "user in userlist" >
-        <a href="#/contacts/editcontact/{{user.$id}}">
+    
+    <!-- <div class="file-box" ng-repeat = "user in userlist | filter: textSearch" >
+        <a href="#/contacts/editcontact/{{user.key}}">
+            {{user.name}}
+        </a>
+    </div> -->
+    <div class="span4"> </div>
+    <div class="file-box" ng-repeat = "user in userlist | filter: textSearch" >
+        <!-- <input type="checkbox" ng-model="main" value="{{brand}}" name="myCheckbox" id="{{brand}}_check" ng-change="selectBrand(brand, $index)"> -->
+        <input class="pull-left" type="checkbox" name="keys[]" ng-model="keys" value="{{user.key}}">
+        <a class="pull-right" href="#/contacts/editcontact/{{user.key}}">
             <div class="col-sm-4">
                 <div class="text-center">
-                    <img alt="image" class="img-circle m-t-xs img-responsive" src="http://res.cloudinary.com/atisundar/image/upload/w_200/person_avatar_h9fddj" getuser-image my-attr="{{user.$id}}">
-
+                    <img alt="image" class="img-circle m-t-xs img-responsive" src="http://res.cloudinary.com/atisundar/image/upload/w_200/person_avatar_h9fddj" getuser-image my-attr="{{user.key}}">                    
                     <div class="m-t-xs font-bold">  </div>
                 </div>
             </div>
             <div class="col-sm-8"> 
 
-                <div getuser-data my-attr="{{user.$id}}"> </div>
+                <div getuser-data my-attr="{{user.key}}"> </div>
             </div>
             <div class="clearfix"></div>
         </a>

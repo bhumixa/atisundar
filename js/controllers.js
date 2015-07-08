@@ -1650,11 +1650,47 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 
 }
 
-function contactlistCtrl($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+function contactlistCtrl($scope, $timeout, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	/*$scope.userlist = {};*/
 	var brand = userDataService.getbrand();
 	var branduserref = new Firebase(firebaseUrl+"brands/"+brand+'/users');
-	$scope.userlist = $firebaseArray(branduserref);
+	//$scope.userlist = $firebaseArray(branduserref);
+	$scope.users = '';
+	$scope.userlist = '';
+	var userlist = []; 
+	branduserref.on('child_added', function(snapshot) {
+		if(snapshot.val()){
+			var name = snapshot.val();
+			var key = snapshot.key();
+			var data= {
+				'name':name,
+				'key':key
+			}
+			userlist.push(data);
+			$timeout(function(){
+				$scope.$apply(function(){
+					$scope.userlist = userlist
+				});
+			},0,false);
+		}
+	});
+
+	$scope.createUserGroup = function(){
+		$scope.keys = [];
+		var checkboxes = document.getElementsByName('keys[]');
+    	//$scope.feedback.label = [];
+
+    	for (var i=0; i<checkboxes.length; i++) {
+        	if (checkboxes[i].checked) 
+	        {
+	        	$scope.keys.push(checkboxes[i].value); 
+	        }
+	        if(i==checkboxes.length-1){
+	        	console.log($scope.keys + '--'+checkboxes.length)   
+        		console.log($scope.keys)
+        	}
+      	}   
+	}
 }
 
 function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataService, firebaseServices, $timeout, $firebaseObject, $firebaseArray){
