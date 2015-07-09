@@ -1632,9 +1632,16 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 
 function contactlistCtrl($scope, $modal, $timeout, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	/*$scope.userlist = {};*/
+
+
 	var brand = userDataService.getbrand();
 	var branduserref = new Firebase(firebaseUrl+"brands/"+brand+'/users');
 	//$scope.userlist = $firebaseArray(branduserref);
+
+	/*var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/Welcome');
+	var val = $firebaseArray(tagref);
+	var length = val.length;
+	alert(length)*/
 	$scope.users = '';
 	$scope.userlist = '';
 	var userlist = []; 
@@ -1655,8 +1662,26 @@ function contactlistCtrl($scope, $modal, $timeout, $rootScope, $stateParams, $st
 		}
 	});
 
-	$scope.addtag = function(){
-		
+	var tagref = new Firebase(firebaseUrl+'/tags/'+brand);
+	tagref.once('value', function(snapshot) {
+		if(snapshot.val()){
+			var data = snapshot.val();
+			console.log(data)
+		}
+	});
+
+	$scope.tag = function(value){
+		if(value == 1){
+			var modalInstance = $modal.open({
+            	templateUrl: 'views/addtag.html',
+            	controller: addTagCtrl
+       		});
+		}else{
+			var modalInstance = $modal.open({
+            	templateUrl: 'views/addtag.html',
+            	controller: removeTagCtrl
+       		});
+		}
 		/*var checkboxes = document.getElementsByName('keys[]');
     	//$scope.feedback.label = [];
 
@@ -1666,10 +1691,7 @@ function contactlistCtrl($scope, $modal, $timeout, $rootScope, $stateParams, $st
 	        	$scope.keys.push(checkboxes[i].value); 
 	        }
 	    }*/
-	    var modalInstance = $modal.open({
-            templateUrl: 'views/addtag.html',
-            controller: addTagCtrl
-        });
+	    
 	        /*if(i==checkboxes.length-1){
 	        	console.log($scope.keys + '--'+checkboxes.length)   
         		console.log($scope.keys)
@@ -1677,11 +1699,12 @@ function contactlistCtrl($scope, $modal, $timeout, $rootScope, $stateParams, $st
 	}
 }
 
-function addTagCtrl ($scope, $modalInstance, $timeout, dataService, $firebaseObject) {
+function addTagCtrl ($scope, $modalInstance, userDataService, $timeout, dataService, $firebaseObject) {
 
    /* var n  = userref.child(user);
     n.child('profile').set(profileData)*/
-    var tagref = new Firebase(firebaseUrl+'/tags');
+    var brand = userDataService.getbrand();
+    
 	$scope.ok = function () {
 		$scope.keys = [];
 		if($scope.tagName){
@@ -1689,16 +1712,48 @@ function addTagCtrl ($scope, $modalInstance, $timeout, dataService, $firebaseObj
 			for (var i=0; i<checkboxes.length; i++) {
 	        	if (checkboxes[i].checked) 
 		        {
+		        	var ctime = new Date().getTime();
 		        	var user = checkboxes[i].value;
 		        	$scope.keys.push(user); 
-		        	var userref = new Firebase(firebaseUrl+"users/"+user);
-		        	userref.child('profile').update({'tag':$scope.tagName})
+		        	var userref = new Firebase(firebaseUrl+"users/"+user+'/profile/tag/'+brand);
+		        	//var i = userref.child(brand);
+		        	userref.child($scope.tagName).set(ctime);
+		        	
+		        	//var n = tagref.child(brand);
+		        	var tagref = new Firebase(firebaseUrl+'/tags/'+brand);	        		
+	        		var b = tagref.child($scope.tagName);
+	        		b.child(user).set(ctime)
 		        	//console.log(checkboxes[i].value)
 		        }
 		        if(i==checkboxes.length-1){ 
-	        		tagref.child($scope.tagName).push($scope.keys)
+	        		$modalInstance.close();
 	        	}
 		    }
+		}else{
+			$scope.error = "Please Enter Tag Name";
+		}		
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+}
+
+function removeTagCtrl ($scope, $modalInstance, userDataService, $timeout, dataService, $firebaseObject) {
+    var brand = userDataService.getbrand();    
+	$scope.ok = function () {
+		if($scope.tagName){
+			var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/'+$scope.tagName)
+			tagref.remove();
+			$modalInstance.close();
+			/*tagref.on('child_added', function(snapshot) {
+				if(snapshot.val()){
+					var user = snapshot.key();
+					var data = snapshot.val();					
+					var userref = new Firebase(firebaseUrl+"users/"+user+'/profile/tag/'+brand+'/'+$scope.tagName);
+					userref.remove();
+				}
+			});*/
 		}else{
 			$scope.error = "Please Enter Tag Name";
 		}		
@@ -1802,10 +1857,8 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 			    	}			    	
 			  	}
 			});
-
 		    $scope.formData.key = $scope.formData.company;
-		    $scope.message = "Data succesfully Updated";
-				
+		    $scope.message = "Data succesfully Updated";				
     	}else{
     		$scope.error = "Please insert all fields";
     	}      

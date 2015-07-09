@@ -23,10 +23,10 @@
                 <input ng-model="textSearch" id="top-search" class="form-control pull-left" type="text" placeholder="Filter by" autofocus>
             </div>
             <div class="col-lg-2">
-                <button  class="btn btn-primary pull-right" ng-click="addtag()"> <i class="fa fa-plus"> Add Tag </i> </button> 
+                <button  class="btn btn-primary pull-right" ng-click="tag(1)"> <i class="fa fa-plus-circle"> Add Tag </i> </button> 
             </div>
             <div class="col-lg-2">
-                <button  class="btn btn-primary pull-right" ng-click="removetag()"> <i class="fa fa-group"> Remove Tag </i> </button> 
+                <button  class="btn btn-primary pull-right" ng-click="tag(0)"> <i class="fa fa-minus-circle"> Remove Tag </i> </button> 
             </div>
             <div class="col-lg-2">
                 <a ui-sref="contacts.addcontact"> <button  class="btn btn-primary pull-right" > <i class="fa fa-plus-square-o "> Add Contact </i> </button> </a>  
