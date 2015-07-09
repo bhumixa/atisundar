@@ -245,12 +245,12 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   	var company = encryptemail($scope.formData.company);
 		   	var address = $scope.formData.address;
 		   	var pImage = $scope.formData.pImage;
-		   	var handle = '';
-		   	if($scope.formData.handle){
+		   	var handle = mobile;
+		   	/*if($scope.formData.handle){
 		   		handle = $scope.formData.handle
 		   	}else{
 		   		handle = mobile;
-		   	}
+		   	}*/
 		   	var ctime = new Date().getTime();
 		   	var date = moment().format('YYYY-MM-DD')
 		   	if(handle){
@@ -284,7 +284,8 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		          	}
 
 		          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
-		          	queueRef.push(queueData);
+		          	var key = queueRef.push(queueData);
+		          	console.log(key.key())
 		          	$scope.message = "Data succesfully Inserted";
 				}
 				else{
@@ -1283,23 +1284,12 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 	var homeData  = new Firebase(firebaseUrl+"brands/"+brand+'/home');
 	$scope.formData = $firebaseObject(homeData);
 
-	$scope.submitForm = function(){
-		//console.log($scope.checkboxModel)
-		var imgName = $scope.formData.image; 
-		var text = $scope.formData.text;
-		var query = $scope.formData.query;
-		var logo = $scope.formData.logo;
+	$scope.submitForm = function(){	
 
-		var left = $scope.formData.left; 
-		var scrollx = $scope.formData.scrollx;
-		var scrolly = $scope.formData.scrolly;
-		var zoom = $scope.formData.zoom;
-		var top = $scope.formData.top;
-
-		var menuButtons = $scope.menuButtons;
+		var homeButtons = $scope.homeButtons;
 		
 		
-		var data = {
+		/*var data = {
 			"image" : imgName,
 	        "logo" : logo,
 	        "query" : query,
@@ -1309,17 +1299,16 @@ function homepageCtrl($scope, $rootScope, $stateParams, $state, userDataService,
 	        "scrolly":scrolly,
 	        "zoom":zoom,
 	        "top":top
+		}*/
+		if(homeButtons){
+			console.log(homeButtons)
+			homeref.child('homeButtons').set(homeButtons);
 		}
-		if(menuButtons){
-			console.log(menuButtons)
-			homeref.child('menuButtons').set(menuButtons);
-		}
-
-		if(imgName && text && query && logo){
-			homeref.child('home').set(data);			
-			/*homeref.child('paymentMethod').set($scope.checkboxModel);*/
+		$scope.message = "Data succesfully Updated";
+		/*if(imgName && text && query && logo){
+			
 			$scope.message = "Data succesfully Updated";
-		}
+		}*/
 	}
 }
 
