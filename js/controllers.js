@@ -1,5 +1,6 @@
 var firebaseUrl = Circle.getFBURL();
 
+
 var client = new Keen({
     projectId: "55430ee796773d5aa89d86a4",
     readKey: "ca294e81b3964d2eab952d3ba67a1cffba7cc091943e0612df8d102281efcadb1b0b382c4928919b13ed977575ddf91e4bbe4d9eb24961f862b88984729d58c2a16a6daa2d30427d254500689175394e96b6436e09c69b96e0cd3ff909ad39eea097b033319e942ac1ca794726c88894"
@@ -253,48 +254,37 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   	}*/
 		   	var ctime = new Date().getTime();
 		   	var date = moment().format('YYYY-MM-DD')
-		   	if(handle){
-		   		var validHandle = isValid($scope.formData.handle);
-				//console.log(validHandle)
-				if(validHandle == true){
-					var userData = {
-				   		'company':company,
-				   		'name':name,
-				   		'email':email,
-				   		'address':address,
-				   		'pImage':pImage,
-				   		'created': ctime,
-				   		'date':date,
-				   		'uhandle':handle
-				   	}
-				   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
-				   	//userref.child(email).set(mobile);	
-				   	/*var emailref = new Firebase(firebaseUrl+"userEmailMap");
-					emailref.child(email).set(mobile);				   	
-
-				    var n  = userref.child(mobile);
-				   // n.child(brand).set(userData)
-				   	n.child('profile').set(userData)*/
-
-				   	var queueData = {
-		          		'data': userData,
-		          		'user':mobile,
-		          		'brand':brand,
-						"_state": "add_user_to_circle",
-		          	}
-
-		          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
-		          	var key = queueRef.push(queueData);
-		          	console.log(key.key())
-		          	$scope.message = "Data succesfully Inserted";
-				}
-				else{
-			   		$scope.error = "please enter Valid User Name"
-			   	}
+		   
+			var userData = {
+		   		'company':company,
+		   		'name':name,
+		   		'email':email,
+		   		'address':address,
+		   		'pImage':pImage,
+		   		'created': ctime,
+		   		'date':date,
+		   		'uhandle':handle
 		   	}
-		   	
-		   	
-          	
+		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
+		   	//userref.child(email).set(mobile);	
+		   	/*var emailref = new Firebase(firebaseUrl+"userEmailMap");
+			emailref.child(email).set(mobile);				   	
+
+		    var n  = userref.child(mobile);
+		   // n.child(brand).set(userData)
+		   	n.child('profile').set(userData)*/
+
+		   	var queueData = {
+          		'data': userData,
+          		'user':mobile,
+          		'brand':brand,
+				"_state": "add_user_to_circle",
+          	}
+
+          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+          	var key = queueRef.push(queueData);
+          	console.log(key.key())
+          	$scope.message = "Data succesfully Inserted";
 		   
 		   /*	var ref = new Firebase(firebaseUrl+"users/"+mobile+'/brands')
 		   	ref.child(brand).set('user')
@@ -310,9 +300,7 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		    company.child(mobile).set(name);
 
 		    var lastupdateref = new Firebase(firebaseUrl+"brands/"+brand+'/lastUpdated');
-		    lastupdateref.child('contact').set(mobile);*/
-
-		    
+		    lastupdateref.child('contact').set(mobile);*/		    
 		    /*$scope.formData = '';*/
     	}else{
     		$scope.error = "Please insert all fields";
@@ -1354,6 +1342,7 @@ function addfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, firebaseS
 	var mainFeedref = new Firebase(firebaseUrl+"/feeds");
 	var name = userDataService.getName();
 	var mobile = userDataService.getMobile();
+	
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();
 		if($scope.feedData.url){
@@ -1364,21 +1353,23 @@ function addfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, firebaseS
 			}
 			firebaseServices.fetchContactData(mobile, brand).then(function(result){
 				if (result){
+					console.log(result)
 					var image = "person_avatar_h9fddj"
 			  		if(result.pImage){
 			  			image = result.pImage;
-			  			var data = {
-							'url':$scope.feedData.url,
-							'last_updated':last_updated,
-							'brand':brand,
-							'authorName':name,
-							'author':mobile,
-							'pImage':image
-						}
-						var feed = mainFeedref.push(data);
-						var key = feed.key();
-						brandformref.child(key).set(ctime);
 			  		}
+			  		var data = {
+						'url':$scope.feedData.url,
+						'last_updated':last_updated,
+						'brand':brand,
+						'authorName':name,
+						'author':mobile,
+						'pImage':image
+					}
+					var feed = mainFeedref.push(data);
+					var key = feed.key();
+					console.log(key)
+					brandformref.child(key).set(ctime);
 				}
 			});			
 			$scope.message = "Feed succesfully Created";
