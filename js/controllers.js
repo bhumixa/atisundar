@@ -1630,7 +1630,7 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 
 }
 
-function contactlistCtrl($scope, $timeout, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+function contactlistCtrl($scope, $modal, $timeout, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	/*$scope.userlist = {};*/
 	var brand = userDataService.getbrand();
 	var branduserref = new Firebase(firebaseUrl+"brands/"+brand+'/users');
@@ -1655,9 +1655,9 @@ function contactlistCtrl($scope, $timeout, $rootScope, $stateParams, $state, use
 		}
 	});
 
-	$scope.createUserGroup = function(){
-		$scope.keys = [];
-		var checkboxes = document.getElementsByName('keys[]');
+	$scope.addtag = function(){
+		
+		/*var checkboxes = document.getElementsByName('keys[]');
     	//$scope.feedback.label = [];
 
     	for (var i=0; i<checkboxes.length; i++) {
@@ -1665,12 +1665,48 @@ function contactlistCtrl($scope, $timeout, $rootScope, $stateParams, $state, use
 	        {
 	        	$scope.keys.push(checkboxes[i].value); 
 	        }
-	        if(i==checkboxes.length-1){
+	    }*/
+	    var modalInstance = $modal.open({
+            templateUrl: 'views/addtag.html',
+            controller: addTagCtrl
+        });
+	        /*if(i==checkboxes.length-1){
 	        	console.log($scope.keys + '--'+checkboxes.length)   
         		console.log($scope.keys)
-        	}
-      	}   
+        	}*/
 	}
+}
+
+function addTagCtrl ($scope, $modalInstance, $timeout, dataService, $firebaseObject) {
+
+   /* var n  = userref.child(user);
+    n.child('profile').set(profileData)*/
+    var tagref = new Firebase(firebaseUrl+'/tags');
+	$scope.ok = function () {
+		$scope.keys = [];
+		if($scope.tagName){
+			var checkboxes = document.getElementsByName('keys[]');
+			for (var i=0; i<checkboxes.length; i++) {
+	        	if (checkboxes[i].checked) 
+		        {
+		        	var user = checkboxes[i].value;
+		        	$scope.keys.push(user); 
+		        	var userref = new Firebase(firebaseUrl+"users/"+user);
+		        	userref.child('profile').update({'tag':$scope.tagName})
+		        	//console.log(checkboxes[i].value)
+		        }
+		        if(i==checkboxes.length-1){ 
+	        		tagref.child($scope.tagName).push($scope.keys)
+	        	}
+		    }
+		}else{
+			$scope.error = "Please Enter Tag Name";
+		}		
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
 }
 
 function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataService, firebaseServices, $timeout, $firebaseObject, $firebaseArray){
@@ -1732,54 +1768,44 @@ function editcontactCtrl($scope, $rootScope, $stateParams, $state, userDataServi
 		   	var address = $scope.formData.address;
 		   	var pImage = $scope.formData.pImage;
 		   	var mobile = $scope.formData.mobile;
-		   	var handle = '';
+		   /*	var handle = '';
 		   	if($scope.formData.handle){
 		   		handle = $scope.formData.handle
 		   	}else{
 		   		handle = mobile;
-		   	}
+		   	}*/
 
 		   	var companyref = new Firebase(firebaseUrl+"brands/"+brand+"/companyusers/"+company);
 			companyref.child(contactId).set(name);
 
 			var mainuseref = new Firebase(firebaseUrl+"brands/"+brand+"/users");
 			mainuseref.child(contactId).set(name);
-
-			if(handle){
-		   		var validHandle = isValid($scope.formData.handle);
-				//console.log(validHandle)
-				if(validHandle == true){
 			
-				   	var userData = {
-				   		'company':company,
-				   		'name':name,
-				   		'email':email,
-				   		'address':address,
-				   		'pImage':pImage,
-				   		'uhandle':handle
-				   	}			   	
+		   	var userData = {
+		   		'company':company,
+		   		'name':name,
+		   		'address':address,
+		   		'pImage':pImage
+		   	}			   	
 
-				   	var userRef = new Firebase(firebaseUrl+"users/"+contactId+'/profile');		   	
-				   	//userRef.child(brand).set(userData);
-				   	userRef.update(userData)
+		   	var userRef = new Firebase(firebaseUrl+"users/"+contactId+'/profile');		   	
+		   	//userRef.child(brand).set(userData);
+		   	userRef.update(userData)
 
-				   	var adminRef = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
-				   	adminRef.once('value', function(snapshot) {
-					 	if (snapshot.hasChild(contactId)) {
-					    	adminRef.child(contactId).set(name);
-					    	console.log(loggedinmobile +'loggedinmobile')
-					    	if(loggedinmobile == contactId){
-					    		userDataService.setName(name);
-					    	}			    	
-					  	}
-					});
+		   	var adminRef = new Firebase(firebaseUrl+"brands/"+brand+'/admins');
+		   	adminRef.once('value', function(snapshot) {
+			 	if (snapshot.hasChild(contactId)) {
+			    	adminRef.child(contactId).set(name);
+			    	console.log(loggedinmobile +'loggedinmobile')
+			    	if(loggedinmobile == contactId){
+			    		userDataService.setName(name);
+			    	}			    	
+			  	}
+			});
 
-				    $scope.formData.key = $scope.formData.company;
-				    $scope.message = "Data succesfully Updated";
-				}else{
-			   		$scope.error = "please enter Valid User Name"
-			   	}
-			}
+		    $scope.formData.key = $scope.formData.company;
+		    $scope.message = "Data succesfully Updated";
+				
     	}else{
     		$scope.error = "Please insert all fields";
     	}      

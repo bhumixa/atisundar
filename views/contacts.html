@@ -19,11 +19,14 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="span4"> </div>
-            <div class="col-lg-8">
+            <div class="col-lg-6">
                 <input ng-model="textSearch" id="top-search" class="form-control pull-left" type="text" placeholder="Filter by" autofocus>
             </div>
             <div class="col-lg-2">
-                <button  class="btn btn-primary pull-right" ng-click="createUserGroup()"> <i class="fa fa-group"> Create Group </i> </button> 
+                <button  class="btn btn-primary pull-right" ng-click="addtag()"> <i class="fa fa-plus"> Add Tag </i> </button> 
+            </div>
+            <div class="col-lg-2">
+                <button  class="btn btn-primary pull-right" ng-click="removetag()"> <i class="fa fa-group"> Remove Tag </i> </button> 
             </div>
             <div class="col-lg-2">
                 <a ui-sref="contacts.addcontact"> <button  class="btn btn-primary pull-right" > <i class="fa fa-plus-square-o "> Add Contact </i> </button> </a>  
