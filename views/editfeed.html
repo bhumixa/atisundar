@@ -27,6 +27,11 @@
                     
                     <div class="col-lg-6">
                         <div class="form-group">
+                            <label>Feed Name *</label>
+                            <input id="feedname" name="feedname" ng-model="feedData.feedname" type="text" class="form-control required" ng-required="true">
+                        </div> 
+
+                        <div class="form-group">
                             <label>Feed Url *</label>
                             <input id="url" name="url" ng-model="feedData.url" type="text" class="form-control required" ng-required="true">
                         </div> 
@@ -36,8 +41,13 @@
                         <div class="form-group">
                             <label>Feed Last Updated *</label>
                             <input id="last_updated" name="last_updated" ng-model="feedData.last_updated" type="text" class="form-control">
-                        </div>                      
-                    </div>                    
+                        </div>  
+
+                        <div class="form-group">
+                            <label>Duration</label>
+                            <input min="01:00" max="24:00" type="text" class="form-control" id="duration" ng-model="formData.duration" ng-change="formatTime('duration')"placeholder="Time">
+                        </div>                     
+                    </div>                         
                 </div>
                 <button type="submit" class="btn btn-primary" ng-click="submitForm()">Submit</button>  
                 <button class="btn btn-danger pull-right" type="button" ng-click="deleteFeed()">

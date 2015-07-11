@@ -79,8 +79,9 @@
                                     <div class="col-sm-6">
                                         <select name="tag"  class="form-control" ng-model="formData.usergrouptag">
                                             <option value="">Choose Tag</option>
-                                            <option value="Developer">Developer</option>
-                                            <option value="Production">Production</option>
+                                           <!--  <option value="Developer">Developer</option>
+                                            <option value="Production">Production</option> -->
+                                            <option value="{{tagIn}}" ng-repeat="tagIn in tags">{{tag}} </option>
                                         </select>
                                     </div>
                                 </div>
@@ -93,6 +94,7 @@
                                             <option value="">Choose Period</option>
                                             <option value="Once">Once</option>
                                             <option value="Daily">Daily</option>
+                                            <option value="Hourly">Hourly</option>
                                         </select> 
                                     </div>
                                 </div>

@@ -1343,6 +1343,18 @@ function addfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, firebaseS
 	var name = userDataService.getName();
 	var mobile = userDataService.getMobile();
 	
+	$scope.formatTime = function(id) { 
+	  var val =  $('#'+id).val();
+	  val = val.replace(/[^0-9]/g,'');
+	  if(val.length >= 2)
+	      val = val.substring(0,2) + ':' + val.substring(2); 
+	  if(val.length >= 5)
+	      val = val.substring(0,5); 
+	  /*if(val.length > 10)
+	      val = val.substring(0,10); */
+	 $('#'+id).val(val);
+	};
+
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();
 		if($scope.feedData.url){
@@ -1361,6 +1373,8 @@ function addfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, firebaseS
 			  		var data = {
 						'url':$scope.feedData.url,
 						'last_updated':last_updated,
+						'name':$scope.feedData.feedname,
+						'duration':$scope.feedData.duration,
 						'brand':brand,
 						'authorName':name,
 						'author':mobile,
@@ -1392,6 +1406,18 @@ function editfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, userData
 
 	var name = userDataService.getName();
 
+	$scope.formatTime = function(id) { 
+	  var val =  $('#'+id).val();
+	  val = val.replace(/[^0-9]/g,'');
+	  if(val.length >= 2)
+	      val = val.substring(0,2) + ':' + val.substring(2); 
+	  if(val.length >= 5)
+	      val = val.substring(0,5); 
+	  /*if(val.length > 10)
+	      val = val.substring(0,10); */
+	 $('#'+id).val(val);
+	};
+
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();
 		if($scope.feedData.url){
@@ -1402,7 +1428,9 @@ function editfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, userData
 			}
 			var data = {
 				'url':$scope.feedData.url,
-				'last_updated':last_updated
+				'last_updated':last_updated,
+				'name':$scope.feedData.feedname,
+				'duration':$scope.feedData.duration
 			}
 
 			mainFeedref.update(data);
@@ -1418,9 +1446,10 @@ function editfeedCtrl($scope, $rootScope, $modal, $stateParams, $state, userData
 	}
 }
 
-function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userDataService, dataService, $firebaseObject, $firebaseArray){
+function addformCtrl ($scope, $rootScope, $timeout,  $modal, $stateParams, $state, userDataService, dataService, $firebaseObject, $firebaseArray){
 	$scope.formData = {};
 	var brand = userDataService.getbrand();
+	var mobile = userDataService.getMobile();
 	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
 	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/forms");
 	var name = userDataService.getName();
@@ -1436,6 +1465,20 @@ function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userData
 	      val = val.substring(0,10); */
 	 $('#'+id).val(val);
 	};
+
+	var tags = []
+	var tagref = new Firebase(firebaseUrl+"tags/"+brand);
+	tagref.on("child_added",function(data){
+		var key = data.key();
+		//var dataList = data.val();
+		tags.push(key)
+		$timeout(function(){
+		  	$scope.$apply(function() {
+		  		$scope.tags = tags;		  				  		
+		  	});
+	  	},0,false);
+
+	});
 
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();	
@@ -1464,8 +1507,15 @@ function addformCtrl ($scope, $rootScope, $modal, $stateParams, $state, userData
 					'time':time,
 					'active':$scope.formData.active
 				}
+				
+				var form = brandformref.push(data);
+				var formKey = form.key();
+
+				var scheduleref = new Firebase(firebaseUrl+"scheduled");
+				scheduleref.child(formKey).set({'brand':brand, 'last_sent':0, 'author':mobile, 'authorName':name});				
+
 				$scope.message = "Form succesfully Created";
-				brandformref.push(data);
+
 			}else{
 				$scope.error = "Please fill all fields";
 			}			
@@ -1547,11 +1597,12 @@ function importFormCtrl ($scope, $modalInstance, $timeout, dataService, $firebas
 }
 
 
-function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
+function editformCtrl ($scope, $timeout, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	$scope.formData = {};
 
 	var brand = userDataService.getbrand();
 	var brandref = new Firebase(firebaseUrl+"brands/"+brand);
+	var mobile = userDataService.getMobile();
 
 	var formId = $stateParams.formId;
 	var brandformref = new Firebase(firebaseUrl+"brands/"+brand+"/forms/"+formId);
@@ -1571,6 +1622,20 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 	      val = val.substring(0,10); */
 	  $('#'+id).val(val);
 	};
+
+	var tags = []
+	var tagref = new Firebase(firebaseUrl+"tags/"+brand);
+	tagref.on("child_added",function(data){
+		var key = data.key();
+		//var dataList = data.val();
+		tags.push(key)
+		$timeout(function(){
+		  	$scope.$apply(function() {
+		  		$scope.tags = tags;		  				  		
+		  	});
+	  	},0,false);
+
+	});
 
 	$scope.submitForm = function(){
 		var ctime = new Date().getTime();
@@ -1601,6 +1666,10 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 				}
 				brandformref.update(data);
 				$scope.message = "Form succesfully Updated";
+
+				var scheduleref = new Firebase(firebaseUrl+"scheduled");
+				scheduleref.child($stateParams.formId).update({'brand':brand});
+
 			}else{
 				$scope.error = "Please fill all fields";
 			}			
@@ -1632,16 +1701,9 @@ function editformCtrl ($scope, $rootScope, $stateParams, $state, userDataService
 
 function contactlistCtrl($scope, $modal, $timeout, $rootScope, $stateParams, $state, userDataService, $firebaseObject, $firebaseArray){
 	/*$scope.userlist = {};*/
-
-
 	var brand = userDataService.getbrand();
 	var branduserref = new Firebase(firebaseUrl+"brands/"+brand+'/users');
-	//$scope.userlist = $firebaseArray(branduserref);
-
-	/*var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/Welcome');
-	var val = $firebaseArray(tagref);
-	var length = val.length;
-	alert(length)*/
+	
 	$scope.users = '';
 	$scope.userlist = '';
 	var userlist = []; 
@@ -1744,16 +1806,27 @@ function removeTagCtrl ($scope, $modalInstance, userDataService, $timeout, dataS
 	$scope.ok = function () {
 		if($scope.tagName){
 			var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/'+$scope.tagName)
+			/*var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/'+$scope.tagName)
 			tagref.remove();
-			$modalInstance.close();
-			/*tagref.on('child_added', function(snapshot) {
+			$modalInstance.close();*/
+			/**/
+			var i = 0 ;
+			tagref.once("value", function(snapshot) {
+		  		var length = snapshot.numChildren();
+		  		tagref.on('child_added', function(snapshot) {
 				if(snapshot.val()){
-					var user = snapshot.key();
-					var data = snapshot.val();					
-					var userref = new Firebase(firebaseUrl+"users/"+user+'/profile/tag/'+brand+'/'+$scope.tagName);
-					userref.remove();
-				}
-			});*/
+						i++;
+						var user = snapshot.key();
+						var data = snapshot.val();					
+						var userref = new Firebase(firebaseUrl+"users/"+user+'/profile/tag/'+brand+'/'+$scope.tagName);
+						userref.remove();
+						if(i == length){
+							var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/'+$scope.tagName)
+							tagref.remove();
+						}
+					}
+				});
+		  	});
 		}else{
 			$scope.error = "Please Enter Tag Name";
 		}		

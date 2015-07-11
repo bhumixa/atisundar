@@ -405,7 +405,7 @@ function getfeedData($firebaseObject, $timeout){
               // val now contains the object { first: 'Fred', last: 'Flintstone' }.
             });
         },
-        template :'<div class="contact-box"><h3><strong>{{feedData.url}}</strong></h3><p> {{feedData.last_updated}} </p></div>'
+        template :'<div class="contact-box"><h3><strong>{{feedData.url}}</strong></h3><p>{{feedData.name}}</p><p> {{feedData.last_updated}} </p></div>'
     };
 }
 
