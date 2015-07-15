@@ -9,7 +9,7 @@ function pageTitle($rootScope, $timeout) {
             var listener = function(event, toState, toParams, fromState, fromParams) {
                 var title = 'Welcome';
                 // Create your own title pattern
-                if (toState.data && toState.data.pageTitle) title = 'Atisundar | ' + toState.data.pageTitle;
+                if (toState.data && toState.data.pageTitle) title = 'Admin | ' + toState.data.pageTitle;
                 $timeout(function() {
                     element.text(title);
                 });
@@ -434,7 +434,8 @@ function getuserData($firebaseObject, $timeout){
 
                         $scope.$apply(function() {
                         $scope.userData = dataUser
-                        $scope.email = email
+                        $scope.email = email;
+                        $scope.mobile = id;
                         //console.log(card)
                             //element.html("<pre>"+card.author+"</pre>")
                         })  },0,false);
@@ -456,7 +457,7 @@ function getuserData($firebaseObject, $timeout){
                var n = userDataRef.child(list);
             });*/
         },
-        template :'<div><h3><strong>{{userData.name}}</strong></h3> <p> <small> {{userData.company | decryptString}}  </small> </p> <p> <small> {{email}} </small> </p> <p>  <small>  <address> <i class="fa fa-map-marker"></i> {{userData.address}}</address>  M: {{user.$id}}  </small>  </p></div>'
+        template :'<div><h3><strong>{{userData.name}}</strong></h3> <p> <small> {{userData.company | decryptString}}  </small> </p> <p> <small> {{email}} </small> </p> <p>  <small>  <address> <i class="fa fa-map-marker"></i> {{userData.address}}</address>  M: {{mobile}}  </small>  </p></div>'
     };
 }
 

@@ -1,6 +1,5 @@
 var firebaseUrl = Circle.getFBURL();
 
-
 var client = new Keen({
     projectId: "55430ee796773d5aa89d86a4",
     readKey: "ca294e81b3964d2eab952d3ba67a1cffba7cc091943e0612df8d102281efcadb1b0b382c4928919b13ed977575ddf91e4bbe4d9eb24961f862b88984729d58c2a16a6daa2d30427d254500689175394e96b6436e09c69b96e0cd3ff909ad39eea097b033319e942ac1ca794726c88894"
@@ -1668,7 +1667,9 @@ function editformCtrl ($scope, $timeout, $rootScope, $stateParams, $state, userD
 				$scope.message = "Form succesfully Updated";
 
 				var scheduleref = new Firebase(firebaseUrl+"scheduled");
-				scheduleref.child($stateParams.formId).update({'brand':brand});
+				//scheduleref.child($stateParams.formId).update({'brand':brand});
+				scheduleref.child($stateParams.formId).update({'brand':brand, 'last_sent':0, 'author':mobile, 'authorName':name});				
+
 
 			}else{
 				$scope.error = "Please fill all fields";
