@@ -231,6 +231,37 @@ function navigationCtrl($scope, $state, $firebaseObject, $firebaseArray, $timeou
 
 /*addcontactCtrl*/
 function addcontactCtrl($scope, $rootScope, userDataService) {
+	//919586484245
+	var ctime = new Date().getTime();
+	/*var userref = new Firebase(firebaseUrl+"users/919586484245/profile")
+	userref.once('value', function(userSnap) {
+	   console.log(userSnap.val())
+	   var firstloggedin = userSnap.val().firstloggedin
+	   var lastloggedin = userSnap.val().lastloggedin
+	   var name =  userSnap.val().name; 
+	   if(firstloggedin == 0){
+			var queueData = {
+				'name':name,
+          		'user':'919586484245',
+				"_state": "first_loggedin"
+          	}
+
+          	var queueRef = new Firebase(firebaseUrl+"/queue/tasks");
+          	queueRef.push(queueData);    
+          	userref.update({'firstloggedin':ctime})
+          	userref.update({'lastloggedin':ctime})      	
+	   }else{
+	   		userref.update({'lastloggedin':ctime})
+	   }
+	});*/
+
+	/*var userref = new Firebase(firebaseUrl+"users/919586484245")
+	userref.child('brands').on('child_added', function(userSnap) {
+		var brand = userSnap.key();
+		var data =  userSnap.val();
+		console.log(brand +'--'+data)
+	})*/
+
     var brand = userDataService.getbrand();
     $scope.formData = {};
     $scope.formData.pImage = "person_avatar_h9fddj"
@@ -262,7 +293,9 @@ function addcontactCtrl($scope, $rootScope, userDataService) {
 		   		'pImage':pImage,
 		   		'created': ctime,
 		   		'date':date,
-		   		'uhandle':handle
+		   		'uhandle':handle,
+		   		'firstloggedin':0,
+		   		'lastloggedin':0
 		   	}
 		   	//var userRef = new Firebase("https://educe.firebaseio.com/users");
 		   	//userref.child(email).set(mobile);	
@@ -516,11 +549,26 @@ function uploadcontactsCtrl($scope, $rootScope, userDataService, $timeout) {
 }
 
 /*productCtrl*/
-function productCtrl($scope, $rootScope, $firebaseArray, userDataService) {
+function productCtrl($scope, $rootScope, $modal, $firebaseArray, userDataService) {
 
 	var brand = userDataService.getbrand();
 	var brandref = new Firebase(firebaseUrl+"brands/"+brand+"/products")
 	$scope.productList = $firebaseArray(brandref);
+
+
+	$scope.tag = function(value){
+		if(value == 1){
+			var modalInstance = $modal.open({
+            	templateUrl: 'views/addProductTag.html',
+            	controller: addProductTagCtrl
+       		});
+		}else{
+			var modalInstance = $modal.open({
+            	templateUrl: 'views/removeProductTag.html',
+            	controller: removeProductTagCtrl
+       		});
+		}
+	}
 
 	$scope.searchCategory = function(category){
 		/*var mainRef = new Firebase("https://educe.firebaseio.com//products/products")
@@ -553,6 +601,48 @@ function productCtrl($scope, $rootScope, $firebaseArray, userDataService) {
 	/*ref3.once("value", function (ss) {
         resolve(ss.val())
     })*/
+}
+
+function addProductTagCtrl($scope, $modalInstance, userDataService, $timeout, dataService, $firebaseObject){
+	var brand = userDataService.getbrand();
+    
+	$scope.ok = function () {
+		$scope.ids = [];
+		if($scope.tagName){
+			var checkboxes = document.getElementsByName('ids[]');
+			for (var i=0; i<checkboxes.length; i++) {
+	        	if (checkboxes[i].checked) 
+		        {
+		        	var ctime = new Date().getTime();
+		        	var product = checkboxes[i].value;
+		        	$scope.ids.push(product); 
+		        	console.log($scope.ids)
+		        	/*var userref = new Firebase(firebaseUrl+"users/"+user+'/producttag/'+brand);
+		        	//var i = userref.child(brand);
+		        	userref.child($scope.tagName).set(ctime);*/
+		        	
+		        	//var n = tagref.child(brand);
+		        	var tagref = new Firebase(firebaseUrl+'/producttags/'+brand);	        		
+	        		var b = tagref.child($scope.tagName);
+	        		b.child(product).set(ctime)
+		        	//console.log(checkboxes[i].value)
+		        }
+		        if(i==checkboxes.length-1){ 
+	        		$modalInstance.close();
+	        	}
+		    }
+		}else{
+			$scope.error = "Please Enter Tag Name";
+		}		
+    };
+
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+}
+
+function removeProductTagCtrl($scope, $modalInstance, userDataService, $timeout, dataService, $firebaseObject) {
+
 }
 
 /*productdetailCtrl*/

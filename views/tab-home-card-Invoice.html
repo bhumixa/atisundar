@@ -1,135 +1,50 @@
- <div class="row">
-    <div class="col-sm-2">
-        <div class="cardImage">
-            <img src="http://res.cloudinary.com/atisundar/image/upload/w_100/{{card.pImage}}" class="img-circle"> 
+<div class="card order-thankyou-card" ng-click="showCard()">
+    <div class="item item-divider">
+        New Invoice & Goods despatch
+    </div>
+    <div class="item item-text-wrap">
+        <div class="list order-list list-inset" >
+            {{card.company}}<br>
+            Invoice: #{{card.invoiceno}} dated  {{card.date}}
+
+            <a class="item" href="#" ng-repeat="i in card.items">
+                <h2><strong>{{i.item}}</strong></h2>
+                <p>{{i.pieces}} x Rs. {{i.rate}}/-</p>
+            </a>
+
         </div>
     </div>
-    <div class="col-sm-10">
-    <div class="item item-avatar">
-      <h2 ng-cloak> {{card.authorName}} {{card.author}}</h2>
-      <p>{{duration}} {{relTime}}</p>
-  </div>
 
-  <div class="item item-body" ng-init="items.total = {}">
-      <p>
-         Invoice No : {{card.invoiceno}} dispatch to you via transport: {{card.transport}} , LR No: {{card.LRno}} on date {{card.date}} 
-      </p>
-      <p>
-      	<strong> Company : </strong>{{card.company}} 
-      </p>
-      
-      <p>
-      	<strong> Transport : </strong>{{card.transport}} 
-      </p>
-      <p>
-      	<strong> Date : </strong>{{card.date}} 
-      </p>
-      <p>
-      	<strong> LR No : </strong>{{card.LRno}} 
-      </p>
-      <div class="ibox-content">
-	    <table datatable="" class="table table-striped table-bordered table-hover dataTables-example">
-	      	<thead>
-		      	<tr class="gradeX"> 
-		  			<th> Item </th>
-		  			<th>  Quantity </th> 	
-		  			<th> Rate </th>
-		  			<th> Amount </th>
-		  		</tr>
-	  		</thead>
-	  		<tbody>
-		  		<tr ng-repeat = "item in card.items" class="gradeX"> 
-		  			<td> {{item.item}} </td>
-		  			<td> {{item.pieces}} </td>
-		  			<td> {{item.rate}} </td>
-		  			<td>  - </td>
-		  		</tr>
-		  		<tr class="gradeX"> 
-		  			<td> </td>
-		  			<td getpieces-total my-attr="{{card.items}}"> </td>
-		  			<td> </td>
-		  			<td getamount-total my-attr="{{card.items}}"> </td>
-		  		</tr>
-		  	</tbody>
-	    </table>
-	   </div>
-      	<!-- <div ng-repeat="item in card.items">
-      		{{item.pieces}} <div ng-init="items.total.pieces = items.total.pieces + item.pieces" > </div>
-      	</div>
-      	{{items.total.pieces}} -->
-      	
-      	<!-- <table datatable="" class="table table-striped table-bordered table-hover dataTables-example">
-      		<tr> 
-      			<th> Company </th>
-      			<th> Invoice No </th> 	
-      			<th> Parcel No </th>
-      			<th> Transport </th>     
-      			<th> Pieces </th> 
-      		</tr>
-      		<tr>
-      			<td> {{card.company}} </td>
-      			<td> {{card.invoiceno}} </td>
-      			<td> {{card.parcelno}} </td>
-      			<td> {{card.transport}} </td>
-      		</tr>
-      	</table> -->
-      	
-      
-      <p>
-          <a href="" class="subdued">{{card.likes}} {{'Likes'}}</a>
-          <a href="" class="subdued" ng-click="showComments()">{{card.commentCount}} Comments</a>
-      </p>
-  </div>
+    <div class="item item-divider">
+        <a href="#" ng-show="showCommentCount()" class="subdued">{{card.commentCount}} Comments</a>
 
-  <div class="item tabs tabs-secondary tabs-icon-left">
-      <!-- <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
-          <i class="icon ion-thumbsup"></i>
-          {{'Like'}}
-      </a>
-      <a ng-if="liked" class="tab-item" ng-click="likeCard()">
-          <i class="icon ion-thumbsup positive"></i>
-          <span class="positive"> {{'Like'}} </span>
-      </a> -->
+        <div class="text-right total-price">{{card.transport}}  &middot; Parcel No: {{card.parcelno}}<br>
+        LR No: {{card.LRno}}</div>
 
-      <!-- <a class="tab-item"  ng-click="addComments()">
-          <i class="icon ion-chatbox"></i>
-          Comment
-      </a> -->
 
-  </div>
-    <div class="item tabs tabs-secondary tabs-icon-left noselected" id="comArea_{{id}}" >
-        
     </div>
-     <div ng-repeat="c in comments">     <!-- comment start   -->
-        <div class="col-sm-12">
-            <div class="col-sm-1"> 
-                <img src="http://res.cloudinary.com/atisundar/image/upload/w_50/{{c.pImage}}" class="img-circle">  
-            </div>
-            <div class="col-sm-11">
-              <h4>{{c.name}} </h4> 
-              <span style="font-size:10px; color:#AAAAAA;">{{c.relTime}}</span>
-              <p>{{c.comment}}</p>
-            </div>
-        </div>
-        <div class="col-sm-12">
-            <span class="list list-inset comment-thread-list">
-                <span class="item" ng-repeat="r in c.replies">
-                    <div class="col-sm-1">                       
-                        <img src="http://res.cloudinary.com/atisundar/image/upload/w_50/{{r.pImage}}" class="img-circle"> 
-                    </div>
-                    <div class="col-sm-11">
-                            <h4>{{r.name}} <span style="font-size:10px; color:#AAAAAA;">{{r.created | getTime }}</span></h4>
 
-                            <p>{{r.comment}}</p>
-                    </div>                    
-                </span> 
-            </span>
-            <span class="list list-inset comment-thread-list"> 
-                 <div class="col-sm-6"> 
-                    <textarea ng-model="comment"  id="txt_{{id}}"> </textarea> <button class="btn btn-primary btn-xs" type="button" ng-click="submitComment(id, comment, c.$id)"><i class="fa fa-arrow-circle-left"> Submit </i></button> 
-                </div>
-            </span>
-        </div>
-    </div> <!-- comment end -->
-</div>
+    <div class="item">
+        <a href="#" ng-show="showLikeCount()" class="subdued">{{card.likes}} {{'Likes'}}</a>
+        <a ng-show='showCommentCount()' href="#"  class="subdued">{{card.commentCount}} Comment<span ng-if="card.commentCount>1">s</span> </a>
+
+    </div>
+
+    <!--div class="item tabs tabs-white tabs-secondary tabs-icon-left">
+        <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
+            <i class="icon ion-thumbsup"></i>
+            {{'Like'|translate}}
+        </a>
+        <a ng-if="liked" class="tab-item" ng-click="likeCard()">
+            <i class="icon ion-thumbsup positive"></i>
+            <span class="positive"> {{'Like'|translate}} </span>
+        </a>
+
+        <a class="tab-item" ng-click="showCard()">
+            <i class="icon ion-chatbox"></i>
+            Comment
+        </a>
+
+    </div-->
+
 </div>
