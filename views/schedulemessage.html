@@ -1,0 +1,112 @@
+<div  ng-controller="schedulemessageCtrl">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-9">
+		        <h2>Products</h2>
+		        <ol class="breadcrumb">
+		            <li>
+		                <a ui-sref="dashboards.main">Home</a>
+		            </li>
+		            
+		            <li class="active">
+		                <strong>Add Product</strong>
+		            </li>
+		        </ol>	       
+		</div>
+	</div>
+	<br>
+        <fieldset>
+
+        
+    	<div class="row">
+		    	<div class="col-lg-12">
+		    		<div class="alert alert-success alert-dismissable" ng-show="message"> {{message}} </div>
+		    	</div>
+		    
+		    	<div class="col-lg-12">
+		            <div class="form-group">
+		            	<div class="row">
+			            	<div class="col-sm-6">
+			            		<div class="col-sm-6">
+				            		<label>User Tags </label>
+				            	</div>
+				            	<div class="col-sm-6">
+					            	<select name="tag"  class="form-control" ng-model="formData.usergrouptag">
+					                	<option value="">Choose Tag</option>
+					                	<option value="Developer">Developer</option>
+					                	<option value="Production">Production</option>
+					                </select>
+				            	</div>
+				            </div>
+				            <div class="col-sm-6">
+				                <div class="col-sm-6">
+				            		<label>have to fill this form</label> 
+				            	</div>
+				            	<div class="col-sm-6">
+					                <select name="period"  class="form-control" ng-model="formData.period">
+					                	<option value="">Choose Period</option>
+					                	<option value="Developer">Once</option>
+					                	<option value="Production">Daily</option>
+					                </select> 
+					            </div>
+				            </div>
+				        </div>
+				    </div>
+				</div>
+
+				<div class="col-lg-12">
+		            <div class="form-group">
+				       	<div class="row">
+				            <div class="col-sm-6">
+				             	<div class="col-sm-6">
+				            		<label>beetween Start Date</label>
+				            	</div>
+				            	<div class="col-sm-6"> 
+						            <div class="input-group date">
+						                <input type="datetime" class="form-control" date-time ng-model="formData.startdate" view="date" placeholder="Start Date">
+						                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+						            </div>
+						        </div>
+			            	</div>			            
+				            <div class="col-sm-6">
+				             	<div class="col-sm-6">
+				            		<label>beetween End Date</label>
+				            	</div>
+				            	<div class="col-sm-6"> 
+				                	<div class="input-group date">
+						                <input type="datetime" class="form-control" date-time ng-model="formData.enddate" view="date" placeholder="End Date">
+						                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+						            </div>
+						        </div>
+			            	</div>
+			            </div>
+		            </div>
+		        </div>
+		   
+		    
+		        <div class="col-lg-12">
+		            <div class="form-group">
+				       	<div class="row">
+				            <div class="col-sm-7">
+				            	<div class="col-sm-12">
+				             		<label>Remind those Users who have not filled the form, everyday at Time </label>
+				             	</div>
+			            	</div>			            
+				            <div class="col-sm-4">
+				             	<div class="input-group date">
+					                <input type="datetime" class="form-control" date-time ng-model="formData.time" view="hours" placeholder="Time">
+					                <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+					            </div>
+			            	</div>
+			            </div>
+		            </div>
+		        </div>	
+		    	
+		    <div class="col-lg-12">
+		    	<div class="col-sm-7">
+		    		<button type="button" class="btn btn-primary" ng-click="submitForm()">Submit</button>
+		    	</div>
+		   	</div>	        
+		</div>
+
+		</fieldset>
+</div>	

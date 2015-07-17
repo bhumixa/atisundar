@@ -1,0 +1,24 @@
+<div class="card warning" ng-click="Go(card.formKey)">
+    <div class="col-sm-2">
+         <div class="item item-avatar">
+            <img src="http://res.cloudinary.com/atisundar/image/upload/w_100/{{card.pImage}}.png">            
+        </div>
+    </div>
+    <div class="col-sm-10">
+        <div class="item item-text-wrap">
+            <h2 ng-cloak>{{card.authorName}}</h2>
+            <p>{{duration}} {{relTime }}</p>
+            <p>
+               {{card.message}} 
+            </p>
+            <p>
+    	        <i class="icon ion-ios-paper"></i>
+    	        <strong>{{card.formName}} ({{card.formHandle}})</strong></br>
+    	        
+    	    </p>
+            <p>
+                <a ng-show="showCommentCount()" href="#" class="subdued">{{card.commentCount}} Comments</a>
+            </p>
+        </div>
+    </div>   
+</div>

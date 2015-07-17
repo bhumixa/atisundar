@@ -1,0 +1,24 @@
+<div class="inmodal">
+    <div class="modal-header">
+        <div ng-show="{{flag}}"> <h5 class="modal-title"> Add Tag </h5> </div>
+        <div ng-hide="{{flag}}"> <h5 class="modal-title"> Remove Tag </h5> </div>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="form-group">
+                <div ng-if="error" class="alert alert-danger"> {{error}} </div>           
+              
+                <div class="col-sm-12">
+                    <div class="form-group">
+		                <label> Tag Name </label>
+		                <input id="name" name="name" ng-model="tagName" type="text" class="form-control required" ng-required="true">
+		            </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" ng-click="cancel()">Close</button>
+        <button type="button" class="btn btn-primary" ng-click="ok()">Save</button>
+    </div>
+</div>

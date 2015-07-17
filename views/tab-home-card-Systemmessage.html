@@ -1,0 +1,43 @@
+<div class="card">
+    <div class="col-sm-2">
+        <div class="item item-avatar">
+            <img src="http://res.cloudinary.com/atisundar/image/upload/w_100/{{card.pImage}}.png" class="img-circle">
+            
+        </div>
+    </div>
+    <div class="col-sm-10">
+    <div class="item item-text-wrap" ng-click="showCard()">
+        <h2 ng-cloak>{{card.authorName}}</h2>
+        <p>{{duration}} {{relTime}}</p>
+        <p>
+            {{card.message}}
+        </p>
+        <p>
+            <a ng-show=showLikeCount() href="#" class="subdued">{{card.likes}} {{'Likes'}}</a>
+            <a ng-show='showCommentCount()' href="#" class="subdued">{{card.commentCount}} Comment<span ng-if="card.commentCount>1">s</span> </a>
+        </p>
+    </div>
+
+    <!--div class="item tabs tabs-secondary tabs-icon-left">
+        <a ng-if="!liked" class="tab-item" ng-click="likeCard()">
+            <i class="icon ion-thumbsup"></i>
+            {{'Like'|translate}}
+        </a>
+        <a ng-if="liked" class="tab-item" ng-click="likeCard()">
+            <i class="icon ion-thumbsup positive"></i>
+            <span class="positive"> {{'Like'|translate}} </span>
+        </a>
+
+        <a class="tab-item" ng-show='showCommentsIcon()' ng-click="showCard()">
+            <i class="icon ion-chatbox"></i>
+            Comment
+        </a>
+
+    </div-->
+
+    </div>
+</div>
+
+
+
+
