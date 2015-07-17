@@ -564,7 +564,7 @@ function productCtrl($scope, $rootScope, $modal, $firebaseArray, userDataService
        		});
 		}else{
 			var modalInstance = $modal.open({
-            	templateUrl: 'views/removeProductTag.html',
+            	templateUrl: 'views/addProductTag.html',
             	controller: removeProductTagCtrl
        		});
 		}
@@ -605,7 +605,7 @@ function productCtrl($scope, $rootScope, $modal, $firebaseArray, userDataService
 
 function addProductTagCtrl($scope, $modalInstance, userDataService, $timeout, dataService, $firebaseObject){
 	var brand = userDataService.getbrand();
-    
+    $scope.flag = 1;
 	$scope.ok = function () {
 		$scope.ids = [];
 		if($scope.tagName){
@@ -620,7 +620,10 @@ function addProductTagCtrl($scope, $modalInstance, userDataService, $timeout, da
 		        	/*var userref = new Firebase(firebaseUrl+"users/"+user+'/producttag/'+brand);
 		        	//var i = userref.child(brand);
 		        	userref.child($scope.tagName).set(ctime);*/
-		        	
+
+		        	var productRef = new Firebase(firebaseUrl+'/products/products/'+product+'/tags/'+brand);	
+		        	productRef.child($scope.tagName).set(ctime);
+
 		        	//var n = tagref.child(brand);
 		        	var tagref = new Firebase(firebaseUrl+'/producttags/'+brand);	        		
 	        		var b = tagref.child($scope.tagName);
@@ -642,8 +645,37 @@ function addProductTagCtrl($scope, $modalInstance, userDataService, $timeout, da
 }
 
 function removeProductTagCtrl($scope, $modalInstance, userDataService, $timeout, dataService, $firebaseObject) {
+	var brand = userDataService.getbrand();    
+	$scope.ok = function () {
+		if($scope.tagName){
+			var tagref = new Firebase(firebaseUrl+'/producttags/'+brand+'/'+$scope.tagName)
+			var i = 0 ;
+			tagref.once("value", function(snapshot) {
+		  		var length = snapshot.numChildren();
+		  		tagref.on('child_added', function(snapshot) {
+					if(snapshot.val()){
+						i++;
+						var product = snapshot.key();
+						var data = snapshot.val();					
+						var productref = new Firebase(firebaseUrl+"products/products/"+product+'/tags/'+brand+'/'+$scope.tagName);
+						productref.remove();
+						if(i == length){
+							var tagref = new Firebase(firebaseUrl+'/producttags/'+brand+'/'+$scope.tagName)
+							tagref.remove();							
+						}						
+					}
+				});
+		  	});
+		  	$modalInstance.close();
+		}else{
+			$scope.error = "Please Enter Tag Name";
+		}		
+    };
 
-}
+    $scope.cancel = function () {
+        $modalInstance.dismiss('cancel');
+    };
+}	
 
 /*productdetailCtrl*/
 function productdetailCtrl($scope, $rootScope, $stateParams, $firebaseObject, userDataService) {
@@ -693,6 +725,7 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
 
 	
 	  var brand = userDataService.getbrand();
+
 	/*var mainRef = new Firebase("https://educe.firebaseio.com//products/products")
 	mainRef.child('category').equalTo('Saree').once('value', function(snapshot) {
 	   console.log(snapshot)
@@ -751,8 +784,6 @@ function addproductCtrl($scope, $rootScope, $stateParams, $firebaseArray, $http,
     		if($scope.formData.category){
     			if($scope.formData.price){
     				if($scope.formData.cimages){
-
-
     				var mainref = new Firebase(firebaseUrl+"products/products")    	
 			    	/*$scope.products = $firebaseArray(brandref);
 			    	var i = $scope.products.push($scope.formData);*/
@@ -1856,6 +1887,7 @@ function addTagCtrl ($scope, $modalInstance, userDataService, $timeout, dataServ
 
    /* var n  = userref.child(user);
     n.child('profile').set(profileData)*/
+    $scope.flag = 1;
     var brand = userDataService.getbrand();
     
 	$scope.ok = function () {
@@ -1897,10 +1929,7 @@ function removeTagCtrl ($scope, $modalInstance, userDataService, $timeout, dataS
 	$scope.ok = function () {
 		if($scope.tagName){
 			var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/'+$scope.tagName)
-			/*var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/'+$scope.tagName)
-			tagref.remove();
-			$modalInstance.close();*/
-			/**/
+
 			var i = 0 ;
 			tagref.once("value", function(snapshot) {
 		  		var length = snapshot.numChildren();
@@ -1913,11 +1942,12 @@ function removeTagCtrl ($scope, $modalInstance, userDataService, $timeout, dataS
 						userref.remove();
 						if(i == length){
 							var tagref = new Firebase(firebaseUrl+'/tags/'+brand+'/'+$scope.tagName)
-							tagref.remove();
+							tagref.remove();							
 						}
 					}
 				});
 		  	});
+		  	$modalInstance.close();
 		}else{
 			$scope.error = "Please Enter Tag Name";
 		}		
@@ -2611,14 +2641,12 @@ function chartJsCtrl($scope, $timeout, $rootScope, $stateParams, $firebaseArray,
 	  })
 	.prepare();
 	client.run([salesCount, salesSum], function(err, res){ // run the queries
-
 	    var result1 = res[0].result  // data from first query
 	    var result2 = res[1].result  // data from second query
 	    var data = []  // place for combined results
 	    var i=0
 
 	    while (i < result1.length) {
-
 	        data[i]={ // format the data so it can be charted
 	            timeframe: result1[i]["timeframe"],
 	            value: [
